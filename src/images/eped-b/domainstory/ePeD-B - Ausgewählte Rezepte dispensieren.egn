@@ -37,19 +37,19 @@
       "waypoints": [
         {
           "original": {
-            "x": 113,
-            "y": -677
+            "x": -50,
+            "y": -665
           },
-          "x": 159,
-          "y": -671
+          "x": -22,
+          "y": -642
         },
         {
           "original": {
-            "x": 391,
-            "y": -642
+            "x": 163,
+            "y": -487
           },
-          "x": 335,
-          "y": -649
+          "x": 125,
+          "y": -519
         }
       ],
       "source": "shape_6698",
@@ -87,77 +87,27 @@
     {
       "type": "domainStory:connection",
       "name": "",
-      "id": "connection_1625",
-      "waypoints": [
-        {
-          "original": {
-            "x": 209,
-            "y": -529
-          },
-          "x": 232,
-          "y": -500
-        },
-        {
-          "original": {
-            "x": 290,
-            "y": -428
-          },
-          "x": 248,
-          "y": -480
-        }
-      ],
-      "source": "shape_7523",
-      "target": "shape_7169"
-    },
-    {
-      "type": "domainStory:connection",
-      "name": "",
       "id": "connection_1642",
       "waypoints": [
         {
           "original": {
-            "x": 373,
-            "y": -629
+            "x": 163,
+            "y": -487
           },
-          "x": 405,
-          "y": -640
+          "x": 206,
+          "y": -487
         },
         {
           "original": {
-            "x": 491,
-            "y": -670
+            "x": 349,
+            "y": -487
           },
-          "x": 441,
-          "y": -653
+          "x": 246,
+          "y": -487
         }
       ],
       "source": "shape_8151",
       "target": "shape_7137"
-    },
-    {
-      "type": "domainStory:connection",
-      "name": "",
-      "id": "connection_2121",
-      "waypoints": [
-        {
-          "original": {
-            "x": 500,
-            "y": -519
-          },
-          "x": 537,
-          "y": -524
-        },
-        {
-          "original": {
-            "x": 812,
-            "y": -562
-          },
-          "x": 762,
-          "y": -555
-        }
-      ],
-      "source": "shape_2330",
-      "target": "shape_5281"
     },
     {
       "type": "domainStory:activity",
@@ -171,16 +121,16 @@
             "x": -352,
             "y": -1017
           },
-          "x": -334,
-          "y": -974
+          "x": -345,
+          "y": -972
         },
         {
           "original": {
-            "x": -249,
-            "y": -827
+            "x": -313,
+            "y": -757
           },
-          "x": -270,
-          "y": -865
+          "x": -319,
+          "y": -795
         }
       ],
       "source": "shape_9717",
@@ -196,19 +146,19 @@
       "waypoints": [
         {
           "original": {
-            "x": 113,
-            "y": -677
+            "x": -50,
+            "y": -665
           },
-          "x": 133,
-          "y": -646
+          "x": -88,
+          "y": -636
         },
         {
           "original": {
-            "x": 209,
-            "y": -529
+            "x": -187,
+            "y": -561
           },
-          "x": 184,
-          "y": -567
+          "x": -163,
+          "y": -579
         }
       ],
       "source": "shape_6698",
@@ -225,10 +175,10 @@
         {
           "original": {
             "x": -613,
-            "y": -1029
+            "y": -1017
           },
-          "x": -568,
-          "y": -1027
+          "x": -570,
+          "y": -1017
         },
         {
           "original": {
@@ -236,7 +186,7 @@
             "y": -1017
           },
           "x": -390,
-          "y": -1019
+          "y": -1017
         }
       ],
       "source": "shape_7985",
@@ -252,11 +202,11 @@
       "waypoints": [
         {
           "original": {
-            "x": -501,
-            "y": -1163
+            "x": -509,
+            "y": -1152
           },
-          "x": -475,
-          "y": -1077.25
+          "x": -481,
+          "y": -1128
         },
         {
           "original": {
@@ -264,7 +214,7 @@
             "y": -1017
           },
           "x": -390,
-          "y": -1054
+          "y": -1050
         }
       ],
       "source": "shape_1768",
@@ -278,19 +228,19 @@
       "waypoints": [
         {
           "original": {
-            "x": -15,
-            "y": -827
+            "x": 39,
+            "y": -816
           },
-          "x": -39,
-          "y": -865
+          "x": 17,
+          "y": -854
         },
         {
           "original": {
-            "x": -76,
-            "y": -924
+            "x": -50,
+            "y": -968
           },
-          "x": -67,
-          "y": -909
+          "x": -41,
+          "y": -953
         }
       ],
       "source": "shape_2113",
@@ -308,16 +258,16 @@
             "x": 113,
             "y": -968
           },
-          "x": 75,
-          "y": -926
+          "x": 90,
+          "y": -902
         },
         {
           "original": {
-            "x": -15,
-            "y": -827
+            "x": 39,
+            "y": -816
           },
-          "x": 5,
-          "y": -849
+          "x": 53,
+          "y": -845
         }
       ],
       "source": "shape_6438",
@@ -333,19 +283,19 @@
       "waypoints": [
         {
           "original": {
-            "x": 113,
-            "y": -677
+            "x": -50,
+            "y": -665
           },
-          "x": 85,
-          "y": -715
+          "x": -34,
+          "y": -692
         },
         {
           "original": {
-            "x": 0,
-            "y": -831
+            "x": 39,
+            "y": -816
           },
-          "x": 17,
-          "y": -808
+          "x": 11,
+          "y": -769
         }
       ],
       "source": "shape_6698",
@@ -364,28 +314,48 @@
             "x": -352,
             "y": -1017
           },
-          "x": -314,
-          "y": -1003
-        },
-        {
-          "x": -154,
-          "y": -946
-        },
-        {
-          "x": -154,
-          "y": -677
+          "x": -328,
+          "y": -974
         },
         {
           "original": {
-            "x": 113,
-            "y": -677
+            "x": -50,
+            "y": -665
           },
-          "x": 75,
-          "y": -677
+          "x": -83,
+          "y": -703
         }
       ],
       "source": "shape_9717",
       "target": "shape_6698",
+      "multipleNumberAllowed": false
+    },
+    {
+      "type": "domainStory:activity",
+      "name": "abgelegt in",
+      "id": "connection_5307",
+      "pickedColor": "black",
+      "number": null,
+      "waypoints": [
+        {
+          "original": {
+            "x": -50,
+            "y": -665
+          },
+          "x": -8,
+          "y": -665
+        },
+        {
+          "original": {
+            "x": 197,
+            "y": -667
+          },
+          "x": 158,
+          "y": -667
+        }
+      ],
+      "source": "shape_6698",
+      "target": "shape_2330",
       "multipleNumberAllowed": false
     },
     {
@@ -397,19 +367,19 @@
       "waypoints": [
         {
           "original": {
-            "x": -249,
-            "y": -827
+            "x": -313,
+            "y": -757
           },
-          "x": -206,
-          "y": -827
+          "x": -277,
+          "y": -763
         },
         {
           "original": {
-            "x": -15,
-            "y": -827
+            "x": 39,
+            "y": -816
           },
-          "x": -53,
-          "y": -827
+          "x": 1,
+          "y": -810
         }
       ],
       "source": "shape_1146",
@@ -429,15 +399,15 @@
             "y": -1017
           },
           "x": -390,
-          "y": -988
+          "y": -983
         },
         {
           "original": {
-            "x": -536,
-            "y": -877
+            "x": -566,
+            "y": -826
           },
-          "x": -512,
-          "y": -895
+          "x": -544,
+          "y": -846
         }
       ],
       "source": "shape_9717",
@@ -481,19 +451,19 @@
       "waypoints": [
         {
           "original": {
-            "x": 113,
-            "y": -677
+            "x": -50,
+            "y": -665
           },
-          "x": 84,
-          "y": -611.25
+          "x": -53,
+          "y": -599.25
         },
         {
           "original": {
-            "x": -76,
-            "y": -370
+            "x": -68,
+            "y": -418
           },
-          "x": -60,
-          "y": -396
+          "x": -65,
+          "y": -456
         }
       ],
       "source": "shape_6698",
@@ -509,27 +479,19 @@
       "waypoints": [
         {
           "original": {
-            "x": 113,
-            "y": -677
+            "x": -50,
+            "y": -665
           },
-          "x": 75,
-          "y": -653
-        },
-        {
-          "x": -83,
-          "y": -553
-        },
-        {
-          "x": -486,
-          "y": -553
+          "x": -88,
+          "y": -659
         },
         {
           "original": {
-            "x": -536,
-            "y": -698
+            "x": -566,
+            "y": -578
           },
-          "x": -523,
-          "y": -660
+          "x": -530,
+          "y": -584
         }
       ],
       "source": "shape_6698",
@@ -545,19 +507,19 @@
       "waypoints": [
         {
           "original": {
-            "x": -536,
-            "y": -698
+            "x": -566,
+            "y": -578
           },
-          "x": -507,
-          "y": -711
+          "x": -541,
+          "y": -596
         },
         {
           "original": {
-            "x": -249,
-            "y": -827
+            "x": -313,
+            "y": -757
           },
-          "x": -287,
-          "y": -810
+          "x": -351,
+          "y": -730
         }
       ],
       "source": "shape_0670",
@@ -573,49 +535,24 @@
       "waypoints": [
         {
           "original": {
-            "x": -536,
-            "y": -877
+            "x": -566,
+            "y": -826
           },
-          "x": -536,
-          "y": -783.25
+          "x": -566,
+          "y": -732.25
         },
         {
           "original": {
-            "x": -536,
-            "y": -698
+            "x": -566,
+            "y": -578
           },
-          "x": -536,
-          "y": -736
+          "x": -566,
+          "y": -616
         }
       ],
       "source": "shape_9417",
       "target": "shape_0670",
       "multipleNumberAllowed": false
-    },
-    {
-      "type": "domainStory:connection",
-      "name": "",
-      "id": "connection_9581",
-      "waypoints": [
-        {
-          "original": {
-            "x": -76,
-            "y": -370
-          },
-          "x": -37,
-          "y": -358
-        },
-        {
-          "original": {
-            "x": 75,
-            "y": -322
-          },
-          "x": 28,
-          "y": -337
-        }
-      ],
-      "source": "shape_9697",
-      "target": "shape_2562"
     },
     {
       "type": "domainStory:activity",
@@ -649,66 +586,57 @@
       "type": "domainStory:workObjectCircle-Arrows",
       "name": "Substitution",
       "id": "shape_0670",
-      "x": -574,
-      "y": -736
+      "x": -604,
+      "y": -616
     },
     {
       "type": "domainStory:group",
       "name": "optional",
       "id": "shape_0941",
-      "pickedColor": "#000000",
-      "x": 110,
-      "y": -774,
-      "height": 383,
-      "width": 779
+      "pickedColor": "#9e9e9e",
+      "x": 55,
+      "y": -757,
+      "height": 387,
+      "width": 425
     },
     {
       "type": "domainStory:workObjectDocument",
       "name": "einlösbares Rezept",
       "id": "shape_1146",
-      "x": -287,
-      "y": -865,
+      "x": -351,
+      "y": -795,
       "pickedColor": "#43a047"
     },
     {
       "type": "domainStory:workObjectDocument",
       "name": "elektronische Bestätigung des Behandlungsverältnisses",
       "id": "shape_1768",
-      "x": -539,
-      "y": -1201,
+      "x": -547,
+      "y": -1190,
       "pickedColor": "#43a047"
     },
     {
       "type": "domainStory:workObjectView-List",
       "name": "Dispensierliste",
       "id": "shape_2113",
-      "x": -53,
-      "y": -865
+      "x": 1,
+      "y": -854,
+      "pickedColor": "#1e88e5"
     },
     {
       "type": "domainStory:workObjectFolder",
       "name": "Dokumentationsarchiv-LE",
       "id": "shape_2330",
-      "x": 462,
-      "y": -557
-    },
-    {
-      "type": "domainStory:textAnnotation",
-      "name": "",
-      "id": "shape_2562",
-      "x": 25,
-      "y": -337,
-      "text": "EU-Bürger: Regionale/Nationale Gesundheits-ID des EU-Bürgers\nLE-DE: ID, Vor- und Nachname\nLEI-DE: ID, Name, vollständige Adresse (Straße, Hausnummer, Stadt, PLZ, Bundesland, Land)\nDispensiertes Medikament: Rezept-ID, Wirkstärke, Packungstyp, Packungsgröße",
-      "number": 70.56798623063685,
-      "height": 70.56798623063685,
-      "width": 542.3408022435725
+      "x": 158,
+      "y": -715,
+      "parent": "shape_0941"
     },
     {
       "type": "domainStory:textAnnotation",
       "name": "",
       "id": "shape_4869",
-      "x": -126,
-      "y": -939,
+      "x": -112,
+      "y": -983,
       "text": "verkaufsbegleitend",
       "number": 29.743589743589748,
       "height": 29.743589743589748,
@@ -718,11 +646,11 @@
       "type": "domainStory:group",
       "name": "optional",
       "id": "shape_5141",
-      "pickedColor": "#000000",
-      "x": -594,
-      "y": -935,
-      "height": 295,
-      "width": 132
+      "pickedColor": "#9e9e9e",
+      "x": -641,
+      "y": -892,
+      "height": 394,
+      "width": 144
     },
     {
       "type": "domainStory:workObjectError",
@@ -730,16 +658,6 @@
       "id": "shape_5237",
       "x": 326,
       "y": -890
-    },
-    {
-      "type": "domainStory:textAnnotation",
-      "name": "",
-      "id": "shape_5281",
-      "x": 762,
-      "y": -577,
-      "text": "TODO optional",
-      "height": 30.005738985517965,
-      "width": 99.99999737370241
     },
     {
       "type": "domainStory:actorSystem",
@@ -752,31 +670,20 @@
       "type": "domainStory:workObjectDocument",
       "name": "Dispensierinformation",
       "id": "shape_6698",
-      "x": 75,
-      "y": -715
+      "x": -88,
+      "y": -703
     },
     {
       "type": "domainStory:textAnnotation",
       "name": "",
       "id": "shape_7137",
-      "x": 441,
-      "y": -685,
+      "x": 246,
+      "y": -537,
       "text": "mindestens: halbautomatische Datenübernahme per Copy&Paste (idealerweise in strukturiertem Zwischenformat, notfalls Wert für Wert) Voraussetzung: 2 Anwendungen auf selbem PC",
-      "number": 100.68846815834769,
-      "height": 100.68846815834769,
-      "width": 206.71256191759227,
+      "number": 100.69725870603493,
+      "height": 100.69725870603493,
+      "width": 206.7026609351278,
       "parent": "shape_0941"
-    },
-    {
-      "type": "domainStory:textAnnotation",
-      "name": "",
-      "id": "shape_7169",
-      "x": 61,
-      "y": -480,
-      "text": "EU-Bürger: Vor- und Nachname\nDispensiertes Medikament: Dispensierinformations-ID, Rezeptprodukt-ID (??), Markenname, Wirkstoff und dessen Rolle (immer \"1-S ACTI active ingredient\"), Darreichungsform, Packungsmenge \nDispensierungsdaten: Datum der Dispensierung, Angabe dass substituiert wurde (im Falle dass substituiert wurde)",
-      "number": 104.13080895008608,
-      "height": 104.13080895008608,
-      "width": 458.00345284598217
     },
     {
       "type": "domainStory:group",
@@ -792,24 +699,23 @@
       "type": "domainStory:workObjectDocument",
       "name": "Dispensierdaten (Pflicht)",
       "id": "shape_7523",
-      "x": 171,
-      "y": -567,
-      "parent": "shape_0941"
+      "x": -225,
+      "y": -599
     },
     {
       "name": "elektronische Identität des LE-DE",
       "id": "shape_7985",
       "type": "domainStory:workObjectDocument",
       "x": -651,
-      "y": -1067,
+      "y": -1055,
       "pickedColor": "#43a047"
     },
     {
       "type": "domainStory:actorSystem",
       "name": "AVS",
       "id": "shape_8151",
-      "x": 335,
-      "y": -667,
+      "x": 125,
+      "y": -525,
       "pickedColor": "#000000",
       "parent": "shape_0941"
     },
@@ -817,15 +723,15 @@
       "type": "domainStory:workObjectInfo",
       "name": "Kennzeichnung des Substitutionsverbots",
       "id": "shape_9417",
-      "x": -574,
-      "y": -915
+      "x": -604,
+      "y": -864
     },
     {
       "type": "domainStory:workObjectDocument",
       "name": "Dispensierdaten (optional)",
       "id": "shape_9697",
-      "x": -114,
-      "y": -408
+      "x": -106,
+      "y": -456
     },
     {
       "type": "domainStory:actorPerson",

@@ -22,31 +22,6 @@
   },
   "dst": [
     {
-      "type": "domainStory:connection",
-      "name": "",
-      "id": "connection_0035",
-      "waypoints": [
-        {
-          "original": {
-            "x": 1033,
-            "y": 502
-          },
-          "x": 1062,
-          "y": 488
-        },
-        {
-          "original": {
-            "x": 1157,
-            "y": 444
-          },
-          "x": 1125,
-          "y": 459
-        }
-      ],
-      "source": "shape_6815",
-      "target": "shape_5507"
-    },
-    {
       "type": "domainStory:activity",
       "name": "",
       "id": "connection_0409",
@@ -101,31 +76,6 @@
       "source": "shape_5988",
       "target": "shape_6815",
       "multipleNumberAllowed": false
-    },
-    {
-      "type": "domainStory:connection",
-      "name": "",
-      "id": "connection_1214",
-      "waypoints": [
-        {
-          "original": {
-            "x": 891,
-            "y": 618
-          },
-          "x": 925,
-          "y": 636
-        },
-        {
-          "original": {
-            "x": 994,
-            "y": 673
-          },
-          "x": 966,
-          "y": 658
-        }
-      ],
-      "source": "shape_1381",
-      "target": "shape_5211"
     },
     {
       "type": "domainStory:activity",
@@ -625,33 +575,11 @@
       "pickedColor": "#43a047"
     },
     {
-      "type": "domainStory:textAnnotation",
-      "name": "",
-      "id": "shape_5211",
-      "x": 944,
-      "y": 658,
-      "text": "AK 5.3",
-      "number": 30,
-      "height": 30,
-      "width": 100
-    },
-    {
       "type": "domainStory:workObjectDocument",
       "name": "PIN-Dokumentation",
       "id": "shape_5397",
       "x": 1191,
       "y": 295
-    },
-    {
-      "type": "domainStory:textAnnotation",
-      "name": "",
-      "id": "shape_5507",
-      "x": 1107,
-      "y": 429,
-      "text": "AK 5.1",
-      "number": 30,
-      "height": 30,
-      "width": 100
     },
     {
       "type": "domainStory:workObjectThumb-up",

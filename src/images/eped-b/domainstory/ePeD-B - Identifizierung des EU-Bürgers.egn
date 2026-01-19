@@ -149,7 +149,7 @@
             "y": 299
           },
           "x": 205,
-          "y": 367.75
+          "y": 400.5
         },
         {
           "original": {
@@ -315,31 +315,6 @@
       "source": "shape_2053",
       "target": "shape_2936",
       "multipleNumberAllowed": false
-    },
-    {
-      "type": "domainStory:connection",
-      "name": "",
-      "id": "connection_5538",
-      "waypoints": [
-        {
-          "original": {
-            "x": 685,
-            "y": 657
-          },
-          "x": 711,
-          "y": 640
-        },
-        {
-          "original": {
-            "x": 804,
-            "y": 579
-          },
-          "x": 781,
-          "y": 594
-        }
-      ],
-      "source": "shape_7339",
-      "target": "shape_0419"
     },
     {
       "type": "domainStory:activity",
@@ -627,17 +602,6 @@
       "y": 227
     },
     {
-      "type": "domainStory:textAnnotation",
-      "name": "",
-      "id": "shape_0419",
-      "x": 754,
-      "y": 564,
-      "text": "US6",
-      "number": 30,
-      "height": 30,
-      "width": 100
-    },
-    {
       "type": "domainStory:actorPerson",
       "name": "LE-DE",
       "id": "shape_1181",
@@ -678,10 +642,10 @@
       "id": "shape_3709",
       "x": 482,
       "y": 457,
-      "text": "PatientIdentifier, Geburtsdatum (AK 2.1)",
-      "number": 57,
-      "height": 57,
-      "width": 120
+      "text": "PatientIdentifier, Geburtsdatum",
+      "number": 43.26923076923077,
+      "height": 43.26923076923077,
+      "width": 119.99198106619029
     },
     {
       "type": "domainStory:workObjectInfo",
@@ -733,11 +697,11 @@
       "id": "shape_8681",
       "x": 30,
       "y": 734,
-      "text": "(AK 1.3) z.B. Sozialversicherungsnr., Geburtsdatum, Nachname (abhängig vom Land des EU-Bürgers, was hier konkret abgefragt wird)",
-      "number": 100,
-      "height": 100,
+      "text": "z.B. Sozialversicherungsnr., Geburtsdatum, Nachname (abhängig vom Land des EU-Bürgers, was hier konkret abgefragt wird)",
+      "number": 86.53846153846153,
+      "height": 86.53846153846153,
       "pickedColor": "#000000",
-      "width": 172.01666259765625
+      "width": 172.01522680429315
     },
     {
       "type": "domainStory:actorPerson",

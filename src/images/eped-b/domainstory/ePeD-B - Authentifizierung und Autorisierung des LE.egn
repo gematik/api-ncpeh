@@ -63,16 +63,16 @@
             "x": 891,
             "y": -265
           },
-          "x": 911,
-          "y": -287
+          "x": 873,
+          "y": -303
         },
         {
           "original": {
-            "x": 977,
-            "y": -359
+            "x": 812,
+            "y": -430
           },
-          "x": 927,
-          "y": -304
+          "x": 849,
+          "y": -353
         }
       ],
       "source": "shape_0481",
@@ -230,16 +230,16 @@
             "x": 337,
             "y": -255
           },
-          "x": 345,
-          "y": -290
+          "x": 350,
+          "y": -284
         },
         {
           "original": {
-            "x": 390,
-            "y": -485
+            "x": 426,
+            "y": -453
           },
-          "x": 378,
-          "y": -433
+          "x": 403,
+          "y": -401
         }
       ],
       "source": "shape_9819",
@@ -379,8 +379,8 @@
       "type": "domainStory:textAnnotation",
       "name": "",
       "id": "shape_1259",
-      "x": 927,
-      "y": -374,
+      "x": 762,
+      "y": -445,
       "text": "neue Identität für den LE-DE im EU-Kontext auf Grundlage von nationalen, bestätigten Identitätsmerkmalen",
       "number": 92,
       "height": 92,
@@ -408,8 +408,8 @@
       "type": "domainStory:workObjectKey",
       "name": "SM(C)-B",
       "id": "shape_5519",
-      "x": 353,
-      "y": -518
+      "x": 389,
+      "y": -486
     },
     {
       "type": "domainStory:textAnnotation",

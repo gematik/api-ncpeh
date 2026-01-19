@@ -38,16 +38,16 @@
             "x": -127,
             "y": -404
           },
-          "x": -133,
+          "x": -129,
           "y": -338.25
         },
         {
           "original": {
-            "x": -159,
-            "y": -151
+            "x": -140,
+            "y": -141
           },
-          "x": -154,
-          "y": -187
+          "x": -138,
+          "y": -177
         }
       ],
       "source": "shape_4580",
@@ -66,16 +66,16 @@
             "x": -192,
             "y": -950
           },
-          "x": -148,
-          "y": -948
+          "x": -149,
+          "y": -950
         },
         {
           "original": {
             "x": 98,
-            "y": -937
+            "y": -949
           },
           "x": 59,
-          "y": -939
+          "y": -949
         }
       ],
       "source": "shape_6661",
@@ -179,7 +179,7 @@
             "y": -950
           },
           "x": -221,
-          "y": -903
+          "y": -884
         },
         {
           "original": {
@@ -207,15 +207,15 @@
             "y": -605
           },
           "x": -110,
-          "y": -630
+          "y": -631
         },
         {
           "original": {
             "x": 97,
-            "y": -938
+            "y": -950
           },
-          "x": 65,
-          "y": -891
+          "x": 66,
+          "y": -903
         }
       ],
       "source": "shape_6240",
@@ -230,18 +230,18 @@
         {
           "original": {
             "x": 97,
-            "y": -938
+            "y": -950
           },
-          "x": 143,
-          "y": -934
+          "x": 97,
+          "y": -903
         },
         {
           "original": {
-            "x": 225,
-            "y": -927
+            "x": 97,
+            "y": -692
           },
-          "x": 175,
-          "y": -931
+          "x": 97,
+          "y": -730
         }
       ],
       "source": "shape_1612",
@@ -285,15 +285,15 @@
             "y": -950
           },
           "x": -230,
-          "y": -948
+          "y": -950
         },
         {
           "original": {
             "x": -594,
-            "y": -933
+            "y": -945
           },
-          "x": -542,
-          "y": -935
+          "x": -540,
+          "y": -946
         }
       ],
       "source": "shape_6661",
@@ -313,7 +313,7 @@
             "y": -666
           },
           "x": -381,
-          "y": -619
+          "y": -558.25
         },
         {
           "original": {
@@ -341,7 +341,7 @@
             "y": -487
           },
           "x": -409,
-          "y": -449
+          "y": -444
         },
         {
           "original": {
@@ -357,31 +357,6 @@
       "multipleNumberAllowed": false
     },
     {
-      "type": "domainStory:connection",
-      "name": "",
-      "id": "connection_3347",
-      "waypoints": [
-        {
-          "original": {
-            "x": 97,
-            "y": -414
-          },
-          "x": 140,
-          "y": -414
-        },
-        {
-          "original": {
-            "x": 426,
-            "y": -414
-          },
-          "x": 179,
-          "y": -414
-        }
-      ],
-      "source": "shape_3541",
-      "target": "shape_8753"
-    },
-    {
       "type": "domainStory:activity",
       "name": "gehört",
       "id": "connection_3617",
@@ -391,18 +366,18 @@
         {
           "original": {
             "x": -587,
-            "y": -938
+            "y": -950
           },
-          "x": -556,
-          "y": -918
+          "x": -557,
+          "y": -928
         },
         {
           "original": {
-            "x": -380,
-            "y": -805
+            "x": -395,
+            "y": -809
           },
           "x": -433,
-          "y": -839
+          "y": -837
         }
       ],
       "source": "shape_2954",
@@ -479,17 +454,17 @@
         {
           "original": {
             "x": -587,
-            "y": -938
+            "y": -950
           },
-          "x": -574,
-          "y": -899
+          "x": -573,
+          "y": -912
         },
         {
           "original": {
-            "x": -450,
-            "y": -516
+            "x": -422,
+            "y": -487
           },
-          "x": -453,
+          "x": -436,
           "y": -525
         }
       ],
@@ -565,16 +540,16 @@
             "x": -127,
             "y": -605
           },
-          "x": -95,
-          "y": -616
+          "x": -84,
+          "y": -605
         },
         {
           "original": {
-            "x": 225,
-            "y": -726
+            "x": 147,
+            "y": -605
           },
-          "x": 187,
-          "y": -713
+          "x": 109,
+          "y": -605
         }
       ],
       "source": "shape_6240",
@@ -664,31 +639,6 @@
       "source": "shape_4580",
       "target": "shape_1959",
       "multipleNumberAllowed": false
-    },
-    {
-      "type": "domainStory:connection",
-      "name": "",
-      "id": "connection_9379",
-      "waypoints": [
-        {
-          "original": {
-            "x": 87,
-            "y": -242
-          },
-          "x": 130,
-          "y": -242
-        },
-        {
-          "original": {
-            "x": 369,
-            "y": -242
-          },
-          "x": 162,
-          "y": -242
-        }
-      ],
-      "source": "shape_5337",
-      "target": "shape_7183"
     },
     {
       "type": "domainStory:activity",
@@ -798,7 +748,7 @@
       "name": "codierte Rezeptinformationen",
       "id": "shape_1612",
       "x": 59,
-      "y": -976
+      "y": -988
     },
     {
       "type": "domainStory:workObjectDocument",
@@ -811,8 +761,8 @@
       "type": "domainStory:textAnnotation",
       "name": "",
       "id": "shape_2031",
-      "x": 175,
-      "y": -942,
+      "x": -12,
+      "y": -730,
       "text": "u.a. ATC-Code, Wirkstärke, Darreichungsform, Name des verordnenden LE-EU, Angabe, ob Substitution erlaubt ist",
       "number": 76,
       "height": 76,
@@ -830,7 +780,7 @@
       "name": "nicht einlösbare Rezepte",
       "id": "shape_2954",
       "x": -625,
-      "y": -976
+      "y": -988
     },
     {
       "type": "domainStory:workObjectDocument",
@@ -861,7 +811,8 @@
       "name": "einlösbares Rezept",
       "id": "shape_4580",
       "x": -165,
-      "y": -442
+      "y": -442,
+      "pickedColor": "#1e88e5"
     },
     {
       "type": "domainStory:workObjectDocument",
@@ -882,8 +833,8 @@
       "type": "domainStory:workObjectInfo",
       "name": "Beschreibung der Verordnung",
       "id": "shape_5413",
-      "x": 187,
-      "y": -764
+      "x": 109,
+      "y": -643
     },
     {
       "type": "domainStory:workObjectView-List",
@@ -900,33 +851,11 @@
       "y": -988
     },
     {
-      "type": "domainStory:textAnnotation",
-      "name": "",
-      "id": "shape_7183",
-      "x": 162,
-      "y": -282,
-      "text": "EU-Bürger: Regionale/Nationale Gesundheits-ID \nEU-LE: ID, Vollständiger Name\nRezept: ID des Rezepts, Wirkstärke, Packungsart und -größe\nVerschreibungsdaten: Beginn und Ende der verordneten Therapie",
-      "number": 80.97174774063589,
-      "height": 80.97174774063589,
-      "width": 414.0921314695848
-    },
-    {
       "type": "domainStory:actorPerson",
       "name": "EU-Bürger",
       "id": "shape_8641",
       "x": -433,
       "y": -847
-    },
-    {
-      "type": "domainStory:textAnnotation",
-      "name": "",
-      "id": "shape_8753",
-      "x": 179,
-      "y": -482,
-      "text": "EU-Bürger: Vollständiger Name, Geburtsdatum \nEU-LE: Berufsbezeichnung, Land der Ausstellung des E-Rezepts\nEU-LEI: Land, in dem das EU-Rezept ausgestellt wurde\nRezept: Rezeptprodukt-ID, Wirkstoff (ID oder Freitext) und Rolle des Wirkstoffs, Darreichungsform, Packungsmenge\nVerschreibungsdaten: Datum der Verschreibung,  verantwortliche LE/LEI im Land der Ausstellung, verknüpftes übergeordnetes Dokument",
-      "number": 136,
-      "height": 136,
-      "width": 493
     },
     {
       "type": "domainStory:workObjectInfo",
@@ -939,8 +868,8 @@
       "type": "domainStory:workObjectInfo",
       "name": "Kennzeichnung des Substitutionsverbots",
       "id": "shape_9396",
-      "x": -184,
-      "y": -187
+      "x": -165,
+      "y": -177
     },
     {
       "info": ""
