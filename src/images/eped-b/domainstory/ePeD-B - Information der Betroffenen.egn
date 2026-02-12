@@ -23,62 +23,6 @@
   "dst": [
     {
       "type": "domainStory:activity",
-      "name": "",
-      "id": "connection_0409",
-      "pickedColor": "black",
-      "number": null,
-      "waypoints": [
-        {
-          "original": {
-            "x": 1224,
-            "y": 618
-          },
-          "x": 1267,
-          "y": 619
-        },
-        {
-          "original": {
-            "x": 1462,
-            "y": 621
-          },
-          "x": 1408,
-          "y": 620
-        }
-      ],
-      "source": "shape_3954",
-      "target": "shape_5988",
-      "multipleNumberAllowed": false
-    },
-    {
-      "type": "domainStory:activity",
-      "name": "generiert",
-      "id": "connection_0773",
-      "pickedColor": "#000000",
-      "number": 8,
-      "waypoints": [
-        {
-          "original": {
-            "x": 1224,
-            "y": 618
-          },
-          "x": 1186,
-          "y": 595
-        },
-        {
-          "original": {
-            "x": 1033,
-            "y": 502
-          },
-          "x": 1065,
-          "y": 521
-        }
-      ],
-      "source": "shape_5988",
-      "target": "shape_6815",
-      "multipleNumberAllowed": false
-    },
-    {
-      "type": "domainStory:activity",
       "name": "für",
       "id": "connection_1676",
       "pickedColor": "black",
@@ -295,34 +239,6 @@
     },
     {
       "type": "domainStory:activity",
-      "name": "erzeugt",
-      "id": "connection_4198",
-      "pickedColor": "black",
-      "number": 6,
-      "waypoints": [
-        {
-          "original": {
-            "x": 1224,
-            "y": 618
-          },
-          "x": 1225,
-          "y": 580
-        },
-        {
-          "original": {
-            "x": 1228,
-            "y": 325
-          },
-          "x": 1227,
-          "y": 380
-        }
-      ],
-      "source": "shape_5988",
-      "target": "shape_5397",
-      "multipleNumberAllowed": false
-    },
-    {
-      "type": "domainStory:activity",
       "name": "wird betreut durch",
       "id": "connection_5199",
       "pickedColor": "black",
@@ -348,6 +264,33 @@
       "source": "shape_1597",
       "target": "shape_2885",
       "multipleNumberAllowed": false
+    },
+    {
+      "type": "domainStory:activity",
+      "name": "",
+      "id": "connection_5390",
+      "pickedColor": "black",
+      "number": 6,
+      "waypoints": [
+        {
+          "original": {
+            "x": 1226,
+            "y": 397
+          },
+          "x": 1226,
+          "y": 397
+        },
+        {
+          "original": {
+            "x": 1224,
+            "y": 618
+          },
+          "x": 1224,
+          "y": 580
+        }
+      ],
+      "source": "shape_5988",
+      "target": "shape_5884"
     },
     {
       "type": "domainStory:activity",
@@ -389,7 +332,7 @@
             "x": 640,
             "y": 540
           },
-          "x": 619,
+          "x": 618,
           "y": 502
         },
         {
@@ -397,7 +340,7 @@
             "x": 523,
             "y": 333
           },
-          "x": 542,
+          "x": 541,
           "y": 366
         }
       ],
@@ -491,6 +434,33 @@
     },
     {
       "type": "domainStory:activity",
+      "name": "",
+      "id": "connection_8375",
+      "pickedColor": "#000000",
+      "number": null,
+      "waypoints": [
+        {
+          "original": {
+            "x": 1224,
+            "y": 618
+          },
+          "x": 1267,
+          "y": 618
+        },
+        {
+          "original": {
+            "x": 1382,
+            "y": 618
+          },
+          "x": 1382,
+          "y": 618
+        }
+      ],
+      "source": "shape_3954",
+      "target": "shape_5988"
+    },
+    {
+      "type": "domainStory:activity",
       "name": "bestätigt",
       "id": "connection_9271",
       "pickedColor": "black",
@@ -518,34 +488,6 @@
       "multipleNumberAllowed": false
     },
     {
-      "type": "domainStory:activity",
-      "name": "wird angezeigt für",
-      "id": "connection_9621",
-      "pickedColor": "black",
-      "number": null,
-      "waypoints": [
-        {
-          "original": {
-            "x": 1033,
-            "y": 502
-          },
-          "x": 1001,
-          "y": 464
-        },
-        {
-          "original": {
-            "x": 891,
-            "y": 333
-          },
-          "x": 915,
-          "y": 361
-        }
-      ],
-      "source": "shape_6815",
-      "target": "shape_2885",
-      "multipleNumberAllowed": false
-    },
-    {
       "type": "domainStory:workObjectInfo",
       "name": "HPIN-Dokument",
       "id": "shape_1381",
@@ -554,7 +496,7 @@
     },
     {
       "type": "domainStory:workObjectPlace",
-      "name": "Apotheke-DE",
+      "name": "LEI-DE",
       "id": "shape_1597",
       "x": 853,
       "y": 43
@@ -568,9 +510,9 @@
     },
     {
       "type": "domainStory:workObjectCheck-Circle",
-      "name": "Bestätigung der TI-Identität",
+      "name": "Bestätigung elektronische Identität des LE-DE",
       "id": "shape_3954",
-      "x": 1408,
+      "x": 1387,
       "y": 580,
       "pickedColor": "#43a047"
     },
@@ -611,13 +553,6 @@
       "id": "shape_6528",
       "x": 567,
       "y": 43
-    },
-    {
-      "type": "domainStory:workObjectInfo",
-      "name": "TA-Datensatz Preview",
-      "id": "shape_6815",
-      "x": 995,
-      "y": 464
     },
     {
       "type": "domainStory:workObjectFolder",
