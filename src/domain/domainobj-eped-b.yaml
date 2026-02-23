@@ -1,0 +1,197 @@
+openapi: 3.1.0
+info:
+  title: ePed-B Domain Objects
+  version: "0.1"
+
+x-subdomains:
+  $ref: './subdomains.yaml#/subdomains'
+
+components:
+  schemas:
+
+    IdentityAssertion:
+      type: object
+      x-object-type: "Entity"
+      x-subdomains: 
+        - "authentication-authorization"
+        - "identity-role-mapping"
+        - "transaction-handling-eped-b"
+      description: "Identitätsnachweis des Leistungserbringers in Deutschland"
+      required: [id]
+      properties:
+        id: { type: string, format: uuid }
+        AccessRights: { $ref: '#/components/schemas/AccessRights' }
+
+    AccessRights:
+      type: object
+      x-object-type: "ValueObject"
+      x-subdomains: 
+        - "authentication-authorization"
+        - "identity-role-mapping"
+      description: "Zugriffsrechte des Leistungserbringers in Deutschland, die die Berechtigungen des Leistungserbringers für die Durchführung von ePeD-B-Vorgängen festlegen"
+
+    PINDocument:
+      type: object
+      x-object-type: "ValueObject"
+      x-subdomains: 
+        - "pin-documents-retrieval"
+        - "pin-documents-preparation"
+        - "pin-documents-display"
+      description: "Ein Dokument, das die Rechte und Pflichten des EU-Bürgers zum Schutz seiner personenbezogenen und gesundheitlichen Daten enthält"
+      properties:
+        language: { type: string}
+
+    HPINDocument:
+      type: object
+      x-object-type: "ValueObject"
+      x-subdomains: 
+        - "pin-documents-retrieval"
+        - "pin-documents-preparation"
+        - "pin-documents-display"
+      description: "Ein Dokument, das die Rechte und Pflichten des Leistungserbringers zum Schutz seiner personenbezogenen und gesundheitlichen Daten enthält, das speziell für den Leistungserbringer in Deutschland erstellt wurde"
+
+    PINAcknowledgement:
+      type: object
+      x-object-type: "Entity"
+      x-subdomains: 
+        - "pin-documents-display"
+        - "transaction-handling-eped-b"
+      description: "Ein Informationsobjekt, das die Bestätigung des EU-Bürgers dokumentiert, dass er über seine Rechte und Pflichten zum Schutz seiner personenbezogenen und gesundheitlichen Daten informiert wurde"
+      required: [id]
+      properties:
+        id: { type: string, format: uuid }
+
+    ISMNational:
+      type: object
+      x-object-type: "ValueObject"
+      x-subdomains: 
+        - "ism-handling-retrieval"
+        - "ism-handling-preparation"
+        - "ism-handling-display"
+      description: "Eine International Search Mask des Herkunftslandes des EU-Bürgers, die die Identifikation des EU-Bürgers in der Apotheke vor Ort ermöglicht"
+
+    PatientIdentificationData:
+      type: object
+      x-object-type: "Entity"
+      x-subdomains: 
+        - "patient-identification-retrieval"
+        - "patient-identification-preparation"
+        - "patient-identification-display"
+        - "treatment-relationship"
+        - "transaction-handling-eped-b"
+      description: "Persönliche Daten des EU-Bürgers, die für die Identifikation des EU-Bürgers in der Apotheke vor Ort erforderlich sind"
+      required: [id, PatientIdentifier]
+      properties:
+        id: { type: string, format: uuid }
+        PatientIdentifier: { $ref: '#/components/schemas/PatientIdentifier' }
+
+    PatientIdentifier:
+      type: object
+      x-object-type: "ValueObject"
+      x-subdomains: 
+        - "patient-identification-retrieval"
+        - "patient-identification-preparation"
+        - "patient-identification-display"
+      description: "Ein Identifikator, der die Identifikation des EU-Bürgers in der Apotheke vor Ort ermöglicht"
+
+    AuditTrailEntry:
+      type: object
+      x-object-type: "ValueObject"
+      x-subdomains: 
+        - "audit-trail-creation"
+      description: "Ein Eintrag im Audit Trail, der die Identifikation des EU-Bürgers in der Apotheke vor Ort dokumentiert"
+
+    SessionTupel:
+      type: object
+      x-object-type: "Entity"
+      x-subdomains:
+        - "transaction-handling-eped-b"
+      description: "Ein Tupel, das die Informationen über eine Sitzung enthält, die für die Verwaltung eines einzelnen ePeD-B-Vorgangs für einen EU-Bürger erforderlich sind"
+      required: [id]
+      properties:
+        id: { type: string, format: uuid }
+
+    TRCAssertion:
+      type: object
+      x-object-type: "Entity"
+      x-subdomains: 
+        - "treatment-relationship"
+        - "transaction-handling-eped-b"
+      description: "Ein Nachweis, der die Bestätigung des Behandlungsverhältnisses zum EU-Bürger enthält"
+      required: [id]
+      properties:
+        id: { type: string, format: uuid }
+
+    PrescriptionLanguage:
+      type: object
+      x-object-type: "ValueObject"
+      x-subdomains: 
+        - "prescription-settings"
+        - "prescription-display"
+      description: "Spracheinstellungen für die Rezepte des EU-Bürgers"
+
+    PrescriptionList:
+      type: object
+      x-object-type: "Entity"
+      x-subdomains: 
+        - "prescription-display"
+      description: "Liste der verfügbaren Rezepte, die an den EU-Bürger abgegeben werden können"
+      required: [id]
+      properties:
+        id: { type: string, format: uuid }
+        PrescriptionRedeemable: { $ref: '#/components/schemas/PrescriptionRedeemable' }
+        PrescriptionNonRedeemable: { $ref: '#/components/schemas/PrescriptionNonRedeemable' }
+
+    PrescriptionRedeemable:
+      type: object
+      x-object-type: "ValueObject"
+      x-subdomains: 
+        - "prescription-settings"
+        - "prescription-retrieval"
+        - "prescription-display"
+      description: "Einlösbares Rezept, das an den EU-Bürger abgegeben werden kann"
+      properties:
+        redeemable: { type: boolean, default: true, readOnly: true }
+        PrescriptionLanguage: { $ref: '#/components/schemas/PrescriptionLanguage' }
+
+    PrescriptionNonRedeemable:
+      type: object
+      x-object-type: "ValueObject"
+      x-subdomains: 
+        - "prescription-display"
+      description: "Nicht einlösbares Rezept, das nicht an den EU-Bürger abgegeben werden kann"
+      properties:
+        redeemable: { type: boolean, default: false, readOnly: true }
+
+    DispensationList:
+      type: object
+      x-object-type: "Entity"
+      x-subdomains: 
+        - "dispensation-preparation"
+        - "dispensation-handling"
+        - "transaction-handling-eped-b"
+      description: "Liste der Dispensationen, die an den EU-Bürger abgegeben wurden"
+      required: [id, DispensationInformation]
+      properties:
+        id: { type: string, format: uuid }
+        DispensationInformation: { $ref: '#/components/schemas/DispensationInformation' }
+
+    DispensationInformation:
+      type: object
+      x-object-type: "Entity"
+      x-subdomains: 
+        - "dispensation-preparation"
+        - "dispensation-handling"
+      required: [id, PrescriptionRedeemable]
+      properties:
+        id: { type: string, format: uuid }
+        PrescriptionRedeemable: { $ref: '#/components/schemas/PrescriptionRedeemable' }
+        SubstitutionInformation: { $ref: '#/components/schemas/SubstitutionInformation' }
+
+    SubstitutionInformation:
+      type: object
+      x-object-type: "ValueObject"
+      x-subdomains: 
+        - "dispensation-preparation"
+        - "dispensation-handling"
+      description: "Informationen über die Substitution eines Medikaments"
