@@ -3,12 +3,48 @@
 skinparam maxMessageSize 200
 autonumber
 
-participant "EU-Webportal" as Webportal
-box "NCPeH-Proxy" #White
-    participant "HTTP-Proxy" as Proxy
+actor "LE-DE" as LE_DE
+ box "EU-Webportal" #AliceBlue
+  participant "__EU-Webportal__\n(Client-side WebApp)" as WebApp
+  participant "Browser" as Browser
+  participant "Webserver" as Webserver
 end box
+
+box "NCPeH-Proxy" #FloralWhite
+    participant "HTTP-Proxy" as Proxy
+    participant "Auth-Service" as AuthService
+end box
+
 participant "NCPeH-FD" as NCPeH
-participant "eHDSI Configuration Service" as ConfServ
+
+
+== Basis-Verbindungen und Client-Bereitstellung ==
+
+LE_DE -> Browser: startet
+Browser -> Webserver: WebApp per Link aufrufen
+Webserver --> Browser: :WebApp
+Browser --> WebApp: WebApp ausführen
+
+note over WebApp, Browser
+  WebApp wird im Browser ausgeführt.
+end note
+
+ref over LE_DE, WebApp, Browser, Webserver : Authentifizierung des LE-DE und der LEI-DE
+
+LE_DE -> WebApp: Wählt die Anwendung ePresrciption aus
+WebApp -> WebApp: Übersicht der Länder-B
+LE_DE -> WebApp: Land-B auswählen
+
+
+
+
+
+
+
+
+
+
+
 
 == 1. Täglich Abruf von relevanten ISMs ==
 alt ISMs zur bestimmten Uhrzeit noch nicht aktualisiert 
