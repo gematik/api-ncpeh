@@ -30,6 +30,34 @@
   "dst": [
     {
       "type": "domainStory:activity",
+      "name": "enthält",
+      "id": "connection_0372",
+      "pickedColor": "black",
+      "number": null,
+      "waypoints": [
+        {
+          "original": {
+            "x": -239,
+            "y": -520
+          },
+          "x": -239,
+          "y": -473
+        },
+        {
+          "original": {
+            "x": -239,
+            "y": -334
+          },
+          "x": -239,
+          "y": -372
+        }
+      ],
+      "source": "shape_7523",
+      "target": "shape_9410",
+      "multipleNumberAllowed": false
+    },
+    {
+      "type": "domainStory:activity",
       "name": "übernimmt Daten aus",
       "id": "connection_0537",
       "pickedColor": "#000000",
@@ -41,7 +69,7 @@
             "y": -665
           },
           "x": -22,
-          "y": -642
+          "y": -623.25
         },
         {
           "original": {
@@ -154,11 +182,11 @@
         },
         {
           "original": {
-            "x": -187,
-            "y": -561
+            "x": -239,
+            "y": -520
           },
-          "x": -163,
-          "y": -579
+          "x": -215,
+          "y": -538
         }
       ],
       "source": "shape_6698",
@@ -205,16 +233,16 @@
             "x": -509,
             "y": -1152
           },
-          "x": -481,
-          "y": -1128
+          "x": -480,
+          "y": -1129
         },
         {
           "original": {
-            "x": -352,
-            "y": -1017
+            "x": -396,
+            "y": -1061
           },
-          "x": -390,
-          "y": -1050
+          "x": -396,
+          "y": -1061
         }
       ],
       "source": "shape_1768",
@@ -388,7 +416,7 @@
     },
     {
       "type": "domainStory:activity",
-      "name": "kann prüfen",
+      "name": "prüft",
       "id": "connection_6149",
       "pickedColor": "black",
       "number": 2,
@@ -440,6 +468,34 @@
       ],
       "source": "shape_6438",
       "target": "shape_5237",
+      "multipleNumberAllowed": false
+    },
+    {
+      "type": "domainStory:activity",
+      "name": "enthält",
+      "id": "connection_6830",
+      "pickedColor": "black",
+      "number": null,
+      "waypoints": [
+        {
+          "original": {
+            "x": -239,
+            "y": -520
+          },
+          "x": -277,
+          "y": -511
+        },
+        {
+          "original": {
+            "x": -444,
+            "y": -470
+          },
+          "x": -410,
+          "y": -478
+        }
+      ],
+      "source": "shape_7523",
+      "target": "shape_7114",
       "multipleNumberAllowed": false
     },
     {
@@ -593,7 +649,7 @@
       "type": "domainStory:group",
       "name": "optional",
       "id": "shape_0941",
-      "pickedColor": "#9e9e9e",
+      "pickedColor": "#000000",
       "x": 55,
       "y": -757,
       "height": 387,
@@ -601,7 +657,7 @@
     },
     {
       "type": "domainStory:workObjectDocument",
-      "name": "einlösbares Rezept",
+      "name": "zur Einlösung ausgewählte Rezepte",
       "id": "shape_1146",
       "x": -351,
       "y": -795,
@@ -609,7 +665,7 @@
     },
     {
       "type": "domainStory:workObjectDocument",
-      "name": "elektronische Bestätigung des Behandlungsverältnisses",
+      "name": "elektronische Bestätigung des Behandlungs- verhältnisses",
       "id": "shape_1768",
       "x": -547,
       "y": -1190,
@@ -625,11 +681,10 @@
     },
     {
       "type": "domainStory:workObjectFolder",
-      "name": "Dokumentationsarchiv-LE",
+      "name": "Dokumenta- tionsarchiv-LE",
       "id": "shape_2330",
       "x": 158,
-      "y": -715,
-      "parent": "shape_0941"
+      "y": -715
     },
     {
       "type": "domainStory:textAnnotation",
@@ -643,18 +698,8 @@
       "width": 123.58974358974358
     },
     {
-      "type": "domainStory:group",
-      "name": "optional",
-      "id": "shape_5141",
-      "pickedColor": "#9e9e9e",
-      "x": -641,
-      "y": -892,
-      "height": 394,
-      "width": 144
-    },
-    {
       "type": "domainStory:workObjectError",
-      "name": "Dispensierinformationsfehler",
+      "name": "Dispensierin- formationsfehler",
       "id": "shape_5237",
       "x": 326,
       "y": -890
@@ -674,6 +719,13 @@
       "y": -703
     },
     {
+      "type": "domainStory:workObjectInfo",
+      "name": "Dispensier- daten, die vorhanden sein MÜSSEN",
+      "id": "shape_7114",
+      "x": -482,
+      "y": -508
+    },
+    {
       "type": "domainStory:textAnnotation",
       "name": "",
       "id": "shape_7137",
@@ -682,8 +734,7 @@
       "text": "mindestens: halbautomatische Datenübernahme per Copy&Paste (idealerweise in strukturiertem Zwischenformat, notfalls Wert für Wert) Voraussetzung: 2 Anwendungen auf selbem PC",
       "number": 100.69725870603493,
       "height": 100.69725870603493,
-      "width": 206.7026609351278,
-      "parent": "shape_0941"
+      "width": 206.7026609351278
     },
     {
       "type": "domainStory:group",
@@ -697,10 +748,10 @@
     },
     {
       "type": "domainStory:workObjectDocument",
-      "name": "Dispensierdaten (Pflicht)",
+      "name": "Dispensier- daten (Pflicht)",
       "id": "shape_7523",
-      "x": -225,
-      "y": -599
+      "x": -277,
+      "y": -558
     },
     {
       "name": "elektronische Identität des LE-DE",
@@ -716,19 +767,25 @@
       "id": "shape_8151",
       "x": 125,
       "y": -525,
-      "pickedColor": "#000000",
-      "parent": "shape_0941"
+      "pickedColor": "#000000"
     },
     {
       "type": "domainStory:workObjectInfo",
-      "name": "Kennzeichnung des Substitutionsverbots",
+      "name": "Dispensier- daten, die vorhanden sein SOLLTEN (bei Fehlen Begründung erforderlich)",
+      "id": "shape_9410",
+      "x": -277,
+      "y": -372
+    },
+    {
+      "type": "domainStory:workObjectInfo",
+      "name": "Kennzeich- nung des Substitutions- verbots",
       "id": "shape_9417",
       "x": -604,
       "y": -864
     },
     {
       "type": "domainStory:workObjectDocument",
-      "name": "Dispensierdaten (optional)",
+      "name": "Dispensier- daten (optional)",
       "id": "shape_9697",
       "x": -106,
       "y": -456
@@ -742,7 +799,7 @@
     },
     {
       "type": "domainStory:workObjectInfo",
-      "name": "Handlungsoptionen für Fehlerbild",
+      "name": "Handlungsop- tionen für Fehlerbild",
       "id": "shape_9764",
       "x": 326,
       "y": -1088

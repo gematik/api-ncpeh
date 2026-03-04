@@ -30,7 +30,7 @@
       "type": "domainStory:activity",
       "name": "",
       "id": "connection_0197",
-      "pickedColor": "#43a047",
+      "pickedColor": "#000000",
       "number": null,
       "waypoints": [
         {
@@ -38,16 +38,16 @@
             "x": -208,
             "y": -620
           },
-          "x": -194,
-          "y": -531.5
+          "x": -198,
+          "y": -579
         },
         {
           "original": {
-            "x": -149,
-            "y": -464
+            "x": -179,
+            "y": -503
           },
-          "x": -163,
-          "y": -502
+          "x": -179,
+          "y": -503
         }
       ],
       "source": "shape_2775",
@@ -117,14 +117,14 @@
             "y": -718
           },
           "x": 148,
-          "y": -729
+          "y": -728
         },
         {
           "original": {
-            "x": 229,
+            "x": 240,
             "y": -757
           },
-          "x": 186,
+          "x": 192,
           "y": -742
         }
       ],
@@ -323,7 +323,7 @@
     },
     {
       "type": "domainStory:workObjectDocument",
-      "name": "elektronische Bestätigung des Behandlungsverältnisses",
+      "name": "elektronische Bestätigung des Behandlungs- verhältnisses",
       "id": "shape_0572",
       "x": 178,
       "y": -502,
@@ -339,7 +339,7 @@
     },
     {
       "type": "domainStory:workObjectCheck-Circle",
-      "name": "Bestätigung des Behandlungsverhältnisses",
+      "name": "Bestätigung des Behandlungs- verhältnisses",
       "id": "shape_2251",
       "x": -417,
       "y": -502
@@ -353,7 +353,7 @@
     },
     {
       "type": "domainStory:workObjectInfo",
-      "name": "ermittelte und bestätigte Patient Identifier",
+      "name": "ermittelter und bestätigter Patient Identifier",
       "id": "shape_2775",
       "x": -246,
       "y": -658,
@@ -363,7 +363,7 @@
       "type": "domainStory:textAnnotation",
       "name": "",
       "id": "shape_5433",
-      "x": 179,
+      "x": 190,
       "y": -772,
       "text": "=IdA",
       "number": 30.004251817266272,

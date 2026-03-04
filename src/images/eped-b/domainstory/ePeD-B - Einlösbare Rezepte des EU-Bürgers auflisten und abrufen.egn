@@ -38,16 +38,16 @@
             "x": -127,
             "y": -404
           },
-          "x": -129,
+          "x": -127,
           "y": -338.25
         },
         {
           "original": {
-            "x": -140,
-            "y": -141
+            "x": -127,
+            "y": -199
           },
-          "x": -138,
-          "y": -177
+          "x": -127,
+          "y": -199
         }
       ],
       "source": "shape_4580",
@@ -122,16 +122,16 @@
             "x": -127,
             "y": -404
           },
-          "x": -99,
-          "y": -343.5
+          "x": -97,
+          "y": -382
         },
         {
           "original": {
-            "x": 78,
-            "y": -238
+            "x": 77,
+            "y": -254
           },
-          "x": 49,
-          "y": -261
+          "x": 48,
+          "y": -275
         }
       ],
       "source": "shape_4580",
@@ -246,6 +246,34 @@
       ],
       "source": "shape_1612",
       "target": "shape_2031"
+    },
+    {
+      "type": "domainStory:activity",
+      "name": "enthält",
+      "id": "connection_2198",
+      "pickedColor": "black",
+      "number": null,
+      "waypoints": [
+        {
+          "original": {
+            "x": 97,
+            "y": -414
+          },
+          "x": 120,
+          "y": -434
+        },
+        {
+          "original": {
+            "x": 261,
+            "y": -555
+          },
+          "x": 223,
+          "y": -522
+        }
+      ],
+      "source": "shape_3541",
+      "target": "shape_5645",
+      "multipleNumberAllowed": false
     },
     {
       "type": "domainStory:connection",
@@ -457,7 +485,7 @@
             "y": -950
           },
           "x": -573,
-          "y": -912
+          "y": -879.25
         },
         {
           "original": {
@@ -586,35 +614,35 @@
     },
     {
       "type": "domainStory:activity",
-      "name": "oder alternativ",
-      "id": "connection_7218",
+      "name": "enthält",
+      "id": "connection_6699",
       "pickedColor": "black",
       "number": null,
       "waypoints": [
         {
           "original": {
-            "x": 87,
-            "y": -242
+            "x": 97,
+            "y": -414
           },
-          "x": 87,
-          "y": -176.25
+          "x": 123,
+          "y": -350.5
         },
         {
           "original": {
-            "x": 87,
-            "y": -65
+            "x": 231,
+            "y": -279
           },
-          "x": 87,
-          "y": -103
+          "x": 223,
+          "y": -287
         }
       ],
-      "source": "shape_5337",
-      "target": "shape_9228",
+      "source": "shape_3541",
+      "target": "shape_5306",
       "multipleNumberAllowed": false
     },
     {
       "type": "domainStory:activity",
-      "name": "enthält,\nsofern vorhanden",
+      "name": "enthält",
       "id": "connection_8604",
       "pickedColor": "black",
       "number": null,
@@ -763,10 +791,10 @@
       "id": "shape_2031",
       "x": -12,
       "y": -730,
-      "text": "u.a. ATC-Code, Wirkstärke, Darreichungsform, Name des verordnenden LE-EU, Angabe, ob Substitution erlaubt ist",
-      "number": 76,
-      "height": 76,
-      "width": 218
+      "text": "u.a. ATC-Code, Wirkstoff, Wirkstärke, Darreichungsform, Name des verordnenden LE-EU, Angabe, ob Substitution erlaubt ist",
+      "number": 71.07843137254902,
+      "height": 71.07843137254902,
+      "width": 217.984068627451
     },
     {
       "type": "domainStory:actorPerson",
@@ -808,7 +836,7 @@
     },
     {
       "type": "domainStory:workObjectDocument",
-      "name": "einlösbares Rezept",
+      "name": "einlösbare Rezepte",
       "id": "shape_4580",
       "x": -165,
       "y": -442,
@@ -823,11 +851,18 @@
       "pickedColor": "#43a047"
     },
     {
+      "type": "domainStory:workObjectInfo",
+      "name": "Rezeptdaten, die vorhanden sein SOLLTEN (bei Fehlen Begründung erforderlich)",
+      "id": "shape_5306",
+      "x": 223,
+      "y": -288
+    },
+    {
       "type": "domainStory:workObjectDocument",
       "name": "Rezeptdaten (optional)",
       "id": "shape_5337",
-      "x": 49,
-      "y": -280
+      "x": 48,
+      "y": -296
     },
     {
       "type": "domainStory:workObjectInfo",
@@ -835,6 +870,13 @@
       "id": "shape_5413",
       "x": 109,
       "y": -643
+    },
+    {
+      "type": "domainStory:workObjectInfo",
+      "name": "Rezeptdaten, die vorhanden sein MÜSSEN",
+      "id": "shape_5645",
+      "x": 223,
+      "y": -593
     },
     {
       "type": "domainStory:workObjectView-List",
@@ -859,17 +901,10 @@
     },
     {
       "type": "domainStory:workObjectInfo",
-      "name": "Begründung des Fehlens",
-      "id": "shape_9228",
-      "x": 49,
-      "y": -103
-    },
-    {
-      "type": "domainStory:workObjectInfo",
-      "name": "Kennzeichnung des Substitutionsverbots",
+      "name": "Kennzeich- nung des Substitutions- verbots",
       "id": "shape_9396",
       "x": -165,
-      "y": -177
+      "y": -197
     },
     {
       "info": ""

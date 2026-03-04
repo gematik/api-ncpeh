@@ -79,6 +79,31 @@
       "target": "shape_1259"
     },
     {
+      "type": "domainStory:connection",
+      "name": "",
+      "id": "connection_4896",
+      "waypoints": [
+        {
+          "original": {
+            "x": 891,
+            "y": -265
+          },
+          "x": 914,
+          "y": -285
+        },
+        {
+          "original": {
+            "x": 1034,
+            "y": -389
+          },
+          "x": 1017,
+          "y": -374
+        }
+      ],
+      "source": "shape_0481",
+      "target": "shape_0464"
+    },
+    {
       "type": "domainStory:activity",
       "name": "erteilt",
       "id": "connection_4967",
@@ -133,6 +158,31 @@
       "source": "shape_9421",
       "target": "shape_0481",
       "multipleNumberAllowed": false
+    },
+    {
+      "type": "domainStory:connection",
+      "name": "",
+      "id": "connection_5877",
+      "waypoints": [
+        {
+          "original": {
+            "x": 891,
+            "y": -265
+          },
+          "x": 937,
+          "y": -259
+        },
+        {
+          "original": {
+            "x": 1068,
+            "y": -243
+          },
+          "x": 1018,
+          "y": -249
+        }
+      ],
+      "source": "shape_0481",
+      "target": "shape_8010"
     },
     {
       "type": "domainStory:activity",
@@ -361,6 +411,17 @@
       "y": -57
     },
     {
+      "type": "domainStory:textAnnotation",
+      "name": "",
+      "id": "shape_0464",
+      "x": 984,
+      "y": -404,
+      "text": "=IdA",
+      "number": 30,
+      "height": 30,
+      "width": 100
+    },
+    {
       "type": "domainStory:workObjectDocument",
       "name": "elektronische Identität des LE-DE",
       "id": "shape_0481",
@@ -428,7 +489,19 @@
       "name": "Bestätigung der TI-Identität",
       "id": "shape_7898",
       "x": 427,
-      "y": -155
+      "y": -155,
+      "pickedColor": "#1e88e5"
+    },
+    {
+      "type": "domainStory:textAnnotation",
+      "name": "",
+      "id": "shape_8010",
+      "x": 1018,
+      "y": -258,
+      "text": "gültig für 4 Stunden",
+      "number": 43,
+      "height": 43,
+      "width": 100
     },
     {
       "type": "domainStory:actorSystem",

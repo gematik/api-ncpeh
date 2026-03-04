@@ -194,7 +194,7 @@
     },
     {
       "type": "domainStory:activity",
-      "name": "werden verknüpft",
+      "name": "wird verknüpft",
       "id": "connection_2412",
       "pickedColor": "#000000",
       "number": null,
@@ -610,21 +610,21 @@
     },
     {
       "type": "domainStory:workObjectPlace",
-      "name": "Apotheke-DE",
+      "name": "LEI-DE",
       "id": "shape_1954",
       "x": 599,
       "y": -74
     },
     {
       "type": "domainStory:workObjectInfo",
-      "name": "Vorgangsbeschreibung der Identifikation",
+      "name": "Vorgangsbe- schreibung der Identifikation",
       "id": "shape_1985",
       "x": 286,
       "y": -94
     },
     {
       "type": "domainStory:workObjectInfo",
-      "name": "Identifier des EU-Bürgers",
+      "name": "Identitäts- merkmale des EU-Bürgers",
       "id": "shape_2053",
       "x": 22,
       "y": 517
@@ -642,10 +642,10 @@
       "id": "shape_3709",
       "x": 482,
       "y": 457,
-      "text": "PatientIdentifier, Geburtsdatum",
-      "number": 43.26923076923077,
-      "height": 43.26923076923077,
-      "width": 119.99198106619029
+      "text": "PatientIdentifier, Name, Geburtsdatum etc. (je nach Vorgaben Land A)",
+      "number": 85.56149732620321,
+      "height": 85.56149732620321,
+      "width": 119.98663101604278
     },
     {
       "type": "domainStory:workObjectInfo",
@@ -664,28 +664,28 @@
     },
     {
       "type": "domainStory:workObjectFolder",
-      "name": "Dokumentationsarchiv",
+      "name": "Dokumenta- tionsarchiv",
       "id": "shape_7025",
       "x": 861,
       "y": 619
     },
     {
       "type": "domainStory:workObjectDocument",
-      "name": "Vertrauenswürdiges Ausweisdokument",
+      "name": "Vertrauens- würdiges Ausweisdoku- ment",
       "id": "shape_7030",
       "x": 599,
       "y": 67
     },
     {
       "type": "domainStory:workObjectDocument",
-      "name": "Identifikationsdokumentation",
+      "name": "Identifika- tionsdokumen- tation",
       "id": "shape_7339",
       "x": 647,
       "y": 619
     },
     {
       "type": "domainStory:workObjectInfo",
-      "name": "ermittelte und bestätigte Patient Identifier",
+      "name": "ermittelter und bestätigter Patient Identifier",
       "id": "shape_8333",
       "x": -116,
       "y": 604,
@@ -697,11 +697,11 @@
       "id": "shape_8681",
       "x": 30,
       "y": 734,
-      "text": "z.B. Sozialversicherungsnr., Geburtsdatum, Nachname (abhängig vom Land des EU-Bürgers, was hier konkret abgefragt wird)",
-      "number": 86.53846153846153,
-      "height": 86.53846153846153,
+      "text": "z.B. Sozialversicherungsnr., Geburtsdatum, Nachname (abhängig von Vorgaben des Land A des EU-Bürgers, was hier konkret abgefragt wird)",
+      "number": 100.26737967914438,
+      "height": 100.26737967914438,
       "pickedColor": "#000000",
-      "width": 172.01522680429315
+      "width": 172.00033422459893
     },
     {
       "type": "domainStory:actorPerson",
