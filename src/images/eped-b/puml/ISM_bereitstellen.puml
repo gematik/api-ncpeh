@@ -3,15 +3,16 @@
 skinparam maxMessageSize 200
 autonumber
 
-participant "EU-Webportal" as Webportal
+ 
+participant "__EU-Webportal__\n(Webserver)" as Webportal
 box "NCPeH-Proxy" #White
     participant "HTTP-Proxy" as Proxy
 end box
 participant "NCPeH-FD" as NCPeH
 participant "eHDSI Configuration Service" as ConfServ
 
-== 1. Täglich Abruf von relevanten ISMs ==
-alt ISMs zur bestimmten Uhrzeit noch nicht aktualisiert 
+== 1. Täglich Abruf von relevanten ISMs durch NCPeH-FD ==
+alt Geplanter täglicher Aktualisierungszeitpunkt erreicht
     NCPeH -> ConfServ: SignedServiceMetadata relevanter NCPeH Land-A gemäß eHDSI abrufen
     activate NCPeH 
     activate ConfServ
@@ -24,32 +25,32 @@ alt ISMs zur bestimmten Uhrzeit noch nicht aktualisiert
     NCPeH -> NCPeH: Signatur und Schema validieren (ISM_ServiceMetadata)
     NCPeH -> NCPeH: Länderzuordnung prüfen (ISM_ServiceMetadata)
     NCPeH -> NCPeH: Serviceinformationen und ISM speichern (ISM_ServiceMetadata)
-    deactivate NCPeH
 end
+deactivate NCPeH
 
 
 
 == 2. Integration von ISMs ins EU-Webportal ==
-alt ISMs zur bestimmten Uhrzeit noch nicht aktualisiert
-    Webportal -> Proxy: GET /ISM
+alt Geplanter täglicher Aktualisierungszeitpunkt erreicht
+    Webportal -> Proxy: GET /ISM?application=<LOINC_Code>
     activate Webportal
     activate Proxy
     
-    Proxy -> NCPeH: GET /ISM
+    Proxy -> NCPeH: GET /ISM?application=<LOINC_Code>
     activate Proxy
     activate NCPeH
-    NCPeH --> Proxy: :Liste der ISMs
+    NCPeH -> NCPeH: ISMs für ePrescription laden(): FHIR_Bundle
+    NCPeH --> Proxy: :FHIR_Bundle
     deactivate NCPeH
-    Proxy -> Proxy: Jede ISM auf Schema validieren (Liste der ISMs)
-    Proxy -> Proxy: ISMs speichern
+    Proxy -> Proxy: Jede ISM auf Schema validieren (FHIR_Bundle)
     deactivate Proxy
+
     
-    
-    Proxy --> Webportal: :Liste von ISMs
+    Proxy --> Webportal: :FHIR_Bundle
     deactivate Proxy
-    Webportal -> Webportal: Jede ISM auf Schema validieren (Liste der ISMs) 
-    Webportal -> Webportal: Integration in Webapp (Liste der ISMs)
-    deactivate Webportal
+    Webportal -> Webportal: Jede ISM auf Schema validieren (FHIR_Bundle) 
+    Webportal -> Webportal: Integration in Webapp (FHIR_Bundle)
 end
+deactivate Webportal
 
 @enduml
