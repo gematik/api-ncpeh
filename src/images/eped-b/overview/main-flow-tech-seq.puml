@@ -99,11 +99,13 @@ opt LE-DE ist noch nicht am EU-Webportal angemeldet
 end
 
 User -> WebApp: Wählt das Herkunftsland des EU-Bürgers aus
-User -> WebApp: Öffnet Datenschutzbestimmungen des Herkunftslands, die vom EU-Webportal bereitgestellt werden
-create PINDocument
-WebApp --> PINDocument: anzeigen
-PINDocument -> User: Datenschutzbestimmungen werden angezeigt
-User -> EUBuerger: Datenschutzbestimmungen werden gezeigt, erklärt und zur Kenntnis genommen
+opt
+    User -> WebApp: Öffnet Datenschutzbestimmungen des Herkunftslands, die vom EU-Webportal bereitgestellt werden
+    create PINDocument
+    WebApp --> PINDocument: anzeigen
+    PINDocument -> User: Datenschutzbestimmungen werden angezeigt
+end
+User -> EUBuerger: Datenschutzbestimmungen werden genannt und zur Kenntnis genommen
 
 alt Datenschutzbestimmungen ausdrucken
     PINDocument -> User: Ausdruck
@@ -111,6 +113,8 @@ alt Datenschutzbestimmungen ausdrucken
 else Datenschutzbestimmungen digital bereitstellen
     PINDocument -> User: Link / QR-Code zum Download der Datenschutzbestimmungen
     & User -> EUBuerger
+else Datenschutzbestimmungshinweis geben
+    User -> EUBuerger: Hinweis auf Website mit den Datenschutzbestimmungen wird gegeben
 end
 
 destroy PINDocument
@@ -135,7 +139,7 @@ alt Identifikationsdaten vollständig und korrekt
     PatientIdentifier --> User: Identifikationsdaten werden angezeigt
     critical Identitätsbestätigung und Behandlungsbeziehung
         User -> PatientIdentifier: Überprüft die angezeigten Identifikationsdaten auf Korrektheit bestätigt die Identität
-        User -> EUBuerger: Abfrage Bereitschaft zur Behandlungsbeziehung
+         User -> EUBuerger: Bereitschaft zur Behandlungsbeziehung abfragen
             alt #HoneyDew
                 EUBuerger --> User: Bereitschaft zur Behandlungsbeziehung wird gegeben
                 User -> WebApp: Bestätigt Bereitschaft zur Behandlungsbeziehung
