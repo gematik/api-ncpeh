@@ -1,8 +1,9 @@
 @startuml
-!pragma PLS 8192
+!pragma PLS 16384
 '!pragma teoz true
 'skinparam dpi 300
-'scale 2
+'scale 0.5
+scale 1800 width
 
 'skinparam ParticipantPadding 10
 'skinparam MessagePadding 5
@@ -14,16 +15,16 @@ hide unlinked
 skinparam maxMessageSize 150
 autonumber
 
-box "Apotheke" #Azure
+box "Apotheke" #Snow
     actor "EU-Bürger" as EUBuerger #LightGoldenRodYellow
     actor "LE-DE" as User
-    entity "Dokument mit\nDatenschutz-\nbestimmungen" as PINDocument
+    entity "PIN-Dokument" as PINDocument
     entity "Patienten-\nidentifikationsdaten" as PatientIdentifier
     entity "Übersicht der\neinlösbaren Rezepte" as PresciptionsList
     entity "Dispensierliste" as DispensationList
     participant "EU-Webportal\n(im Browser am PoS)" as WebApp
     participant "gematik\nAuthenticator" as AuthApp
-    box "Telematikinfrastruktur" #Snow
+    box "Telematikinfrastruktur" #WhiteSmoke
         participant "Konnektor" as Konnektor
         participant "IDP-Dienst" as IDP
     end box
@@ -67,14 +68,19 @@ end note
     eH-KTs gesteckt.
 end note
 /note over NCPeH
-    Ist mit dem 
+    * NCPeH-FD ist mit dem 
     TESTA-ng verbunden
+    * Suchmasken für die
+    EU-Länder sind abrufbar
 end note
+
 
 
 == Gesamter Workflow des ePeD-B Szenarios ==
 
 EUBuerger -> User: Möchte ein oder mehrere Rezept(e) aus dem EU-Ausland einlösen und das Medikament kaufen
+User -> EUBuerger: Abfrage Herkunftsland
+EUBuerger --> User: Herkunftsland wird genannt
 User -> WebApp: Ruft EU-Webportal im Browser auf
 
 opt LE-DE ist noch nicht am EU-Webportal angemeldet
@@ -92,20 +98,19 @@ opt LE-DE ist noch nicht am EU-Webportal angemeldet
     NCPeH --> IdentityAssertion: Identitätsnachweis des LE-DE wird erzeugt
 end
 
-User -> WebApp: Öffnet Datenschutzbestimmungen, die vom EU-Webportal bereitgestellt werden
+User -> WebApp: Wählt das Herkunftsland des EU-Bürgers aus
+User -> WebApp: Öffnet Datenschutzbestimmungen des Herkunftslands, die vom EU-Webportal bereitgestellt werden
 create PINDocument
 WebApp --> PINDocument: anzeigen
 PINDocument -> User: Datenschutzbestimmungen werden angezeigt
 User -> EUBuerger: Datenschutzbestimmungen werden gezeigt, erklärt und zur Kenntnis genommen
 
-opt auf Wunsch des EU-Bürgers
-    alt Datenschutzbestimmungen ausdrucken
-        PINDocument -> User: Ausdruck
-        & User -> EUBuerger
-    else Datenschutzbestimmungen digital bereitstellen
-        PINDocument -> User: Link / QR-Code zum Download der Datenschutzbestimmungen
-        & User -> EUBuerger
-    end
+alt Datenschutzbestimmungen ausdrucken
+    PINDocument -> User: Ausdruck
+    & User -> EUBuerger
+else Datenschutzbestimmungen digital bereitstellen
+    PINDocument -> User: Link / QR-Code zum Download der Datenschutzbestimmungen
+    & User -> EUBuerger
 end
 
 destroy PINDocument
@@ -125,12 +130,35 @@ group#Gold ref
     WebApp -> NCPeH: REFXXX - Kap. "8.4.2 Demographische Daten eines EU-Bürgers abrufen" durchführen
     |||
 end
-alt #HoneyDew Identifikationsdaten vollständig und korrekt 
-WebApp --> PatientIdentifier: Bestätigung
-PatientIdentifier --> User: Identifikationsdaten werden angezeigt
+alt Identifikationsdaten vollständig und korrekt 
+    WebApp --> PatientIdentifier: Bestätigung
+    PatientIdentifier --> User: Identifikationsdaten werden angezeigt
+    critical Identitätsbestätigung und Behandlungsbeziehung
+        User -> PatientIdentifier: Überprüft die angezeigten Identifikationsdaten auf Korrektheit bestätigt die Identität
+        User -> EUBuerger: Abfrage Bereitschaft zur Behandlungsbeziehung
+            alt #HoneyDew
+                EUBuerger --> User: Bereitschaft zur Behandlungsbeziehung wird gegeben
+                User -> WebApp: Bestätigt Bereitschaft zur Behandlungsbeziehung
+            else #MistyRose
+                break 
+                EUBuerger --> User: Bereitschaft zur Behandlungsbeziehung wird nicht gegeben
+                User -> EUBuerger: Verabschiedung
+                User -> WebApp: Abbruch, Vorgang kann nicht fortgesetzt werden
+                end
+            end
 
-else #MistyRose Identifikationsdaten nicht auffindbar oder nicht ausreichend für eideutige Identifikation
-    break
+    end
+
+else Identifikationsdaten nicht auffindbar oder nicht ausreichend für eideutige Identifikation
+    loop bis Identifikationsdaten vollständig und korrekt oder LE-DE den Vorgang abbricht
+        WebApp --> PatientIdentifier: Fehlermeldung "Identifikationsdaten unvollständig oder fehlerhaft, bitte korrigieren"
+        User --> PatientIdentifier: Passt Identifikationsdaten des EU-Bürgers bzw. Suchparameter an
+        group#Gold ref
+            WebApp -> NCPeH: REFXXX - Kap. "8.4.2 Demographische Daten eines EU-Bürgers abrufen" durchführen
+            |||
+        end
+    end
+    break #MistyRose
     WebApp --> User: Abbruch, Vorgang kann nicht fortgesetzt werden
     User -> EUBuerger: Information über Abbruch des Einlöseprozesses, Verabschiedung
     end
@@ -163,8 +191,8 @@ create DispensationList
 WebApp --> DispensationList: wird aus der Auswahl des LE-DE erzeugt und angezeigt
 
 alt #HoneyDew Auswahl bestätigt
-    User -> DispensationList: bestätigt die Auswahl der Rezepte
     User -> EUBuerger: Verkauf und Abgabe der Medikamente werden durchgeführt
+    User -> DispensationList: bestätigt die Auswahl der Rezepte und komplettiert die Dispensationinformationen
 else #MistyRose Auswahl nicht bestätigt
     break
         User --> WebApp: Abbruch der Auswahl, Vorgang kann nicht fortgesetzt werden
