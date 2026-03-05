@@ -1,13 +1,20 @@
 @startuml
+!pragma PLS 8192
 
 skinparam maxMessageSize 200
 autonumber
+hide unlinked
+scale 1700 width
 
 actor "LE-DE" as User
-participant "EU-Webportal" as WebApp
-participant "gematik\nAuthenticator" as AuthApp
-participant "Konnektor" as Konnektor
-participant "IDP-Dienst" as IDP
+box "EU-Webportal" #AliceBlue
+    participant "EU-Webportal" as WebApp
+end box
+box "Hilfsmittel" #WhiteSmoke
+    participant "gematik\nAuthenticator" as AuthApp
+    participant "Konnektor" as Konnektor
+    participant "IDP-Dienst" as IDP
+end box
 box "NCPeH-Proxy" #FloralWhite
     participant "HTTP-Proxy" as Proxy
     participant "Auth-Service" as AuthService
@@ -19,6 +26,13 @@ participant "NCPeH-FD" as NCPeH
 User -> WebApp: Ruft Web App im Browser auf
 activate WebApp
 User -> WebApp: Klick auf "Anmelden"
+
+opt Falls DPoP-Schlüsselpaar noch nicht vorhanden
+  WebApp -> WebApp: Asymmetrisches Schlüsselpaar generieren (PrK, PuK)
+end
+
+WebApp -> WebApp: DPoP-Proof JWT generieren (PrK, ...): DPoP-Token-1
+
 WebApp -> Proxy: Decoupled Auth Request POST /auth-decoupled
 activate Proxy
 Proxy -> AuthService: Request weiterleiten
@@ -28,9 +42,10 @@ activate AuthService
 AuthService -> AuthService: Erstelle PKCE (Code Verifier, Challenge, state)
 AuthService -> AuthService: Erzeuge auth_req_id:auth_req_id
 AuthService -> AuthService: Autorisierungsauftrag speichern (auth_req_id, Code Verifier, state, ...)
-note over WebApp
+AuthService --> Proxy: 200 OK Decoupled Authorization Response (:auth_req_id, :poll_uri, :redirect_uri, expires_in, interval)
+note left
     redirect_uri enthält neben Endpoint Adresse des IDP
-    folgende Requestparameter und Werte:
+    u.a. folgende Requestparameter und Werte:
     ""response_type=code""
     ""client_id=<CLIENT_ID>"" **statisch, durch Registrierung am IDP zugewiesen**
     ""scope=<SCOPE>"" **Muss im zIDP konfiguriert werden im zIDP bei Client-Reg.**
@@ -39,7 +54,6 @@ note over WebApp
     ""code_challenge=<PKCE CHALLENGE_HASH>""
     ""code_challenge_method=S256""
 end note
-AuthService --> Proxy: 200 OK Decoupled Authorization Response (:auth_req_id, :poll_uri, :redirect_uri, expires_in, interval)
 activate Proxy
 Proxy --> WebApp: Response weiterleiten
 deactivate Proxy
@@ -111,7 +125,7 @@ par Authenticator Flow
     == 5. erneuter TokenExchange und Polling durch EU-Webportal ==
     AuthService -> AuthService: Tokens validieren (Autorisierungsauftrag.id_token[1..2])
 
-    group Policy für Access-Token
+    group Policy für neues Access-Token
         AuthService -> AuthService: Prüfe Exchange-Policy (id_token[1..2])
         note left
             grant_type=urn:ietf:params:oauth:grant-type:token-exchange
@@ -123,17 +137,17 @@ par Authenticator Flow
         AuthService -> AuthService: Prüfung der Rolle des LE-DE auf Zugriffsberechtigung (id_token[1..2].Claims)
         AuthService -> AuthService: Generiere neues ncpehprx_access_token (id_token[1..2]):ncpehprx_access_token
     end
-    group Policy für SAML-Assertion
+    group Policy für neues ID-Token
         AuthService -> AuthService: Prüfe Exchange-Policy (id_token[1..2])
         note left
             grant_type=urn:ietf:params:oauth:grant-type:token-exchange
             subject_token=<id_token>
             subject_token_type=urn:ietf:params:oauth:token-type:id_token
-            requested_token_type=urn:ietf:params:oauth:token-type:saml2
+            requested_token_type=urn:ietf:params:oauth:token-type:id_token
             audience=ncpeh-fd
         end note
-        AuthService -> AuthService: Mapping der Claims (id_token[1..2].Claims):SAML Attributes
-        AuthService -> AuthService: Generiere und signiere neue IdA-Vorstufe (SAML Attributes):IdA_raw
+        AuthService -> AuthService: Mapping der Claims (id_token[1..2].Claims):IdA_Claims
+        AuthService -> AuthService: Generiere und signiere neue IdA-Vorstufe als ID-Token (IdA_Claims):IdA_raw
     end
 
     AuthService -> AuthService: Autorisierungsauftrag ergänzen (ncpehprx_access_token, IdA_raw)
@@ -141,7 +155,13 @@ par Authenticator Flow
 else EU-Webportal pollt
 
     loop solange Pollen, bis expires_in erreicht ist, alle Sekunden gemäß interval
-        WebApp -> Proxy: Access-Token Request POST poll_uri (auth_req_id)
+        WebApp -> Proxy: Access-Token Request POST poll_uri (auth_req_id, DPoP-Token-1, PuK, ...)
+        note left
+            Polling mit DPoP-Token-1 und PuK
+            zur Bindung der Access-Token-Response
+            an den ursprünglichen
+            Authentifizierungsversuch.
+        end note
         activate Proxy
         Proxy -> AuthService: Request weiterleiten
         deactivate Proxy
@@ -161,76 +181,38 @@ else EU-Webportal pollt
             Proxy --> WebApp: Response weiterleiten
             deactivate Proxy
         else ncpehprx_access_token vorhanden
-            note over WebApp #GhostWhite
-                TODO DPoP / VAU-Kanal Token-Binding ergänzen
-            end note
-            ref#Gold over WebApp, Proxy
-                VAU-Kanal Einrichtung zw. EU-Webportal im Browser
-                (Rolle: ASL-Client) und NCPeH-Proxy (Rolle: ASL-Server)
-            end ref
+
+            AuthService -> AuthService: DPoP-Token validieren (DPoP-Token-1, PuK, ...)
+            AuthService -> AuthService: im ncpehprx_access_token inkludiertem JWK-Thumbprint ergänzen (DPoP-Token-1, PuK):ncpehprx_access_token
 
             AuthService --> Proxy: 200 OK (:ncpehprx_access_token)
             activate Proxy
             Proxy --> WebApp: Response weiterleiten
             deactivate Proxy
-            activate WebApp #LightSeaGreen
+             note left
+                Status: AUTHENTICATED
+             end note
         end
     end
-
+|||
 end
 
-== 6. Backend-Zugriff ==
-
-AuthService --> Proxy: 200 OK (IdA_raw)
+AuthService --> Proxy: 200 OK (:IdA_raw)
 deactivate AuthService
 activate Proxy
 
-    ref#Gold over NCPeH, Proxy
-        VAU-Kanal Einrichtung zw. NCPeH-Proxy
-        (Rolle: ASL-Client) und NCPeH-FD (Rolle: ASL-Server)
-    end ref
-    |||
-    loop jeder weitere API-Request
-        User -> WebApp: mit Szenario-Workflow interagieren, der API-Requests auslöst
-        WebApp -> Proxy: GET/POST/PUT /api_xyz (ncpehprx_access_token)
-        opt Falls kein Session-Tupel aus ncpehprx_access_token und IdA_raw gespeichert
-            Proxy -> Proxy: Speichere für die Dauer der Gültigkeit der IdA_raw als Session-Tupel (ncpehprx_access_token, IdA_raw)
-            activate Proxy #LightSeaGreen
-        end
-        Proxy -> Proxy: Token validieren (ncpehprx_access_token)
-        Proxy -> Proxy: Session-Tupel validieren (ncpehprx_access_token, IdA_raw)
-        alt #HoneyDew ncpehprx_access_token und IdA_raw gültig
-            hnote left
-                Dauer der gemeinsamen "Session"
-                über ncpehprx_access_token und IdA_raw: 4h
-            end note
-            Proxy -> NCPeH: Request weiterleiten (IdA_raw)
-            activate NCPeH
-            opt Falls kein Session-Tupel aus\nIdA_raw und IdA gespeichert
-                NCPeH -> NCPeH: Non-Repudiation of Receipt erstellen()  
-                NCPeH -> NCPeH: SAML-Assertion validieren (IdA_raw)
-                NCPeH -> NCPeH: Attribute extrahieren (IdA_raw): SAML_Attributes
-                NCPeH -> NCPeH: Attribute transkodieren (SAML Attributes):Transkodierte_Attribute
-                NCPeH -> NCPeH: IdA generieren und signieren (NCPeH_PrK_SEAL, Transkodierte_Attribute): IdA
-                NCPeH -> NCPeH: Speichere für die Dauer der Gültigkeit der IdA als Session-Tupel (IdA_raw, IdA)
-                activate NCPeH #LightSeaGreen
-                NCPeH -> NCPeH: HP Assurance Audit trail Eintrag erstellen()
-            end
-            NCPeH -> NCPeH: Session-Tupel (IdA_raw, IdA) validieren
-            NCPeH --> Proxy: 200 OK (:Daten)
-            deactivate NCPeH
-            deactivate NCPeH
-            
-            Proxy --> WebApp: 200 OK (:Daten)
-        else #MistyRose Eines der Tokens ungültig
-            Proxy --> WebApp: 403 Forbidden
-            deactivate Proxy
-            WebApp -> WebApp: Benutzer abgemeldet
-            deactivate WebApp
-        end
-        deactivate Proxy
-    end
-    |||
-|||
+== 6. Backend-Zugriff ==
 
+deactivate AuthService
+
+opt ASL-Kanal noch nicht etabliert
+    group#Gold ref
+        WebApp -> NCPeH: Ende-zu-Ende ASL-Kanal Einrichtung
+    end
+end
+
+
+group#Gold ref
+    User -> NCPeH: Backend-Zugriff über ASL-Kanal mit DPoP-Absicherung
+end
 @enduml
