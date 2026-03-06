@@ -4,15 +4,21 @@ skinparam maxMessageSize 200
 autonumber
 
  
-participant "__EU-Webportal__\n(Webserver)" as Webportal
-box "NCPeH-Proxy" #White
+'participant "__EU-Webportal__\n(Webserver)" as Webportal
+
+box "EU-Webportal" #AliceBlue
+    participant "Webapp" as WebApp
+    participant "Webserver" as Webserver
+end box
+
+box "NCPeH-Proxy" #FloralWhite
     participant "HTTP-Proxy" as Proxy
 end box
 participant "NCPeH-FD" as NCPeH
 participant "eHDSI Configuration Service" as ConfServ
 
-== 1. Täglich Abruf von relevanten ISMs durch NCPeH-FD ==
-alt Geplanter täglicher Aktualisierungszeitpunkt erreicht
+== 1. Täglich Abruf von ServiceMetadata ==
+opt Geplanter täglicher Aktualisierungszeitpunkt erreicht
     NCPeH -> ConfServ: SignedServiceMetadata relevanter NCPeH Land-A gemäß eHDSI abrufen
     activate NCPeH 
     activate ConfServ
@@ -20,37 +26,36 @@ alt Geplanter täglicher Aktualisierungszeitpunkt erreicht
     ConfServ --> NCPeH: :Liste der SignedServiceMetadata
     deactivate ConfServ
 
-    NCPeH -> NCPeH: Schema und Signatur validieren (SingedServiceMetadata)
-    NCPeH -> NCPeH: ServiceMetada für ISM auswählen (SignedServiceMetadata): ISM_ServiceMetadata
-    NCPeH -> NCPeH: Signatur und Schema validieren (ISM_ServiceMetadata)
-    NCPeH -> NCPeH: Länderzuordnung prüfen (ISM_ServiceMetadata)
-    NCPeH -> NCPeH: Serviceinformationen und ISM speichern (ISM_ServiceMetadata)
+    NCPeH -> NCPeH: Schema und Signatur validieren (SingedServiceMetadata) :ServiceMetadata
+    NCPeH -> NCPeH: Signatur validieren (ServiceMetadata)
+    NCPeH -> NCPeH: Länderzuordnung prüfen (ServiceMetadata)
+    NCPeH -> NCPeH: Serviceinformationen und ISM aktualisieren (ServiceMetadata)
 end
 deactivate NCPeH
 
-
-
 == 2. Integration von ISMs ins EU-Webportal ==
-alt Geplanter täglicher Aktualisierungszeitpunkt erreicht
-    Webportal -> Proxy: GET /ISM?application=<LOINC_Code>
-    activate Webportal
-    activate Proxy
+opt Geplanter täglicher Aktualisierungszeitpunkt erreicht
     
-    Proxy -> NCPeH: GET /ISM?application=<LOINC_Code>
+    
+    Proxy -> NCPeH: ISMs abrufen()
     activate Proxy
     activate NCPeH
-    NCPeH -> NCPeH: ISMs für ePrescription laden(): FHIR_Bundle
+    NCPeH -> NCPeH: Alle ISMs in FHIR-Bundle transformieren(ServiceMetadata.ISM): FHIR_Bundle
     NCPeH --> Proxy: :FHIR_Bundle
     deactivate NCPeH
-    Proxy -> Proxy: Jede ISM auf Schema validieren (FHIR_Bundle)
-    deactivate Proxy
-
-    
-    Proxy --> Webportal: :FHIR_Bundle
-    deactivate Proxy
-    Webportal -> Webportal: Jede ISM auf Schema validieren (FHIR_Bundle) 
-    Webportal -> Webportal: Integration in Webapp (FHIR_Bundle)
+    Proxy -> Proxy: Jede ISM gegen Schema validieren (FHIR_Bundle)
 end
-deactivate Webportal
+deactivate Proxy
+
+WebApp -> Proxy: GET /ISM?application=<LOINC_Code>
+activate WebApp
+activate Proxy
+Proxy --> WebApp: :FHIR_Bundle
+deactivate Proxy
+    
+opt Bei Aufruf einer länderspezifischen Suchmaske
+    WebApp -> WebApp: Rendering und Anzeige der entsprechenden ISM(FHIR_Bundle)
+end
+
 
 @enduml

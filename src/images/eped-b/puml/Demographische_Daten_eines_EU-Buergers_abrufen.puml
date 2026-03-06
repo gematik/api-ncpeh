@@ -1,91 +1,84 @@
-@startuml ISM bereiststellen
+@startuml
 
 skinparam maxMessageSize 200
 autonumber
-
-actor "LE-DE" as LE_DE
+actor "LE-DE" as User
  box "EU-Webportal" #AliceBlue
-  participant "__EU-Webportal__\n(Client-side WebApp)" as WebApp
-  participant "Browser" as Browser
+  participant "EU-Webportal\n(Client-side WebApp)" as Webportal
   participant "Webserver" as Webserver
 end box
 
 box "NCPeH-Proxy" #FloralWhite
-    participant "HTTP-Proxy" as Proxy
-    participant "Auth-Service" as AuthService
+    participant "HTTP-Proxy" as HTTP_Proxy
+    participant "HTTP-Proxy" as Auth_Service
 end box
 
 participant "NCPeH-FD" as NCPeH
+participant "NCPeH Land-A" as NCPeH_A
 
 
-== Basis-Verbindungen und Client-Bereitstellung ==
-
-LE_DE -> Browser: startet
-Browser -> Webserver: WebApp per Link aufrufen
-Webserver --> Browser: :WebApp
-Browser --> WebApp: WebApp ausführen
-
-note over WebApp, Browser
-  WebApp wird im Browser ausgeführt.
-end note
-
-ref over LE_DE, WebApp, Browser, Webserver : Authentifizierung des LE-DE und der LEI-DE
-
-LE_DE -> WebApp: Wählt die Anwendung ePresrciption aus
-WebApp -> WebApp: Übersicht der Länder-B
-LE_DE -> WebApp: Land-B auswählen
-
-
-
-
-
-
-
-
-
-
-
-
-== 1. Täglich Abruf von relevanten ISMs ==
-alt ISMs zur bestimmten Uhrzeit noch nicht aktualisiert 
-    NCPeH -> ConfServ: SignedServiceMetadata relevanter NCPeH Land-A gemäß eHDSI abrufen
-    activate NCPeH 
-    activate ConfServ
-
-    ConfServ --> NCPeH: :Liste der SignedServiceMetadata
-    deactivate ConfServ
-
-    NCPeH -> NCPeH: Schema und Signatur validieren (SingedServiceMetadata)
-    NCPeH -> NCPeH: ServiceMetada für ISM auswählen (SignedServiceMetadata): ISM_ServiceMetadata
-    NCPeH -> NCPeH: Signatur und Schema validieren (ISM_ServiceMetadata)
-    NCPeH -> NCPeH: Länderzuordnung prüfen (ISM_ServiceMetadata)
-    NCPeH -> NCPeH: Serviceinformationen und ISM speichern (ISM_ServiceMetadata)
-    deactivate NCPeH
+group#Gold ref
+        Webportal -> Auth_Service: 8.5.1 "Authentifizierung und Autorisierung des LE-DE"
 end
 
+User -> Webportal: Anwendung ePrescription auswählen()
+activate Webportal
+Webportal -> Webportal: Information über die ausgewählte Anwendung zwischenspeichern() :LOINC_Code
+User -> Webportal: Land-A auswählen()
+Webportal -> Webportal: Ländercode für das ausgewählte Land-A zwischenspeichern() :Country_Code
+Webportal -> Webportal: ISM für das gewählte Herkunftsland laden(FHIR_Bundle) :ISM_Land-A
+Webportal -> Webportal: HTML-Seite erstellen(ISM_Land-A) :ISM_HTML_Seite
+Webportal -> Webportal: Webseite anzeigen(ISM_HTML_Seite)
 
+User -> Webportal: Identitätsmerkmale und Zugriffsinformationen für Dokumentensuche in ISM eintragen() :patient_search_prameters, document_search_parameter
+Webportal -> Webportal:  Format validieren(patient_search_prameters, document_search_parameter)
+User -> Webportal: Senden der Anfrage zur Patient Identification bestätigen()
+Webportal -> Webportal: Zugriffsinformationen für Dokumentensuche zwischenspeichern(document_search_parameter)
+Webportal -> Webportal: API-Request für Patient Identification erstellen(patient_search_prameters, LOINC_Code, Country_Code)
+note over Webportal #DodgerBlue
+    Nutzung von {Default-Auth-Header}
+    für den API-Request
+end note  
 
-== 2. Integration von ISMs ins EU-Webportal ==
-alt ISMs zur bestimmten Uhrzeit noch nicht aktualisiert
-    Webportal -> Proxy: GET /ISM
-    activate Webportal
-    activate Proxy
-    
-    Proxy -> NCPeH: GET /ISM
-    activate Proxy
-    activate NCPeH
-    NCPeH --> Proxy: :Liste der ISMs
-    deactivate NCPeH
-    Proxy -> Proxy: Jede ISM auf Schema validieren (Liste der ISMs)
-    Proxy -> Proxy: ISMs speichern
-    deactivate Proxy
-    
-    
-    Proxy --> Webportal: :Liste von ISMs
-    deactivate Proxy
-    Webportal -> Webportal: Jede ISM auf Schema validieren (Liste der ISMs) 
-    Webportal -> Webportal: Integration in Webapp (Liste der ISMs)
-    deactivate Webportal
+ref#Gold over Webportal, Webserver, HTTP_Proxy, NCPeH
+    8.5.3 "Nutzung einer autorisierten Verbindung zum NCPeD-FH"
+end ref
+
+'Webportal -> HTTP_Proxy: GET %HTTP-Proxy%/?app=<LOINC_Code>&cc=<Ländercode> \nAuthorization: DPoP <ncpehprx_access_token> DPoP <DPoP-Token-2>\nuser-agent:XYZ\nX-ncpeh-resource: Demographic\nPayload: <Chiffrat>
+
+group#Gold ref
+        NCPeH o-> NCPeH: {Payloadverarbeitung (Payload_decrypted)} aufnehmen
 end
+
+NCPeH -> NCPeH: Identitätsdaten aus Anfrage extrahieren() :patient_identity_traits
+activate NCPeH
+NCPeH -> NCPeH: IHE XCPD-Anfrage erstellen(patient_identity_traits, IdA) :xcpd_request
+NCPeH -> NCPeH: Informationen über XCPD Service Endpoint des Land-A laden() :xcpd_endpoint_country_a
+NCPeH -> NCPeH: Non-Repudiation of Origin speichern()
+NCPeH -> NCPeH_A: IHE-Anfrage über TESTA-ng senden(xcpd_endpoint_country_a, xcpd_request)
+activate NCPeH_A
+NCPeH_A -> NCPeH_A: Weitere demographische Daten im Land-A ermitteln(xcpd_request)
+NCPeH_A --> NCPeH: :xcpd_response
+deactivate NCPeH_A
+NCPeH -> NCPeH: Non-Repudiation of Receipt speichern()
+NCPeH -> NCPeH: Auf eHDSI und IHE Vorgaben prüfen(xcpd_response)
+NCPeH -> NCPeH: queryByParameters aus XCPD-Response auf Eindeutigkeit mit Identitätsdaten aus der WebApp-Anfrage prüfen(patient_identity_traits, xcpd_response)
+NCPeH -> NCPeH: Demographische Daten des EU-Bürgers extrahieren(xcpd_response) :patient_demographic_data
+NCPeH -> NCPeH: Demographische Daten in FHIR_Bundle integrieren(patient_demographic_data) :Payload_decrypted
+NCPeH -> NCPeH: Non-Repudiation of Origin speichern()
+group#Gold ref
+        NCPeH ->o NCPeH: {Payloadverarbeitung abgeschlossen(Payload_decrypted)}
+end
+
+ref#Gold over Webportal, Webserver, HTTP_Proxy, NCPeH
+    8.5.3 "Nutzung einer autorisierten Verbindung zum NCPeD-FH"
+end ref
+deactivate NCPeH
+
+Webportal -> Webportal: Antwort gegen Schema validieren(FHIR_Bundle_Demographic)
+Webportal -> Webportal: Eindeutiges Patient Identifier zwischenspeichern(FHIR_Bundle_Demographic) :patient_identifier
+Webportal -> Webportal: Webseite rendern(FHIR_Bundle_Demographic) :html_site
+Webportal -> Webportal: Webseite anzeigen(html_site)
+deactivate Webportal
 
 @enduml
