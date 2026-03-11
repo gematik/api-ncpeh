@@ -16,6 +16,7 @@ components:
         - "authentication-authorization"
         - "identity-role-mapping"
         - "transaction-handling-eped-b"
+      x-medical-personal-information: false
       description: "Identitätsnachweis des Leistungserbringers in Deutschland"
       required: [id]
       properties:
@@ -28,6 +29,7 @@ components:
       x-subdomains: 
         - "authentication-authorization"
         - "identity-role-mapping"
+      x-medical-personal-information: false
       description: "Zugriffsrechte des Leistungserbringers in Deutschland, die die Berechtigungen des Leistungserbringers für die Durchführung von ePeD-B-Vorgängen festlegen"
 
     PINDocument:
@@ -37,6 +39,7 @@ components:
         - "pin-documents-retrieval"
         - "pin-documents-preparation"
         - "pin-documents-display"
+      x-medical-personal-information: false
       description: "Ein Dokument, das die Rechte und Pflichten des EU-Bürgers zum Schutz seiner personenbezogenen und gesundheitlichen Daten enthält"
       properties:
         language: { type: string}
@@ -48,6 +51,7 @@ components:
         - "pin-documents-retrieval"
         - "pin-documents-preparation"
         - "pin-documents-display"
+      x-medical-personal-information: false
       description: "Ein Dokument, das die Rechte und Pflichten des Leistungserbringers zum Schutz seiner personenbezogenen und gesundheitlichen Daten enthält, das speziell für den Leistungserbringer in Deutschland erstellt wurde"
 
     PINAcknowledgement:
@@ -56,6 +60,7 @@ components:
       x-subdomains: 
         - "pin-documents-display"
         - "transaction-handling-eped-b"
+      x-medical-personal-information: false
       description: "Ein Informationsobjekt, das die Bestätigung des EU-Bürgers dokumentiert, dass er über seine Rechte und Pflichten zum Schutz seiner personenbezogenen und gesundheitlichen Daten informiert wurde"
       required: [id]
       properties:
@@ -68,6 +73,7 @@ components:
         - "ism-handling-retrieval"
         - "ism-handling-preparation"
         - "ism-handling-display"
+      x-medical-personal-information: false
       description: "Eine International Search Mask des Herkunftslandes des EU-Bürgers, die die Identifikation des EU-Bürgers in der Apotheke vor Ort ermöglicht"
 
     PatientIdentificationData:
@@ -79,6 +85,7 @@ components:
         - "patient-identification-display"
         - "treatment-relationship"
         - "transaction-handling-eped-b"
+      x-medical-personal-information: true
       description: "Persönliche Daten des EU-Bürgers, die für die Identifikation des EU-Bürgers in der Apotheke vor Ort erforderlich sind"
       required: [id, PatientIdentifier]
       properties:
@@ -92,6 +99,7 @@ components:
         - "patient-identification-retrieval"
         - "patient-identification-preparation"
         - "patient-identification-display"
+      x-medical-personal-information: true
       description: "Ein Identifikator, der die Identifikation des EU-Bürgers in der Apotheke vor Ort ermöglicht"
 
     AuditTrailEntry:
@@ -99,6 +107,7 @@ components:
       x-object-type: "ValueObject"
       x-subdomains: 
         - "audit-trail-creation"
+      x-medical-personal-information: false
       description: "Ein Eintrag im Audit Trail, der die Identifikation des EU-Bürgers in der Apotheke vor Ort dokumentiert"
 
     SessionTupel:
@@ -106,6 +115,7 @@ components:
       x-object-type: "Entity"
       x-subdomains:
         - "transaction-handling-eped-b"
+      x-medical-personal-information: false
       description: "Ein Tupel, das die Informationen über eine Sitzung enthält, die für die Verwaltung eines einzelnen ePeD-B-Vorgangs für einen EU-Bürger erforderlich sind"
       required: [id]
       properties:
@@ -117,6 +127,7 @@ components:
       x-subdomains: 
         - "treatment-relationship"
         - "transaction-handling-eped-b"
+      x-medical-personal-information: true
       description: "Ein Nachweis, der die Bestätigung des Behandlungsverhältnisses zum EU-Bürger enthält"
       required: [id]
       properties:
@@ -128,6 +139,7 @@ components:
       x-subdomains: 
         - "prescription-settings"
         - "prescription-display"
+      x-medical-personal-information: false
       description: "Spracheinstellungen für die Rezepte des EU-Bürgers"
 
     PrescriptionList:
@@ -135,6 +147,7 @@ components:
       x-object-type: "Entity"
       x-subdomains: 
         - "prescription-display"
+      x-medical-personal-information: true
       description: "Liste der verfügbaren Rezepte, die an den EU-Bürger abgegeben werden können"
       required: [id]
       properties:
@@ -149,6 +162,7 @@ components:
         - "prescription-settings"
         - "prescription-retrieval"
         - "prescription-display"
+      x-medical-personal-information: true
       description: "Einlösbares Rezept, das an den EU-Bürger abgegeben werden kann"
       properties:
         redeemable: { type: boolean, default: true, readOnly: true }
@@ -159,6 +173,7 @@ components:
       x-object-type: "ValueObject"
       x-subdomains: 
         - "prescription-display"
+      x-medical-personal-information: true
       description: "Nicht einlösbares Rezept, das nicht an den EU-Bürger abgegeben werden kann"
       properties:
         redeemable: { type: boolean, default: false, readOnly: true }
@@ -170,6 +185,7 @@ components:
         - "dispensation-preparation"
         - "dispensation-handling"
         - "transaction-handling-eped-b"
+      x-medical-personal-information: true
       description: "Liste der Dispensationen, die an den EU-Bürger abgegeben wurden"
       required: [id, DispensationInformation]
       properties:
@@ -182,6 +198,8 @@ components:
       x-subdomains: 
         - "dispensation-preparation"
         - "dispensation-handling"
+      x-medical-personal-information: true
+      description: "Informationen über die Dispensationen, die an den EU-Bürger abgegeben wurden, einschließlich der Informationen über die abgegebenen Medikamente und die Substitution eines Medikaments"
       required: [id, PrescriptionRedeemable]
       properties:
         id: { type: string, format: uuid }
@@ -194,4 +212,5 @@ components:
       x-subdomains: 
         - "dispensation-preparation"
         - "dispensation-handling"
+      x-medical-personal-information: true
       description: "Informationen über die Substitution eines Medikaments"
