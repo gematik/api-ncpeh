@@ -25,20 +25,25 @@ User -> Webportal: Behandlungsbeziehung zum EU-Bürger bestätigen()
 User -> Webportal: Senden der Anfrage zur Auflistung von einlösbaren E-Rezepten bestätigen()
 Webportal -> Webportal: Patient Identiefer laden() :patient_identifier
 Webportal -> Webportal: Zugriffsinformationen für Dokumentensuche laden() :document_search_parameter
-Webportal -> Webportal: API-Request erstellen(LOINC_Code, Country_Code, patient_identifier, document_search_parameter)
+Webportal -> Webportal: API-Request erstellen(LOINC_Code, Country_Code, patient_identifier, document_search_parameter):Payload
 note over Webportal #DodgerBlue
     Nutzung von {Default-Auth-Header}
     für den API-Request
 end note
-ref#Gold over Webportal, Webserver, HTTP_Proxy, NCPeH
-    8.5.3 "Nutzung einer autorisierten Verbindung zum NCPeD-FH"
-end ref
+group#Gold ref
+        Webportal o-> NCPeH: UC "Nutzung einer autorisierten Verbindung zum NCPeH-FD" {Autorisierter Request (Payload)}
+        NCPeH ->o NCPeH: UC "Nutzung einer autorisierten Verbindung zum NCPeH-FD" {Autorisierter Request abgeschlossen (Payload)}
+        NCPeH o-> NCPeH: UC "Nutzung einer autorisierten Verbindung zum NCPeH-FD" {Payloadverarbeitung (Payload_decrypted)} aufnehmen
+
+end
 
 activate NCPeH
-group#Gold ref
-        NCPeH o-> NCPeH: {Payloadverarbeitung (Payload_decrypted)} aufnehmen
-end
+
 NCPeH -> NCPeH: Daten aus Anfrage extrahieren() :LOINC_Code, Country_Code, patient_identifier, document_search_parameter
+note left
+    TODO Param/ReturnValue Check
+end note
+
 NCPeH -> NCPeH: Land-A für ePrescription auf Zugriffsberechtigung prüfen(LOINC_Code, Country_Code)
 NCPeH -> NCPeH: SAML2.0 Assertion erstellen(IdA.NameID, patient_identifier, document_search_parameter) :trc_assertion
 NCPeH -> NCPeH: SAML Assertion signieren(trc_assertion, PrK_SEAL_eHDSI) :trc_assertion_signed
@@ -63,12 +68,10 @@ end note
 NCPeH -> NCPeH: Metadata in FHIR_Bundle integrieren (metadata_eprescriptions) :Payload_decrypted
 NCPeH -> NCPeH: Non-Repudiation of Origin speichern()
 group#Gold ref
-        NCPeH ->o NCPeH: {Payloadverarbeitung abgeschlossen(Payload_decrypted)}
+        NCPeH ->o NCPeH: UC "Nutzung einer autorisierten Verbindung zum NCPeH-FD" {Payloadverarbeitung abgeschlossen(Payload_decrypted)}
+        NCPeH o-> Webportal: UC "Nutzung einer autorisierten Verbindung zum NCPeH-FD" {Autorisierter Response (Payload)}
+        Webportal ->o Webportal: UC "Nutzung einer autorisierten Verbindung zum NCPeH-FD" {Autorisierter Response abgeschlossen (Payload)}
 end
-
-ref#Gold over Webportal, Webserver, HTTP_Proxy, NCPeH
-    8.5.3 "Nutzung einer autorisierten Verbindung zum NCPeD-FH"
-end ref
 
 Webportal -> Webportal: Antwort gegen Schema validieren(fhir_bundle_metadata_eprescriptions)
 deactivate NCPeH
