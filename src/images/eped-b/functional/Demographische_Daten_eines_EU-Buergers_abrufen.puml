@@ -10,7 +10,7 @@ end box
 
 box "NCPeH-Proxy" #FloralWhite
     participant "HTTP-Proxy" as HTTP_Proxy
-    participant "HTTP-Proxy" as Auth_Service
+    participant "Auth Service" as Auth_Service
 end box
 
 participant "NCPeH-FD" as NCPeH
@@ -24,11 +24,16 @@ end
 User -> Webportal: Anwendung ePrescription auswählen()
 activate Webportal
 Webportal -> Webportal: Information über die ausgewählte Anwendung zwischenspeichern() :LOINC_Code
+Webportal -> HTTP_Proxy: GET /ISM
+HTTP_Proxy --> Webportal: :fhir_bundle_ism
+Webportal -> Webportal: Graphische Übersicht der EU-Länder für den Austausch von E-Rezepten erstellen(fhir_bundle_ism, LOINC_Code): html_country_overview
+Webportal -> Webportal: anzeigen(html_country_overview)
+
 User -> Webportal: Land-A auswählen()
 Webportal -> Webportal: Ländercode für das ausgewählte Land-A zwischenspeichern() :Country_Code
-Webportal -> Webportal: ISM für das gewählte Herkunftsland laden(FHIR_Bundle) :ISM_Land-A
-Webportal -> Webportal: HTML-Seite erstellen(ISM_Land-A) :ISM_HTML_Seite
-Webportal -> Webportal: Webseite anzeigen(ISM_HTML_Seite)
+Webportal -> Webportal: ISM für das gewählte Herkunftsland laden und anzeigen(fhir_bundle_ism) :ism_selected_country
+Webportal -> Webportal: HTML-Seite erstellen(ism_selected_country) :html_ism_page
+Webportal -> Webportal: Webseite anzeigen(html_ism_page)
 
 User -> Webportal: Identitätsmerkmale und Zugriffsinformationen für Dokumentensuche in ISM eintragen() :patient_search_prameters, document_search_parameter
 Webportal -> Webportal:  Format validieren(patient_search_prameters, document_search_parameter)
@@ -39,6 +44,8 @@ note over Webportal #DodgerBlue
     Nutzung von {Default-Auth-Header}
     für den API-Request
 end note  
+
+Webportal -> Webportal: Fachliche Daten im inneren Request des ASL-Kanals an NCPeH-FD senden()
 
 ref#Gold over Webportal, Webserver, HTTP_Proxy, NCPeH
     8.5.3 "Nutzung einer autorisierten Verbindung zum NCPeD-FH"

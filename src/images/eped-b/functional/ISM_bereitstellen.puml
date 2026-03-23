@@ -3,14 +3,6 @@
 skinparam maxMessageSize 200
 autonumber
 
- 
-'participant "__EU-Webportal__\n(Webserver)" as Webportal
-
-box "EU-Webportal" #AliceBlue
-    participant "Webapp" as WebApp
-    participant "Webserver" as Webserver
-end box
-
 box "NCPeH-Proxy" #FloralWhite
     participant "HTTP-Proxy" as Proxy
 end box
@@ -33,29 +25,18 @@ opt Geplanter täglicher Aktualisierungszeitpunkt erreicht
 end
 deactivate NCPeH
 
-== 2. Integration von ISMs ins EU-Webportal ==
+== 2. Integration von ISM ins EU-Webportal ==
 opt Geplanter täglicher Aktualisierungszeitpunkt erreicht
     
     
-    Proxy -> NCPeH: ISMs abrufen()
+    Proxy -> NCPeH: GET /ISM
     activate Proxy
     activate NCPeH
-    NCPeH -> NCPeH: Alle ISMs in FHIR-Bundle transformieren(ServiceMetadata.ISM): FHIR_Bundle
-    NCPeH --> Proxy: :FHIR_Bundle
+    NCPeH -> NCPeH: Alle ISM in FHIR-Bundle integrieren(ServiceMetadata.ISM): fhir_bundle_ism
+    NCPeH --> Proxy: :fhir_bundle_ism
     deactivate NCPeH
-    Proxy -> Proxy: Jede ISM gegen Schema validieren (FHIR_Bundle)
+    Proxy -> Proxy: Jede ISM gegen Schema validieren (fhir_bundle_ism)
 end
 deactivate Proxy
-
-WebApp -> Proxy: GET /ISM?application=<LOINC_Code>
-activate WebApp
-activate Proxy
-Proxy --> WebApp: :FHIR_Bundle
-deactivate Proxy
-    
-opt Bei Aufruf einer länderspezifischen Suchmaske
-    WebApp -> WebApp: Rendering und Anzeige der entsprechenden ISM(FHIR_Bundle)
-end
-
 
 @enduml
