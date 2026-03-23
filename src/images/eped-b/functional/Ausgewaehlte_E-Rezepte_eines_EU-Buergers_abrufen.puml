@@ -1,0 +1,79 @@
+@startuml
+
+skinparam maxMessageSize 200
+autonumber
+actor "LE-DE" as User
+ box "EU-Webportal" #AliceBlue
+  participant "EU-Webportal\n(Client-side WebApp)" as Webportal
+  participant "Webserver" as Webserver
+end box
+
+box "NCPeH-Proxy" #FloralWhite
+    participant "HTTP-Proxy" as HTTP_Proxy
+end box
+
+participant "NCPeH-FD" as NCPeH
+participant "NCPeH Land-A" as NCPeH_A
+
+User -> Webportal: E-Rezepte zum Abruf auswählen() :selected_eprescriptions_metadata
+activate Webportal
+User -> Webportal: Senden der Anfrage zum Abruf der ausgewählten E-Rezepte bestätigen()
+Webportal -> Webportal: Patient Identiefer laden() :patient_identifier
+Webportal -> Webportal: API-Request erstellen(LOINC_Code, Country_Code, patient_identifier, selected_eprescriptions_metadata)
+note over Webportal #DodgerBlue
+    Nutzung von {Default-Auth-Header}
+    für den API-Request
+end note
+Webportal -> Webportal: Fachliche Daten im inneren Request des ASL-Kanals an NCPeH-FD senden()
+ref#Gold over Webportal, Webserver, HTTP_Proxy, NCPeH
+    8.5.3 "Nutzung einer autorisierten Verbindung zum NCPeD-FH"
+end ref
+
+activate NCPeH
+group#Gold ref
+        NCPeH o-> NCPeH: {Payloadverarbeitung (Payload_decrypted)} aufnehmen
+end
+NCPeH -> NCPeH: Daten aus Anfrage extrahieren() :LOINC_Code, Country_Code, patient_identifier, selected_eprescriptions_metadata
+NCPeH -> NCPeH: Land-A für ePrescription auf Zugriffsberechtigung prüfen(LOINC_Code, Country_Code)
+NCPeH -> NCPeH: TRC Assertion laden(patient_identifier, IdA) :trc_assertion_signed
+NCPeH -> NCPeH: TRC Assertion auf Gültigkeit prüfen(trc_assertion_signed)
+NCPeH -> NCPeH: IHE XCA.Retrieve-Anfrage erstellen(selected_eprescriptions_metadata, IdA, trc_assertion_signed) :xca_retrieve_request
+NCPeH -> NCPeH: Informationen über XCA.Retrieve Service Endpoint des Land-A laden() :xca_retrieve_endpoint_country_a
+NCPeH -> NCPeH: Non-Repudiation of Origin speichern()
+NCPeH -> NCPeH_A: IHE-Anfrage über TESTA-ng senden(xca_retrieve_endpoint_country_a, xca_retrieve_request)
+activate NCPeH_A
+NCPeH_A -> NCPeH_A: Angeforderte E-Rezepte des EU-Bürgers im Land-A ermitteln(xca_retrieve_request)
+NCPeH_A --> NCPeH: :xca_retrieve_response
+deactivate NCPeH_A
+NCPeH -> NCPeH: Non-Repudiation of Receipt speichern()
+NCPeH -> NCPeH: Auf eHDSI und IHE Vorgaben prüfen(xca_retrieve_response)
+NCPeH -> NCPeH: Patient Identifiers auf Übereinstimmung prüfen(patient_identifier, xca_retrieve_response)
+NCPeH -> NCPeH: E-Rezepte transkodieren(xca_query_response) :list_transcoded_eprescriptions
+note over NCPeH
+    Transkodierung der strukturierten 
+    Angaben von E-Rezepten  
+end note
+NCPeH -> NCPeH: E-Rezepte in FHIR_Bundle integrieren (list_transcoded_eprescriptions, xca_retrieve_response.list_uncoded_eprescriptions) :Payload_decrypted
+NCPeH -> NCPeH: Informationen über stattgefundene Events in HP Assurance Audit Trail Eintrag aufnehmen()
+NCPeH -> NCPeH: Non-Repudiation of Origin speichern()
+group#Gold ref
+        NCPeH ->o NCPeH: {Payloadverarbeitung abgeschlossen(Payload_decrypted)}
+end
+
+ref#Gold over Webportal, Webserver, HTTP_Proxy, NCPeH
+    8.5.3 "Nutzung einer autorisierten Verbindung zum NCPeD-FH"
+end ref
+
+Webportal -> Webportal: Antwort gegen Schema validieren(fhir_bundle_eprescriptions)
+deactivate NCPeH
+Webportal -> Webportal: Patient Identifiers auf Übereinstimmung prüfen(patient_identifier, fhir_bundle_eprescriptions)
+Webportal -> Webportal: E-Rezepte in Webseite rendern(fhir_bundle_eprescriptions) :html_site
+Webportal -> Webportal: Webseite anzeigen(html_site)
+group#Gold opt
+    User -> Webportal: Ausgewählte Original E-Rezepte anzeigen(fhir_bundle_eprescriptions): selected_original_eprescriptions
+    Webportal -> Webportal: PDF/A-Dokumente extrahieren(selected_original_eprescriptions): pdf_eprescriptions
+    Webportal -> Webportal: :E-Rezepte im PDF/A-Format anzeigen(pdf_eprescriptions)
+end
+deactivate Webportal
+
+@enduml
