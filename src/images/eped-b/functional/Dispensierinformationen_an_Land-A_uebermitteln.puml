@@ -1,0 +1,96 @@
+@startuml
+
+skinparam maxMessageSize 200
+autonumber
+actor "LE-DE" as User
+ box "EU-Webportal" #AliceBlue
+  participant "EU-Webportal\n(Client-side WebApp)" as Webportal
+  participant "Webserver" as Webserver
+end box
+
+box "NCPeH-Proxy" #FloralWhite
+    participant "HTTP-Proxy" as HTTP_Proxy
+end box
+
+participant "NCPeH-FD" as NCPeH
+participant "NCPeH Land-A" as NCPeH_A
+
+
+User -> Webportal: E-Rezepte zum Dispensieren auswählen() :selected_eprescriptions_to_dispense
+activate Webportal
+Webportal -> Webportal: Webseite zur Erfassung von Dispensierinformationen rendern(selected_eprescriptions_to_dispense) :html_site_dispensation
+Webportal -> Webportal: Webseite anzeigen(html_site_dispensation)
+User -> Webportal: Dispensierinformationen manuell erfassen(selected_eprescriptions_to_dispense) :list_dispensed_eprescriptions
+
+group#Gold opt
+    loop Solange bis die Liste der dispensierten E-Rezepte aus Sicht des LE-DE nicht vollständig ist            
+            alt E-Rezept von der Dispensierung ausschließen
+                User -> Webportal: Ausgewähltes E-Rezept von Dispensierung ausschließen(list_dispensed_eprescriptions) :prescription
+                Webportal -> Webportal: E-Rezept aus der Liste der dispensierten E-Rezepte entfernen(prescription, list_dispensed_eprescriptions) :list_dispensed_eprescriptions
+                Webportal -> Webportal: Aktuelle Liste der dispensierten E-Rezepte rendern und anzeigen(list_dispensed_eprescriptions)
+            else
+                User -> Webportal: Ausgewähltes E-Rezept in die Dispensierung aufnehmen(list_dispensed_eprescriptions) :prescription
+                Webportal -> Webportal: E-Rezept in die Liste der dispensierten E-Rezepte aufnehmen(prescription, list_dispensed_eprescriptions) :list_dispensed_eprescriptions
+                Webportal -> Webportal: Aktuelle Liste der dispensierten E-Rezepte rendern und anzeigen(list_dispensed_eprescriptions)
+                User -> Webportal: Dispensierinformationen für das neu aufgenomme E-Rezept manuell erfassen(list_dispensed_eprescriptions) :list_dispensed_eprescriptions
+            end
+    end
+end
+
+User -> Webportal: Senden von Dispensierinformationen bestätigen()
+Webportal -> Webportal: Daten laden() :patient_identifier, LOINC_Code, Country_Code, XDSDocumentEntry.uniqueId, ID_Token
+Webportal -> Webportal: Demographische Daten des EU-Bürgers laden() :demographic_patient_data
+Webportal -> Webportal: CDA eDispensation Dokument generieren(LOINC_Code, Country_Code, patient_identifier, list_dispensed_eprescriptions, XDSDocumentEntry.uniqueId, demographic_patient_data, ID_Token) :cda_dispensation
+Webportal -> Webportal: CDA eDispensation in FHIR-Bundle integrieren(cda_dispensation) :fhir_bundle
+Webportal -> Webportal: API-Request erstellen(LOINC_Code, Country_Code, patient_identifier, fhir_bundle)
+note over Webportal #DodgerBlue
+    Nutzung von {Default-Auth-Header}
+    für den API-Request
+end note
+Webportal -> Webportal: Fachliche Daten im inneren Request des ASL-Kanals an NCPeH-FD senden()
+ref#Gold over Webportal, Webserver, HTTP_Proxy, NCPeH
+    8.5.3 "Nutzung einer autorisierten Verbindung zum NCPeD-FH"
+end ref
+
+activate NCPeH
+group#Gold ref
+        NCPeH o-> NCPeH: {Payloadverarbeitung (Payload_decrypted)} aufnehmen
+end
+NCPeH -> NCPeH: Daten aus Anfrage extrahieren() :LOINC_Code, Country_Code, patient_identifier, fhir_bundle
+NCPeH -> NCPeH: Land-A für ePrescription auf Zugriffsberechtigung prüfen(LOINC_Code, Country_Code)
+NCPeH -> NCPeH: TRC Assertion laden(patient_identifier, IdA) :trc_assertion_signed
+NCPeH -> NCPeH: TRC Assertion auf Gültigkeit prüfen(trc_assertion_signed)
+NCPeH -> NCPeH: CDA aus FHIR-Bundle extrahieren(fhir_bundle) :cda_dispensation
+NCPeH -> NCPeH: Relevante demographische Daten des EU-Bürgers aus CDA extrahieren(cda_dispensation) :demographic_patient_data
+NCPeH -> NCPeH: Vorlage für IHE XDR.Anfrage erstellen() :xdr_request
+NCPeH -> NCPeH: CDA transkodieren(cda_dispensation) :cda_dispensation_transcoded
+NCPeH -> NCPeH: IHE XDR.Anfrage um CDA erweitern(cda_dispensation_transcoded) :xdr_request
+NCPeH -> NCPeH: IHE XDR.Anfrage um Metadata erweitern(patient_identifier, demographic_patient_data, IdA) :xdr_request
+NCPeH -> NCPeH: Informationen über XDR Service Endpoint des Land-A laden() :xdr_endpoint_country_a
+NCPeH -> NCPeH: Non-Repudiation of Origin speichern()
+NCPeH -> NCPeH_A: IHE XDR.Anfrage über TESTA-ng senden(xdr_endpoint_country_a, xdr_request)
+activate NCPeH_A
+NCPeH_A -> NCPeH_A: Dispensierinformationen übermitteln(xdr_request)
+NCPeH_A --> NCPeH: :xdr_response
+deactivate NCPeH_A
+NCPeH -> NCPeH: Non-Repudiation of Receipt speichern()
+NCPeH -> NCPeH: Auf eHDSI und IHE Vorgaben prüfen(xdr_response)
+NCPeH -> NCPeH: Antwort über den Erfolg der Übrmittlung von Dispensierinformationen in FHIR-Bundle integrieren(xdr_response) :Payload_decrypted
+NCPeH -> NCPeH: Informationen über stattgefundene Events in HP Assurance Audit Trail Eintrag aufnehmen()
+NCPeH -> NCPeH: Non-Repudiation of Origin speichern()
+group#Gold ref
+        NCPeH ->o NCPeH: {Payloadverarbeitung abgeschlossen(Payload_decrypted)}
+end
+
+ref#Gold over Webportal, Webserver, HTTP_Proxy, NCPeH
+    8.5.3 "Nutzung einer autorisierten Verbindung zum NCPeD-FH"
+end ref
+
+Webportal -> Webportal: Antwort gegen Schema validieren(fhir_bundle_eprescriptions)
+deactivate NCPeH
+Webportal -> Webportal: Antwort extrahieren(fhir_bundle) :200 OK
+Webportal -> Webportal: Antwort anzeigen()
+
+deactivate Webportal
+
+@enduml
