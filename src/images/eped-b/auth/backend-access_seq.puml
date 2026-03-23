@@ -37,53 +37,62 @@ activate Proxy
 |||
 loop jeder weitere API-Request
     User -> WebApp: mit Szenario-Workflow interagieren, der API-Requests auslöst
-    WebApp -> WebApp: Nutzdaten mit AES/GCM verschlüsseln (K2_c2s_app_data):Chiffrat
+    group Aufruf/Nutzung durch funktionale Use Cases
+        WebApp ->o WebApp: {Autorisierter Request (Payload)}
+    end
+    WebApp -> WebApp: Payload mit AES/GCM verschlüsseln (Payload, K2_c2s_app_data):Chiffrat
 
 
     group#GreenYellow Standard-Request
 
-    WebApp -> WebApp: DPoP-Proof JWT generieren (PrK, ...): DPoP-Token-2
-    note right
-        DPoP-Token-2 enthält Claim ""ath"" mit Hash von
-        ncpehprx_access_token zwecks Bindungsprüfung.
-    end note
+        WebApp -> WebApp: DPoP-Proof JWT generieren (PrK, ...): DPoP-Token-2
+        note right
+            DPoP-Token-2 enthält Claim ""ath"" mit Hash von
+            ncpehprx_access_token zwecks Bindungsprüfung.
+        end note
 
-    WebApp -> Proxy: POST/GET/PUT /<ASL-Kanal-ID>/api_xyz mit Header: ""Authorization: DPoP <ncpehprx_access_token> DPoP <DPoP-Token-2>"" und Payload: ""<Chiffrat>""
-    note right #DodgerBlue
-        Definition {Default-Auth-Header}:
-        ""Authorization: DPoP <ncpehprx_access_token> DPoP <DPoP-Token-2>""
-    end note
-    note left
-        Chiffrat gemäß
-        A_26927-*
-    end note
-
-    Proxy -> Proxy: ncpehprx_access_token validieren (ncpehprx_access_token)
-    note left
-        Validierungsschritte u.a.:
-        * Signaturprüfung, Ablaufzeit
-    end note
-    Proxy -> Proxy: DPoP-Token validieren (DPoP-Token-2, PuK, ath, ...)
-    note left
-        Validierungsschritte u.a.:
-        * Signaturprüfung mit PuK aus DPoP-Token-2 Header
-        (Prüfung gegen Hash aus Confirmation-Claim im ncpehprx_access_token)
-        * Berechnung Hash von ncpehprx_access_token und Vergleich mit ""ath"" Claim
-    end note
-
+        WebApp -> Proxy: POST/GET/PUT /<ASL-Kanal-ID>/api_xyz mit Header: ""Authorization: DPoP <ncpehprx_access_token> DPoP <DPoP-Token-2>"" und Payload: ""<Chiffrat>""
+        note right #DodgerBlue
+            Definition {Default-Auth-Header}:
+            ""Authorization: DPoP <ncpehprx_access_token> DPoP <DPoP-Token-2>""
+        end note
+        note left
+            Chiffrat gemäß
+            A_26927-*
+        end note
+        Proxy -> Proxy: ncpehprx_access_token validieren (ncpehprx_access_token, Gateway-Policies)
+        note left
+            Validierungsschritte u.a.:
+            * Signaturprüfung, Ablaufzeit
+        end note
+        Proxy -> Proxy: DPoP-Token validieren (DPoP-Token-2, PuK, ath, ...)
+        note left
+            Validierungsschritte u.a.:
+            * Signaturprüfung mit PuK aus DPoP-Token-2 Header
+            (Prüfung gegen Hash aus Confirmation-Claim im ncpehprx_access_token)
+            * Berechnung Hash von ncpehprx_access_token und Vergleich mit ""ath"" Claim
+        end note
     end
 
     opt Falls kein Session-Tupel aus ncpehprx_access_token und IdA_raw gespeichert
         Proxy -> Proxy: Speichere für die Dauer der Gültigkeit der IdA_raw als Session-Tupel (ncpehprx_access_token, IdA_raw)
         activate Proxy #LightSeaGreen
     end
-    Proxy -> Proxy: Token validieren (ncpehprx_access_token)
-    Proxy -> Proxy: Session-Tupel validieren (ncpehprx_access_token, IdA_raw)
+    Proxy -> Proxy: Token validieren (ncpehprx_access_token, Gateway-Policies)
+    Proxy -> Proxy: Session-Tupel validieren (ncpehprx_access_token, IdA_raw, Gateway-Policies)
+    hnote left
+        Dauer der gemeinsamen "Session"
+        über ncpehprx_access_token und IdA_raw: 4h
+    end note
+
+    Proxy -> Proxy: Request auswerten und Regeln anwenden (Request, Gateway-Policies)
+    note left
+        Mögliche Regeln u.a.:
+        * Routen basierend auf API-Pfad, HTTP-Methode, ...
+        * QoS basierend auf Attributen aus IdA_raw, ...
+    end note
+
     alt #HoneyDew Validierung erfolgreich: ncpehprx_access_token und IdA_raw gültig
-        hnote left
-            Dauer der gemeinsamen "Session"
-            über ncpehprx_access_token und IdA_raw: 4h
-        end note
         Proxy -> NCPeH: Request-Path und Payload weiterleiten (IdA_raw)
         activate NCPeH
         opt Falls kein Session-Tupel aus\nIdA_raw und IdA gespeichert
@@ -97,12 +106,19 @@ loop jeder weitere API-Request
             NCPeH -> NCPeH: HP Assurance Audit trail Eintrag erstellen()
         end
         NCPeH -> NCPeH: Session-Tupel (IdA_raw, IdA) validieren
-        NCPeH -> NCPeH: Payload des Request-Bodys entschlüsseln (K2_c2s_app_data):Payload_decrypted
-        group Detailverarbeitung siehe andere Use Cases
+        group Aufruf/Nutzung durch funktionale\nUse Cases abgeschlossen
+            NCPeH o-> NCPeH: {Autorisierter Request abgeschlossen (Payload)}
+        end
+
+        NCPeH -> NCPeH: Payload des Request-Bodys entschlüsseln (Payload, K2_c2s_app_data):Payload_decrypted
+        group Detailverarbeitung siehe funktionale Use Cases
             NCPeH ->o NCPeH: {Payloadverarbeitung (Payload_decrypted)}
             activate NCPeH #LightYellow
             NCPeH o-> NCPeH: {Payloadverarbeitung abgeschlossen (Payload_decrypted)}
             deactivate NCPeH
+        end
+        group Aufruf/Nutzung durch funktionale Use Cases
+            NCPeH ->o NCPeH: {Autorisierter Response (Payload_decrypted)}
         end
         NCPeH -> NCPeH: API-Antwort verschlüsseln (Payload_decrypted, K2_s2c_app_data):Chiffrat
         note left
@@ -112,17 +128,22 @@ loop jeder weitere API-Request
         NCPeH --> Proxy: 200 OK mit Payload: ""<Chiffrat>""
         deactivate NCPeH
         deactivate NCPeH
+        Proxy -> Proxy: Response auswerten und Regeln anwenden (Response, Gateway-Policies)
 
         Proxy --> WebApp: 200 OK mit Payload: ""<Chiffrat>""
-        note right
+        note left
             Chiffrat gemäß A_26930-*
         end note
-        WebApp -> WebApp: Payload des Response-Bodys entschlüsseln (K2_s2c_app_data):Payload_decrypted
+
+        WebApp -> WebApp: Payload des Response-Bodys entschlüsseln (Payload, K2_s2c_app_data):Payload_decrypted
+        group Aufruf/Nutzung durch funktionale\nUse Cases abgeschlossen
+            WebApp o-> WebApp: {Autorisierter Response abgeschlossen (Payload)}
+        end
         
     else #MistyRose Validierung fehlgeschlagen: Eines der Tokens ungültig
         Proxy --> WebApp: 403 Forbidden
     note right
-        Nutzdaten erreichen VAU-Server nie
+        Payload erreicht NCPeH-FD nie
     end note
         deactivate Proxy
         WebApp -> WebApp: Benutzer abgemeldet
