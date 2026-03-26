@@ -1,0 +1,53 @@
+requirementDiagram
+
+direction RL
+
+requirement "Zuverlässigkeit und Hochverfügbarkeit" {
+  text: "System bleibt bei Fehlern erreichbar und (teil-)funktional"
+  verifyMethod: demonstration
+}
+
+requirement "Ausfallsicherheit" {
+  text: "Verteilung von Last und Vermeidung von Single Point of Failures"
+  verifyMethod: demonstration
+}
+
+requirement "Aktualisierbarkeit" {
+  text: "Zero-Downtime Updates und schnelle Rollbacks"
+  verifyMethod: demonstration
+}
+
+requirement "Wiederherstellbarkeit" {
+  text: "Automatische Reparatur bei Container-Abstürzen"
+  verifyMethod: test
+}
+
+element "Selbstheilung" {
+  type: "Cloud-native OS Feature"
+}
+
+element "Container-Sonden (Liveness/Startup)" {
+  type: "Cloud-native OS Feature"
+}
+
+element "Repliken" {
+  type: "Cloud-native OS Feature"
+}
+
+element "verschiedene Deploymenttypen" {
+  type: "Cloud-native OS Feature"
+}
+
+element "Rollierende Updates, Deployments und Rollbacks" {
+  type: "Cloud-native OS Feature"
+}
+
+"Rollierende Updates, Deployments und Rollbacks" - satisfies -> "Ausfallsicherheit"
+"Rollierende Updates, Deployments und Rollbacks" - satisfies -> "Aktualisierbarkeit"
+"Container-Sonden (Liveness/Startup)" - satisfies -> "Wiederherstellbarkeit"
+
+
+"Selbstheilung" - satisfies -> "Zuverlässigkeit und Hochverfügbarkeit"
+"Container-Sonden (Liveness/Startup)" - satisfies -> "Zuverlässigkeit und Hochverfügbarkeit"
+"Repliken" - satisfies -> "Zuverlässigkeit und Hochverfügbarkeit"
+"verschiedene Deploymenttypen" - satisfies -> "Zuverlässigkeit und Hochverfügbarkeit"

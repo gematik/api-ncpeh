@@ -1,0 +1,37 @@
+requirementDiagram
+
+direction RL
+
+requirement "Sicherheit" {
+  text: "Isolierung und strikte Zugriffskontrollen"
+  verifyMethod: analysis
+}
+
+requirement "Netzwerksicherheit" {
+  text: "Strikte Abschottung der Netzwerk-Kommunikation"
+  verifyMethod: analysis
+}
+
+requirement "Zugriffs- und Datensicherheit" {
+  text: "Verschlüsselung von Passwörtern und Einhaltung des Least-Privilege-Prinzips"
+  verifyMethod: inspection
+}
+
+
+element "Netzwerk-Policies" {
+  type: "Cloud-native OS Feature"
+}
+
+element "Role-Based Access Control (RBAC)" {
+  type: "Cloud-native OS Feature"
+}
+
+element "verschlüsselte Secrets und Schlüssel" {
+  type: "ermöglicht durch Cloud-native OS"
+}
+
+"Role-Based Access Control (RBAC)" - satisfies -> "Zugriffs- und Datensicherheit"
+"Sicherheit" - contains -> "Netzwerksicherheit"
+"Sicherheit" - contains -> "Zugriffs- und Datensicherheit"
+"Netzwerk-Policies" - satisfies -> "Netzwerksicherheit"
+"verschlüsselte Secrets und Schlüssel" - satisfies -> "Zugriffs- und Datensicherheit"
