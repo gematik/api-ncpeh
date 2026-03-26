@@ -3,7 +3,7 @@
 '!pragma teoz true
 'skinparam dpi 300
 'scale 0.5
-scale 1800 width
+scale 1700 width
 
 'skinparam ParticipantPadding 10
 'skinparam MessagePadding 5
@@ -18,9 +18,9 @@ autonumber
 box "Apotheke" #Snow
     actor "EU-Bürger" as EUBuerger #LightGoldenRodYellow
     actor "LE-DE" as User
-    entity "PIN-Dokument" as PINDocument
+    entity "PIN-Dokument/\nHPIN-Dokument" as PINDocument
     entity "Patienten-\nidentifikationsdaten" as PatientIdentifier
-    entity "Übersicht der\neinlösbaren Rezepte" as PresciptionsList
+    entity "Übersicht der\neinlösbaren Rezepte" as PrescriptionList
     entity "Dispensierliste" as DispensationList
     participant "EU-Webportal\n(im Browser am PoS)" as WebApp
     participant "gematik\nAuthenticator" as AuthApp
@@ -89,20 +89,30 @@ opt LE-DE ist noch nicht am EU-Webportal angemeldet
     & Konnektor <<->> AuthApp: LE-DE prüfen
      
     group#Gold ref
-        User -> WebApp: REFXXX - Kap. "7.1 Authentifizierung und Autorisierung des LE-DE" durchführen
+        User -> WebApp: UC "Authentifizierung und Autorisierung des LE-DE" durchführen
         |||
         
     end
     
     create IdentityAssertion
     NCPeH --> IdentityAssertion: Identitätsnachweis des LE-DE wird erzeugt
+    note over IdentityAssertion #Yellow
+        Domänenobjekt:
+        ""IdentityAssertion""
+    end note
 end
 
 User -> WebApp: Wählt das Herkunftsland des EU-Bürgers aus
 opt
     User -> WebApp: Öffnet Datenschutzbestimmungen des Herkunftslands, die vom EU-Webportal bereitgestellt werden
     create PINDocument
-    WebApp --> PINDocument: anzeigen
+    WebApp --> PINDocument: Inhalt des Links anzeigen
+    note over PINDocument #Yellow
+        Domänenobjekte:
+        ""PINDocument""
+        ""HPINDocument""
+    end note
+
     PINDocument -> User: Datenschutzbestimmungen werden angezeigt
 end
 User -> EUBuerger: Datenschutzbestimmungen werden genannt und zur Kenntnis genommen
@@ -122,16 +132,21 @@ User --> WebApp: Bestätigt Kenntnisnahme der Datenschutzbestimmungen
 WebApp -> WebApp: zur Suchmaske weiterleiten
 
 group#Gold ref
-    WebApp -> NCPeH: REFXXX - Kap. "8.4.1 Abruf einer Suchmaske" durchführen
+    WebApp -> NCPeH: UC "International Search Masks abrufen" durchführen
     |||
 end
 
 WebApp -> User: Suchmaske wird angezeigt
 create PatientIdentifier
 User --> PatientIdentifier: Erfasst Identifikationsdaten des EU-Bürgers
+note over PatientIdentifier #Yellow
+    Domänenobjekte:
+    ""PatientIdentifier""
+    ""PatientIdentificationData""
+end note
 
 group#Gold ref
-    WebApp -> NCPeH: REFXXX - Kap. "8.4.2 Demographische Daten eines EU-Bürgers abrufen" durchführen
+    WebApp -> NCPeH: UC "Demographische Daten eines EU-Bürgers abrufen" durchführen
     |||
 end
 alt Identifikationsdaten vollständig und korrekt 
@@ -158,7 +173,7 @@ else Identifikationsdaten nicht auffindbar oder nicht ausreichend für eideutige
         WebApp --> PatientIdentifier: Fehlermeldung "Identifikationsdaten unvollständig oder fehlerhaft, bitte korrigieren"
         User --> PatientIdentifier: Passt Identifikationsdaten des EU-Bürgers bzw. Suchparameter an
         group#Gold ref
-            WebApp -> NCPeH: REFXXX - Kap. "8.4.2 Demographische Daten eines EU-Bürgers abrufen" durchführen
+            WebApp -> NCPeH: UC "Demographische Daten eines EU-Bürgers abrufen" durchführen
             |||
         end
     end
@@ -170,29 +185,42 @@ end
 
 create TRCAssertion
 NCPeH --> TRCAssertion: Nachweis der Behandlungsbeziehung zwischen LE-DE und EU-Bürger wird erzeugt
+note over TRCAssertion #Yellow
+    Domänenobjekt:
+    ""TRCAssertion""
+end note
 
 group#Gold ref
-    WebApp -> NCPeH: REFXXX - Kap. "8.6.1 Liste der einlösbaren E-Rezepte eines EU-Bürgers abrufen" durchführen
-    note left
-        TODO was ist mit der Liste
-        der nicht-einlösbaren Rezepte?
-    end note
+    WebApp -> NCPeH: UC "Liste der einlösbaren E-Rezepte eines EU-Bürgers abrufen" durchführen
+    'note left
+        'TODO was ist mit der Liste
+        'der nicht-einlösbaren Rezepte?
+    'end note
     |||
 end
 
-create PresciptionsList
-WebApp --> PresciptionsList: anzeigen
-PresciptionsList -> User: Übersicht über die einlösbaren Rezepte wird angezeigt
+create PrescriptionList
+WebApp --> PrescriptionList: anzeigen
+note over PrescriptionList #Yellow
+    Domänenobjekt:
+    ""PrescriptionList""
+end note
+PrescriptionList -> User: Übersicht über die einlösbaren Rezepte wird angezeigt
 
 User -> WebApp: Wählt ein oder mehrere Rezepte aus der Übersicht aus
 
 group#Gold ref
-    WebApp -> NCPeH: REFXXX - Kap. "8.6.2 Ausgewählte E-Rezepte eines EU-Bürgers abrufen" durchführen
+    WebApp -> NCPeH: UC "Ausgewählte E-Rezepte eines EU-Bürgers abrufen" durchführen
     |||
 end
 
 create DispensationList
 WebApp --> DispensationList: wird aus der Auswahl des LE-DE erzeugt und angezeigt
+note over DispensationList #Yellow
+    Domänenobjekte:
+    ""DispensationList""
+    ""DispensationInformation""
+end note
 
 alt #HoneyDew Auswahl bestätigt
     User -> EUBuerger: Verkauf und Abgabe der Medikamente werden durchgeführt
@@ -210,7 +238,7 @@ end
 
 DispensationList -> WebApp: übermitteln
 group#Gold ref
-    WebApp -> NCPeH: REFXXX - Kap. "8.6.3 Abgabe von E-Rezepten" durchführen
+    WebApp -> NCPeH: UC "Dispensierinformationen an Land-A übermitteln" durchführen
     |||
 end
 

@@ -4,11 +4,11 @@
 skinparam maxMessageSize 200
 autonumber
 hide unlinked
-scale 1700 width
+scale 1625 width
 
 actor "LE-DE" as User
 box "EU-Webportal" #AliceBlue
-    participant "EU-Webportal" as WebApp
+    participant "WebApp" as WebApp
 end box
 box "Hilfsmittel" #WhiteSmoke
     participant "gematik\nAuthenticator" as AuthApp
@@ -23,7 +23,7 @@ participant "NCPeH-FD" as NCPeH
 
 == 1. Start EU-Webportal und Authentifizierung ==
 
-User -> WebApp: Ruft Web App im Browser auf
+User -> WebApp: Ruft WebApp im Browser auf
 activate WebApp
 User -> WebApp: Klick auf "Anmelden"
 
@@ -125,32 +125,44 @@ par Authenticator Flow
     == 5. erneuter TokenExchange und Polling durch EU-Webportal ==
     AuthService -> AuthService: Tokens validieren (Autorisierungsauftrag.id_token[1..2])
 
-    group Policy für neues Access-Token
+    group Policy für neues Access-Token "ncpehprx_access_token"
         AuthService -> AuthService: Prüfe Exchange-Policy (id_token[1..2])
         note left
-            grant_type=urn:ietf:params:oauth:grant-type:token-exchange
-            subject_token=<id_token>
-            subject_token_type=urn:ietf:params:oauth:token-type:id_token
-            requested_token_type=urn:ietf:params:oauth:token-type:access_token
-            audience=ncpeh-proxy
+            ""grant_type=urn:ietf:params:oauth:grant-type:token-exchange""
+            ""subject_token=<id_token>""
+            ""subject_token_type=urn:ietf:params:oauth:token-type:id_token""
+            ""requested_token_type=urn:ietf:params:oauth:token-type:access_token""
+            **""audience=ncpeh-proxy""**
         end note
         AuthService -> AuthService: Prüfung der Rolle des LE-DE auf Zugriffsberechtigung (id_token[1..2].Claims)
         AuthService -> AuthService: Generiere neues ncpehprx_access_token (id_token[1..2]):ncpehprx_access_token
     end
-    group Policy für neues ID-Token
+    group Policy für neues ID-Token "IdA_raw"
         AuthService -> AuthService: Prüfe Exchange-Policy (id_token[1..2])
         note left
-            grant_type=urn:ietf:params:oauth:grant-type:token-exchange
-            subject_token=<id_token>
-            subject_token_type=urn:ietf:params:oauth:token-type:id_token
-            requested_token_type=urn:ietf:params:oauth:token-type:id_token
-            audience=ncpeh-fd
+            ""grant_type=urn:ietf:params:oauth:grant-type:token-exchange""
+            ""subject_token=<id_token>""
+            ""subject_token_type=urn:ietf:params:oauth:token-type:id_token""
+            ""requested_token_type=urn:ietf:params:oauth:token-type:id_token""
+            **""audience=ncpeh-fd""**
         end note
         AuthService -> AuthService: Mapping der Claims (id_token[1..2].Claims):IdA_Claims
         AuthService -> AuthService: Generiere und signiere neue IdA-Vorstufe als ID-Token (IdA_Claims):IdA_raw
     end
+    group Policy für neues ID-Token "euwp_id_token"
+        AuthService -> AuthService: Prüfe Exchange-Policy (id_token[1..2])
+        note left
+            ""grant_type=urn:ietf:params:oauth:grant-type:token-exchange""
+            ""subject_token=<id_token>""
+            ""subject_token_type=urn:ietf:params:oauth:token-type:id_token""
+            ""requested_token_type=urn:ietf:params:oauth:token-type:id_token""
+            **""audience=eu-webportal""**
+        end note
+        AuthService -> AuthService: Mapping der Claims (id_token[1..2].Claims):Disp_Claims
+        AuthService -> AuthService: Generiere und signiere ID-Token (Disp_Claims):euwp_id_token
+    end
 
-    AuthService -> AuthService: Autorisierungsauftrag ergänzen (ncpehprx_access_token, IdA_raw)
+    AuthService -> AuthService: Autorisierungsauftrag ergänzen (ncpehprx_access_token, IdA_raw, euwp_id_token)
 
 else EU-Webportal pollt
 
@@ -173,7 +185,7 @@ else EU-Webportal pollt
             deactivate Proxy
             note left
                 Status:
-                WAITING_FOR_AUTHENTICATOR_RESPONSE
+                ""WAITING_FOR_AUTHENTICATOR_RESPONSE""
             end note
         else #MistyRose Poll Fehler     
             AuthService --> Proxy: 400 Bad Request (Error)
@@ -185,12 +197,12 @@ else EU-Webportal pollt
             AuthService -> AuthService: DPoP-Token validieren (DPoP-Token-1, PuK, ...)
             AuthService -> AuthService: im ncpehprx_access_token inkludiertem JWK-Thumbprint ergänzen (DPoP-Token-1, PuK):ncpehprx_access_token
 
-            AuthService --> Proxy: 200 OK (:ncpehprx_access_token)
+            AuthService --> Proxy: 200 OK (:ncpehprx_access_token, :euwp_id_token)
             activate Proxy
             Proxy --> WebApp: Response weiterleiten
             deactivate Proxy
              note left
-                Status: AUTHENTICATED
+                Status: ""AUTHENTICATED""
              end note
         end
     end
@@ -207,12 +219,11 @@ deactivate AuthService
 
 opt ASL-Kanal noch nicht etabliert
     group#Gold ref
-        WebApp -> NCPeH: Ende-zu-Ende ASL-Kanal Einrichtung
+        WebApp -> NCPeH: UC "Etablierung eines ASL-Kanals in die VAU-Umgebung des NCPeH-FD"
     end
 end
 
-
 group#Gold ref
-    User -> NCPeH: Backend-Zugriff über ASL-Kanal mit DPoP-Absicherung
+    User -> NCPeH: UC "Nutzung einer autorisierten Verbindung zum NCPeH-FD"
 end
 @enduml
