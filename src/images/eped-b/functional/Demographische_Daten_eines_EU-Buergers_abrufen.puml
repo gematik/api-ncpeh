@@ -2,8 +2,10 @@
 
 skinparam maxMessageSize 200
 autonumber
+actor "EU-Bürger" as EUBuerger #LightGoldenRodYellow
 actor "LE-DE" as User
- box "EU-Webportal" #AliceBlue
+entity "PIN-Dokument/\nHPIN-Dokument" as Document
+box "EU-Webportal" #AliceBlue
   participant "EU-Webportal\n(Client-side WebApp)" as Webportal
   participant "Webserver" as Webserver
 end box
@@ -24,6 +26,42 @@ end
 User -> Webportal: Anwendung ePrescription auswählen()
 activate Webportal
 Webportal -> Webportal: Information über die ausgewählte Anwendung zwischenspeichern() :LOINC_Code
+
+
+
+
+opt
+    User -> Webportal: Öffnet Datenschutzbestimmungen des Herkunftslands, die vom EU-Webportal bereitgestellt werden
+    create Document
+    Webportal --> Document: Inhalt des Links anzeigen
+    note over Document #Yellow
+        Domänenobjekte:
+        ""PINDocument""
+        ""HPINDocument""
+    end note
+    Document -> User: Datenschutzbestimmungen werden angezeigt
+    User -> EUBuerger: Datenschutzbestimmungen werden genannt und zur Kenntnis genommen
+
+    alt Datenschutzbestimmungen ausdrucken
+        PINDocument -> User: Ausdruck
+        & User -> EUBuerger
+    else Datenschutzbestimmungen digital bereitstellen
+        PINDocument -> User: Link / QR-Code zum Download der Datenschutzbestimmungen
+        & User -> EUBuerger
+    else Datenschutzbestimmungshinweis geben
+        User -> EUBuerger: Hinweis auf Website mit den Datenschutzbestimmungen wird gegeben
+end
+
+destroy PINDocument
+
+end
+
+
+
+User --> Webportal: Bestätigt Kenntnisnahme der Datenschutzbestimmungen
+
+User -> Webportal: Wählt das Herkunftsland des EU-Bürgers aus
+
 Webportal -> HTTP_Proxy: GET /ISM
 HTTP_Proxy --> Webportal: :fhir_bundle_ism
 Webportal -> Webportal: Graphische Übersicht der EU-Länder für den Austausch von E-Rezepten erstellen(fhir_bundle_ism, LOINC_Code): html_country_overview
