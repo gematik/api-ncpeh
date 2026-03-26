@@ -73,8 +73,21 @@ components:
         - "ism-handling-retrieval"
         - "ism-handling-preparation"
         - "ism-handling-display"
+      x-external-reference: "list_ism_international"
       x-medical-personal-information: false
       description: "Eine International Search Mask des Herkunftslandes des EU-Bürgers, die die Identifikation des EU-Bürgers in der Apotheke vor Ort ermöglicht"
+
+  PatientIdentificationQuery:
+      type: object
+      x-object-type: "Entity"
+      x-subdomains: 
+        - "patient-identification-retrieval"
+      x-external-reference: "patient_identification_query"
+      x-medical-personal-information: true
+      description: "Übermittlung von Identitätsmerkmalen zur Ermittlung und Befreitstellung von weiteren demographischen Daten."
+      required: [id]
+      properties:
+        id: { type: string, format: uuid }
 
     PatientIdentificationData:
       type: object
@@ -85,6 +98,7 @@ components:
         - "patient-identification-display"
         - "treatment-relationship"
         - "transaction-handling-eped-b"
+      x-external-reference: "patient_demographics_data"
       x-medical-personal-information: true
       description: "Persönliche Daten des EU-Bürgers, die für die Identifikation des EU-Bürgers in der Apotheke vor Ort erforderlich sind"
       required: [id, PatientIdentifier]
@@ -147,6 +161,7 @@ components:
       x-object-type: "Entity"
       x-subdomains: 
         - "prescription-display"
+      x-external-reference: "list_available_presciption"
       x-medical-personal-information: true
       description: "Liste der verfügbaren Rezepte, die an den EU-Bürger abgegeben werden können"
       required: [id]
@@ -162,6 +177,7 @@ components:
         - "prescription-settings"
         - "prescription-retrieval"
         - "prescription-display"
+      x-external-reference: "list_available_presciption"
       x-medical-personal-information: true
       description: "Einlösbares Rezept, das an den EU-Bürger abgegeben werden kann"
       properties:
@@ -173,10 +189,37 @@ components:
       x-object-type: "ValueObject"
       x-subdomains: 
         - "prescription-display"
+      x-external-reference: "list_available_presciption"
       x-medical-personal-information: true
       description: "Nicht einlösbares Rezept, das nicht an den EU-Bürger abgegeben werden kann"
       properties:
         redeemable: { type: boolean, default: false, readOnly: true }
+
+    SelectedPrescriptionRetrieval:
+      type: object
+      x-object-type: "Entity"
+      x-subdomains: 
+        - "list-prescription-retrieval"
+      x-external-reference: "list_selected_presciption_retrieval"
+      x-medical-personal-information: true
+      description: "Liste der ausgewählten Rezepte, die abgerufen werden sollen."
+      required: [id]
+      properties:
+        id: { type: string, format: uuid }
+        PrescriptionRedeemable: { $ref: '#/components/schemas/PrescriptionRetrieval' }
+
+    PrescriptionRetrieved:
+      type: object
+      x-object-type: "Entity"
+      x-subdomains: 
+        - "list-prescription-retrieved"
+      x-external-reference: "list_prescription_retrieved"
+      x-medical-personal-information: true
+      description: "Liste der abgerufenen Rezepte."
+      required: [id]
+      properties:
+        id: { type: string, format: uuid }
+        PrescriptionRedeemable: { $ref: '#/components/schemas/PrescriptionRetrieved' }
 
     DispensationList:
       type: object
@@ -185,6 +228,7 @@ components:
         - "dispensation-preparation"
         - "dispensation-handling"
         - "transaction-handling-eped-b"
+      x-external-reference: "list_dispensation_information"
       x-medical-personal-information: true
       description: "Liste der Dispensationen, die an den EU-Bürger abgegeben wurden"
       required: [id, DispensationInformation]
