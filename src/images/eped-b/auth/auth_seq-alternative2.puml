@@ -42,6 +42,10 @@ activate AuthService
 AuthService -> AuthService: Erstelle PKCE (Code Verifier, Challenge, state)
 AuthService -> AuthService: Erzeuge auth_req_id:auth_req_id
 AuthService -> AuthService: Autorisierungsauftrag speichern (auth_req_id, Code Verifier, state, ...)
+note left #Yellow
+    Domänenobjekt:
+    ""AuthorizationTask""
+end note
 AuthService --> Proxy: 200 OK Decoupled Authorization Response (:auth_req_id, :poll_uri, :redirect_uri, expires_in, interval)
 note left
     redirect_uri enthält neben Endpoint Adresse des IDP
@@ -111,7 +115,7 @@ par Authenticator Flow
         Proxy -> IDP: Request weiterleiten
         deactivate Proxy
 
-        IDP -> IDP: Tokenrequest validieren (code, Code Verifier)
+        IDP -> IDP: Token Request validieren (code, Code Verifier)
         IDP --> Proxy: 200 OK (:id_token[n])
         activate Proxy
         Proxy --> AuthService: Response weiterleiten
@@ -126,7 +130,7 @@ par Authenticator Flow
     AuthService -> AuthService: Tokens validieren (Autorisierungsauftrag.id_token[1..2])
 
     group Policy für neues Access-Token "ncpehprx_access_token"
-        AuthService -> AuthService: Prüfe Exchange-Policy (id_token[1..2])
+        AuthService -> AuthService: Prüfe ExchangePolicy (id_token[1..2])
         note left
             ""grant_type=urn:ietf:params:oauth:grant-type:token-exchange""
             ""subject_token=<id_token>""
@@ -134,11 +138,15 @@ par Authenticator Flow
             ""requested_token_type=urn:ietf:params:oauth:token-type:access_token""
             **""audience=ncpeh-proxy""**
         end note
+        note right #Yellow
+            Domänenobjekt:
+            ""ExchangePolicy""
+        end note
         AuthService -> AuthService: Prüfung der Rolle des LE-DE auf Zugriffsberechtigung (id_token[1..2].Claims)
         AuthService -> AuthService: Generiere neues ncpehprx_access_token (id_token[1..2]):ncpehprx_access_token
     end
     group Policy für neues ID-Token "IdA_raw"
-        AuthService -> AuthService: Prüfe Exchange-Policy (id_token[1..2])
+        AuthService -> AuthService: Prüfe ExchangePolicy (id_token[1..2])
         note left
             ""grant_type=urn:ietf:params:oauth:grant-type:token-exchange""
             ""subject_token=<id_token>""
@@ -146,17 +154,25 @@ par Authenticator Flow
             ""requested_token_type=urn:ietf:params:oauth:token-type:id_token""
             **""audience=ncpeh-fd""**
         end note
+        note right #Yellow
+            Domänenobjekt:
+            ""ExchangePolicy""
+        end note
         AuthService -> AuthService: Mapping der Claims (id_token[1..2].Claims):IdA_Claims
         AuthService -> AuthService: Generiere und signiere neue IdA-Vorstufe als ID-Token (IdA_Claims):IdA_raw
     end
     group Policy für neues ID-Token "euwp_id_token"
-        AuthService -> AuthService: Prüfe Exchange-Policy (id_token[1..2])
+        AuthService -> AuthService: Prüfe ExchangePolicy (id_token[1..2])
         note left
             ""grant_type=urn:ietf:params:oauth:grant-type:token-exchange""
             ""subject_token=<id_token>""
             ""subject_token_type=urn:ietf:params:oauth:token-type:id_token""
             ""requested_token_type=urn:ietf:params:oauth:token-type:id_token""
             **""audience=eu-webportal""**
+        end note
+        note right #Yellow
+            Domänenobjekt:
+            ""ExchangePolicy""
         end note
         AuthService -> AuthService: Mapping der Claims (id_token[1..2].Claims):Disp_Claims
         AuthService -> AuthService: Generiere und signiere ID-Token (Disp_Claims):euwp_id_token
