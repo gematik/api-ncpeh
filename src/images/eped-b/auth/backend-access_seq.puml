@@ -7,7 +7,7 @@ hide unlinked
 
 actor "LE-DE" as User
 box "EU-Webportal" #AliceBlue
-    participant "EU-Webportal" as WebApp
+    participant "WebApp" as WebApp
 end box
 box "Hilfsmittel der gematik" #WhiteSmoke
     participant "gematik\nAuthenticator" as AuthApp
@@ -60,7 +60,7 @@ loop jeder weitere API-Request
             Chiffrat gemäß
             A_26927-*
         end note
-        Proxy -> Proxy: ncpehprx_access_token validieren (ncpehprx_access_token, Gateway-Policies)
+        Proxy -> Proxy: ncpehprx_access_token validieren (ncpehprx_access_token, GatewayPolicies)
         note left
             Validierungsschritte u.a.:
             * Signaturprüfung, Ablaufzeit
@@ -74,18 +74,26 @@ loop jeder weitere API-Request
         end note
     end
 
-    opt Falls kein Session-Tupel aus ncpehprx_access_token und IdA_raw gespeichert
-        Proxy -> Proxy: Speichere für die Dauer der Gültigkeit der IdA_raw als Session-Tupel (ncpehprx_access_token, IdA_raw)
+    opt Falls kein SessionTupel aus ncpehprx_access_token und IdA_raw gespeichert
+        Proxy -> Proxy: Speichere für die Dauer der Gültigkeit der IdA_raw als SessionTupel (ncpehprx_access_token, IdA_raw)
+        note left #Yellow
+            Domänenobjekt:
+            ""SessionTupel""
+        end note
         activate Proxy #LightSeaGreen
     end
-    Proxy -> Proxy: Token validieren (ncpehprx_access_token, Gateway-Policies)
-    Proxy -> Proxy: Session-Tupel validieren (ncpehprx_access_token, IdA_raw, Gateway-Policies)
-    hnote left
-        Dauer der gemeinsamen "Session"
-        über ncpehprx_access_token und IdA_raw: 4h
+    Proxy -> Proxy: Token validieren (ncpehprx_access_token, GatewayPolicies)
+    note left #Yellow
+        Domänenobjekt:
+        ""GatewayPolicies""
     end note
 
-    Proxy -> Proxy: Request auswerten und Regeln anwenden (Request, Gateway-Policies)
+    Proxy -> Proxy: SessionTupel validieren (ncpehprx_access_token, IdA_raw, GatewayPolicies)
+    hnote left
+        Dauer der gemeinsamen Session: 4h
+    end note
+
+    Proxy -> Proxy: Request auswerten und Regeln anwenden (Request, GatewayPolicies)
     note left
         Mögliche Regeln u.a.:
         * Routen basierend auf API-Pfad, HTTP-Methode, ...
@@ -95,17 +103,30 @@ loop jeder weitere API-Request
     alt #HoneyDew Validierung erfolgreich: ncpehprx_access_token und IdA_raw gültig
         Proxy -> NCPeH: Request-Path und Payload weiterleiten (IdA_raw)
         activate NCPeH
-        opt Falls kein Session-Tupel aus\nIdA_raw und IdA gespeichert
+        opt Falls kein SessionTupel aus\nIdA_raw und IdentityAssertion gespeichert
             NCPeH -> NCPeH: Non-Repudiation of Receipt erstellen()  
             NCPeH -> NCPeH: Token validieren (IdA_raw)
             NCPeH -> NCPeH: Attribute extrahieren (IdA_raw): IdA_Claims
             NCPeH -> NCPeH: Attribute transkodieren (IdA_Claims):Transkodierte_Attribute
-            NCPeH -> NCPeH: IdA generieren und signieren (NCPeH_PrK_SEAL, Transkodierte_Attribute): IdA
-            NCPeH -> NCPeH: Speichere für die Dauer der Gültigkeit der IdA als Session-Tupel (IdA_raw, IdA)
+            NCPeH -> NCPeH: IdentityAssertion generieren und signieren (NCPeH_PrK_SEAL, Transkodierte_Attribute): IdentityAssertion
+            note left #Yellow
+                Domänenobjekt:
+                ""IdentityAssertion""
+            end note
+
+            NCPeH -> NCPeH: Speichere für die Dauer der Gültigkeit der IdentityAssertion als SessionTupel (IdA_raw, IdentityAssertion)
+            note left #Yellow
+                Domänenobjekt:
+                ""SessionTupel""
+            end note
             activate NCPeH #LightSeaGreen
-            NCPeH -> NCPeH: HP Assurance Audit trail Eintrag erstellen()
+            NCPeH -> NCPeH: HP Assurance Audit Trail Eintrag erstellen()
+            note left #Yellow
+                Domänenobjekt:
+                ""AuditTrailEntry""
+            end note
         end
-        NCPeH -> NCPeH: Session-Tupel (IdA_raw, IdA) validieren
+        NCPeH -> NCPeH: SessionTupel (IdA_raw, IdentityAssertion) validieren
         group Aufruf/Nutzung durch funktionale\nUse Cases abgeschlossen
             NCPeH o-> NCPeH: {Autorisierter Request abgeschlossen (Payload)}
         end
@@ -128,7 +149,7 @@ loop jeder weitere API-Request
         NCPeH --> Proxy: 200 OK mit Payload: ""<Chiffrat>""
         deactivate NCPeH
         deactivate NCPeH
-        Proxy -> Proxy: Response auswerten und Regeln anwenden (Response, Gateway-Policies)
+        Proxy -> Proxy: Response auswerten und Regeln anwenden (Response, GatewayPolicies)
 
         Proxy --> WebApp: 200 OK mit Payload: ""<Chiffrat>""
         note left
