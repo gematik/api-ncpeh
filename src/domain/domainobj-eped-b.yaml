@@ -77,7 +77,7 @@ components:
       x-medical-personal-information: false
       description: "Eine International Search Mask des Herkunftslandes des EU-Bürgers, die die Identifikation des EU-Bürgers in der Apotheke vor Ort ermöglicht"
 
-  PatientIdentificationQuery:
+    PatientIdentificationQuery:
       type: object
       x-object-type: "Entity"
       x-subdomains: 
@@ -195,31 +195,31 @@ components:
       properties:
         redeemable: { type: boolean, default: false, readOnly: true }
 
-    SelectedPrescriptionRetrieval:
+    SelectedPrescriptionRetrievalList:
       type: object
       x-object-type: "Entity"
       x-subdomains: 
-        - "list-prescription-retrieval"
+        - "prescription-retrieval"
       x-external-reference: "list_selected_presciption_retrieval"
       x-medical-personal-information: true
       description: "Liste der ausgewählten Rezepte, die abgerufen werden sollen."
       required: [id]
       properties:
         id: { type: string, format: uuid }
-        PrescriptionRedeemable: { $ref: '#/components/schemas/PrescriptionRetrieval' }
+        PrescriptionRedeemable: { $ref: '#/components/schemas/SelectedPrescriptionRetrievalList' }
 
-    PrescriptionRetrieved:
+    PrescriptionRetrievedList:
       type: object
       x-object-type: "Entity"
       x-subdomains: 
-        - "list-prescription-retrieved"
+        - "prescription-retrieval"
       x-external-reference: "list_prescription_retrieved"
       x-medical-personal-information: true
       description: "Liste der abgerufenen Rezepte."
       required: [id]
       properties:
         id: { type: string, format: uuid }
-        PrescriptionRedeemable: { $ref: '#/components/schemas/PrescriptionRetrieved' }
+        PrescriptionRedeemable: { $ref: '#/components/schemas/PrescriptionRetrievedList' }
 
     DispensationList:
       type: object
