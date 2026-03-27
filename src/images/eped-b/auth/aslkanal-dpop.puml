@@ -5,7 +5,7 @@ autonumber
 skinparam maxMessageSize 200
 
 box "EU-Webportal" #AliceBlue
-  participant "__EU-Webportal__\n(Client-side WebApp)\n**(VAU-Client)**" as WebApp
+  participant "WebApp\n**(VAU-Client)**" as WebApp
   participant "Browser" as Browser
   participant "Webserver" as Webserver
 end box
@@ -20,7 +20,8 @@ participant "NCPeH-FD\n**(VAU-Server)**" as NCPeH
 
 == allgemeine Vorbedingungen ==
 note over WebApp, NCPeH
-  **Keine Content-Auswertung der verschlüsselten Nutzdaten durch den Proxy vorgesehen.** D.h., Auswertung des äußeren Message Header und URL-Pfadinformationen reicht für Routing/Token-Validierung etc. aus.
+  **Keine Content-Auswertung der verschlüsselten Nutzdaten durch den Proxy vorgesehen.**
+  D.h., Auswertung des äußeren Message Header und URL-Pfadinformationen reicht für Routing/Token-Validierung etc. aus.
 end note
 
 == Vorbedingungen: Basis-Verbindungen und Client-Bereitstellung ==
@@ -43,20 +44,15 @@ hnote over WebApp, Webserver #Darkorange
   TLS Kanal ist etabliert.
 end note
 
-note over WebApp, Browser
-  WebApp wird im Browser ausgeführt.
-end note
-
-note over WebApp, Webserver
-  Vollständiger WebApp-Traffic von nun an über Webserver geleitet wegen CORS-Restriktionen.
-  Der Webserver übernimmt die Funktion des CORS-Proxyings für die WebApp.
-end note
-
 hnote over Webserver
-  CORS-Proxying
-  für WebApp
+  SRI-Tags und CSPs
+  für WebApp zur Ersparnis
+  von CORS-Proxying
 end note
 
+note over WebApp, Browser
+  Client-side WebApp des EU-Webportals wird im Browser ausgeführt.
+end note
 
 == ASL-Handshake mit VAU ==
 
