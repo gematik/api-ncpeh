@@ -1,4 +1,5 @@
 @startyaml
+
 openapi: 3.1.0
 info:
   title: ePed-B Domain Objects
@@ -33,6 +34,37 @@ components:
       x-medical-personal-information: false
       description: "Zugriffsrechte des Leistungserbringers in Deutschland, die die Berechtigungen des Leistungserbringers für die Durchführung von ePeD-B-Vorgängen festlegen"
 
+    AuthorizationTask:
+      type: object
+      x-object-type: "Entity"
+      x-subdomains: 
+        - $ref: './subdomains.yaml#/subdomains/authentication-authorization'
+      x-medical-personal-information: false
+      description: "Autorisierungsauftrag, der die Informationen über die Autorisierung des Leistungserbringers in Deutschland für die Durchführung von ePeD-B-Vorgängen enthält"
+      required: [auth_req_id]
+      properties:
+        auth_req_id: { type: string, format: uuid }
+        Code_Verifier: { type: string }
+        redirect_uri: { type: string, format: uri }
+        state: { type: string }
+        code: { type: string }
+        ncpehprx_access_token: { type: string, format: jwt }
+        ncpehprx_refresh_token: { type: string, format: jwt }
+        IdA_raw: { type: string, format: jwt }
+        euwp_id_token: { type: string, format: jwt }
+
+    ExchangePolicy:
+      type: object
+      x-object-type: "Entity"
+      x-subdomains: 
+        - $ref: './subdomains.yaml#/subdomains/identity-role-mapping'
+      x-medical-personal-information: false
+      description: "Richtlinie für den Austausch von ID-Tokens des Upstream-IDPs"
+      required: [id]
+      properties:
+        id: { type: string, format: uuid }
+        PolicyDefinition: { type: string }
+
     PINDocument:
       type: object
       x-object-type: "ValueObject"
@@ -44,6 +76,7 @@ components:
       description: "Ein Dokument, das die Rechte und Pflichten des EU-Bürgers zum Schutz seiner personenbezogenen und gesundheitlichen Daten enthält"
       properties:
         language: { type: string}
+        weblink: { type: string, format: uri }
 
     HPINDocument:
       type: object
@@ -54,6 +87,8 @@ components:
         - $ref: './subdomains.yaml#/subdomains/pin-documents-display'
       x-medical-personal-information: false
       description: "Ein Dokument, das die Rechte und Pflichten des Leistungserbringers zum Schutz seiner personenbezogenen und gesundheitlichen Daten enthält, das speziell für den Leistungserbringer in Deutschland erstellt wurde"
+      properties:
+        weblink: { type: string, format: uri }
 
     PINAcknowledgement:
       type: object
@@ -259,5 +294,30 @@ components:
         - $ref: './subdomains.yaml#/subdomains/dispensation-handling'
       x-medical-personal-information: true
       description: "Informationen über die Substitution eines Medikaments"
+
+    GatewayPolicies:
+      type: object
+      x-object-type: "Entity"
+      x-subdomains: 
+        - $ref: './subdomains.yaml#/subdomains/transaction-handling-eped-b' 
+      x-medical-personal-information: false
+      description: "Richtlinien für die Durchführung von Land-B-Vorgängen, die vom NCPeH-Proxy verwendet werden, um die Einhaltung der Anforderungen an die Durchführung von ePeD-B-Vorgängen sicherzustellen"
+      required: [id]
+      properties:
+        id: { type: string, format: uuid }
+        GatewayPolicy: { $ref: '#/components/schemas/GatewayPolicy' }
+
+    GatewayPolicy:
+      type: object
+      x-object-type: "Entity"
+      x-subdomains:
+        - $ref: './subdomains.yaml#/subdomains/transaction-handling-eped-b' 
+      x-medical-personal-information: false
+      description: "einzelne Richtlinie für die Durchführung von Land-B-Vorgängen"
+      required: [id]
+      properties:
+        id: { type: string, format: uuid }
+        PolicyType: { type: string }
+        PolicyDefinition: { type: string }
 
 @endyaml
