@@ -7,7 +7,6 @@ actor "LE-DE" as User
 entity "PIN-Dokument/\nHPIN-Dokument" as Document
 box "EU-Webportal" #AliceBlue
   participant "EU-Webportal\n(Client-side WebApp)" as Webportal
-  participant "Webserver" as Webserver
 end box
 
 box "NCPeH-Proxy" #FloralWhite
@@ -62,8 +61,10 @@ User --> Webportal: Bestätigt Kenntnisnahme der Datenschutzbestimmungen
 
 User -> Webportal: Wählt das Herkunftsland des EU-Bürgers aus
 
-Webportal -> HTTP_Proxy: GET /ISM
+Webportal -> HTTP_Proxy: 
+activate HTTP_Proxy
 HTTP_Proxy --> Webportal: :fhir_bundle_ism
+deactivate HTTP_Proxy
 Webportal -> Webportal: Graphische Übersicht der EU-Länder für den Austausch von E-Rezepten erstellen(fhir_bundle_ism, LOINC_Code): html_country_overview
 Webportal -> Webportal: anzeigen(html_country_overview)
 
@@ -85,7 +86,7 @@ end note
 
 Webportal -> Webportal: Fachliche Daten im inneren Request des ASL-Kanals an NCPeH-FD senden()
 
-ref#Gold over Webportal, Webserver, HTTP_Proxy, NCPeH
+ref#Gold over Webportal, HTTP_Proxy, NCPeH
     8.5.3 "Nutzung einer autorisierten Verbindung zum NCPeD-FH"
 end ref
 
@@ -93,14 +94,17 @@ end ref
 
 group#Gold ref
         NCPeH o-> NCPeH: {Payloadverarbeitung (Payload_decrypted)} aufnehmen
+        activate NCPeH
 end
 
-NCPeH -> NCPeH: Identitätsdaten aus Anfrage extrahieren() :patient_identity_traits
-activate NCPeH
+NCPeH -> NCPeH: ISM des Land-A laden() :ism_coutry_a
+NCPeH -> NCPeH: Suchparameter aus API-Request extrahieren(): patient_search_prameters
+NCPeH -> NCPeH: Suchparameter aus API-Request auf Vorgaben aus ISM abgleichen(patient_search_prameters, ism_coutry_a)
+NCPeH -> NCPeH: Identitätsdaten aus API-Request extrahieren() :patient_identity_traits
 NCPeH -> NCPeH: IHE XCPD-Anfrage erstellen(patient_identity_traits, IdA) :xcpd_request
 NCPeH -> NCPeH: Informationen über XCPD Service Endpoint des Land-A laden() :xcpd_endpoint_country_a
 NCPeH -> NCPeH: Non-Repudiation of Origin speichern()
-NCPeH -> NCPeH_A: IHE-Anfrage über TESTA-ng senden(xcpd_endpoint_country_a, xcpd_request)
+NCPeH -> NCPeH_A: IHE-Anfrage senden(xcpd_endpoint_country_a, xcpd_request)
 activate NCPeH_A
 NCPeH_A -> NCPeH_A: Weitere demographische Daten im Land-A ermitteln(xcpd_request)
 NCPeH_A --> NCPeH: :xcpd_response
@@ -115,7 +119,7 @@ group#Gold ref
         NCPeH ->o NCPeH: {Payloadverarbeitung abgeschlossen(Payload_decrypted)}
 end
 
-ref#Gold over Webportal, Webserver, HTTP_Proxy, NCPeH
+ref#Gold over Webportal, HTTP_Proxy, NCPeH
     8.5.3 "Nutzung einer autorisierten Verbindung zum NCPeD-FH"
 end ref
 deactivate NCPeH
