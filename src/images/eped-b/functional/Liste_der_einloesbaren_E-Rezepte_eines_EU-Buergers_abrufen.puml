@@ -23,7 +23,7 @@ activate Webportal
 Webportal -> Webportal: Webseite rendern und anzeigen()
 User -> Webportal: Behandlungsbeziehung zum EU-Bürger bestätigen()
 User -> Webportal: Senden der Anfrage zur Auflistung von einlösbaren E-Rezepten bestätigen()
-Webportal -> Webportal: Patient Identiefer laden() :patient_identifier
+Webportal -> Webportal: Patient Identifier laden() :patient_identifier
 Webportal -> Webportal: Zugriffsinformationen für Dokumentensuche laden() :document_search_parameter
 Webportal -> Webportal: API-Request erstellen(LOINC_Code, Country_Code, patient_identifier, document_search_parameter):Payload
 note over Webportal #DodgerBlue
@@ -76,7 +76,7 @@ end
 Webportal -> Webportal: Antwort gegen Schema validieren(fhir_bundle_metadata_eprescriptions)
 deactivate NCPeH
 Webportal -> Webportal: Patient Identifiers auf Übereinstimmung prüfen(patient_identifier, fhir_bundle_metadata_eprescriptions)
-Webportal -> Webportal: Metadaten zur E-Rezepten des EU-Bürgers Webseite rendern(fhir_bundle_metadata_eprescriptions) :html_site
+Webportal -> Webportal: Metadaten zu E-Rezepten des EU-Bürgers Webseite rendern(fhir_bundle_metadata_eprescriptions) :html_site
 Webportal -> Webportal: Webseite anzeigen(html_site)
 deactivate Webportal
 
