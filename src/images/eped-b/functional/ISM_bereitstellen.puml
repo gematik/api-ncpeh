@@ -32,7 +32,7 @@ opt Geplanter täglicher Aktualisierungszeitpunkt erreicht
     Proxy -> NCPeH: GET /I_ISM_Service
     activate Proxy
     activate NCPeH
-    NCPeH -> NCPeH: Alle ISM in FHIR-Bundle integrieren(ServiceMetadata.ISM): fhir_bundle_ism
+    NCPeH -> NCPeH: Alle ISM in FHIR-Bundle integrieren(ServiceMetadata.ISM): list_ism_international
     NCPeH --> Proxy: :list_ism_international
     deactivate NCPeH
     Proxy -> Proxy: Jede ISM gegen Schema validieren (list_ism_international)
