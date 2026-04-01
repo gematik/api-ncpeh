@@ -27,8 +27,6 @@ deactivate NCPeH
 
 == 2. Integration von ISM ins EU-Webportal ==
 opt Geplanter täglicher Aktualisierungszeitpunkt erreicht
-    
-    
     Proxy -> NCPeH: GET /I_ISM_Service
     activate Proxy
     activate NCPeH
@@ -38,5 +36,4 @@ opt Geplanter täglicher Aktualisierungszeitpunkt erreicht
     Proxy -> Proxy: Jede ISM gegen Schema validieren (list_ism_international)
 end
 deactivate Proxy
-
 @enduml
