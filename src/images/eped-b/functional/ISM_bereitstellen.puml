@@ -27,7 +27,7 @@ deactivate NCPeH
 
 == 2. Integration von ISM ins EU-Webportal ==
 opt Geplanter täglicher Aktualisierungszeitpunkt erreicht
-    Proxy -> NCPeH: GET /I_ISM_Service
+    Proxy -> NCPeH: GET /ism
     activate Proxy
     activate NCPeH
     NCPeH -> NCPeH: Alle ISM in FHIR-Bundle integrieren(ServiceMetadata.ISM): list_ism_international

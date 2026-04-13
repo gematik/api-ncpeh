@@ -85,7 +85,9 @@ group#Gold ref
 end
 activate NCPeH
 
+NCPeH -> NCPeH: Gültigkeit der Assertion prüfen(IdentityAssertion)
 NCPeH -> NCPeH: Daten aus API-Request extrahieren() :LOINC_Code, country_code, patient_search_prameters
+NCPeH -> NCPeH: Autorisierung des LE-DE zum Abruf der demographischen Daten prüfen(IdentityAssertion, LOINC_Code)
 NCPeH -> NCPeH: ISM des Land-A laden() :ism_coutry_a
 NCPeH -> NCPeH: Suchparameter aus API-Request gegen ISM prüfen(patient_search_prameters, ism_coutry_a)
 NCPeH -> NCPeH: IHE XCPD-Anfrage erstellen(patient_search_prameters, IdA) :xcpd_request

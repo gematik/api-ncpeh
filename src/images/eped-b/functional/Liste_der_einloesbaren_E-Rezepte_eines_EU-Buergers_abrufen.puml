@@ -30,25 +30,27 @@ note over Webportal #DodgerBlue
     Nutzung von {Default-Auth-Header}
     für den API-Request
 end note
+
+== I_Health_Service ==
 group#Gold ref
-        Webportal o-> NCPeH: UC "Nutzung einer autorisierten Verbindung zum NCPeH-FD" {Autorisierter Request (Payload)}
-        NCPeH ->o NCPeH: UC "Nutzung einer autorisierten Verbindung zum NCPeH-FD" {Autorisierter Request abgeschlossen (Payload)}
+        Webportal o-> NCPeH: UC "Nutzung einer autorisierten Verbindung zum NCPeH-FD" {Autorisierter Request (patient_identifier)}
+        NCPeH ->o NCPeH: UC "Nutzung einer autorisierten Verbindung zum NCPeH-FD" {Autorisierter Request abgeschlossen (patient_identifier)}
         NCPeH o-> NCPeH: UC "Nutzung einer autorisierten Verbindung zum NCPeH-FD" {Payloadverarbeitung (Payload_decrypted)} aufnehmen
 
 end
 
 activate NCPeH
 
-NCPeH -> NCPeH: Daten aus Anfrage extrahieren() :LOINC_Code, Country_Code, patient_identifier, document_search_parameter
-note left
-    TODO Param/ReturnValue Check
-end note
+NCPeH -> NCPeH: Daten aus API-Request extrahieren() :LOINC_Code, Country_Code, patient_identifier, document_search_parameter
 
+NCPeH -> NCPeH: Gültigkeit der Assertion prüfen(IdentityAssertion)
 NCPeH -> NCPeH: Land-A für ePrescription auf Zugriffsberechtigung prüfen(LOINC_Code, Country_Code)
-NCPeH -> NCPeH: SAML2.0 Assertion erstellen(IdA.NameID, patient_identifier, document_search_parameter) :trc_assertion
+NCPeH -> NCPeH: Autorisierung des LE-DE zur Auflistung von einlösbaren E-Rezepten prüfen(IdentityAssertion, LOINC_Code)
+NCPeH -> NCPeH: SAML2.0 Assertion erstellen(IdentityAssertion.NameID, patient_identifier, document_search_parameter) :trc_assertion
 NCPeH -> NCPeH: SAML Assertion signieren(trc_assertion, PrK_SEAL_eHDSI) :trc_assertion_signed
-NCPeH -> NCPeH: HP Assurance audit trail Eintrag speichern(IdA, patient_identifier)
-NCPeH -> NCPeH: IHE XCA.Query-Anfrage erstellen(patient_identifier, IdA, trc_assertion_signed) :xca_query_request
+NCPeH -> NCPeH: Assertion für die Dauer der Gültigkeit speichern (trc_assertion_signed)
+NCPeH -> NCPeH: HP Assurance audit trail Eintrag speichern(IdentityAssertion, patient_identifier)
+NCPeH -> NCPeH: IHE XCA.Query-Anfrage erstellen(patient_identifier, IdentityAssertion, trc_assertion_signed) :xca_query_request
 NCPeH -> NCPeH: Informationen über XCA.Query Service Endpoint des Land-A laden() :xca_endpoint_country_a
 NCPeH -> NCPeH: Non-Repudiation of Origin speichern()
 NCPeH -> NCPeH_A: IHE-Anfrage über TESTA-ng senden(xca_endpoint_country_a, xca_query_request)
@@ -70,11 +72,11 @@ NCPeH -> NCPeH: Non-Repudiation of Origin speichern()
 group#Gold ref
         NCPeH ->o NCPeH: UC "Nutzung einer autorisierten Verbindung zum NCPeH-FD" {Payloadverarbeitung abgeschlossen(Payload_decrypted)}
         NCPeH o-> Webportal: UC "Nutzung einer autorisierten Verbindung zum NCPeH-FD" {Autorisierter Response (Payload)}
+        deactivate NCPeH
         Webportal ->o Webportal: UC "Nutzung einer autorisierten Verbindung zum NCPeH-FD" {Autorisierter Response abgeschlossen (Payload)}
 end
 
 Webportal -> Webportal: Antwort gegen Schema validieren(fhir_bundle_metadata_eprescriptions)
-deactivate NCPeH
 Webportal -> Webportal: Patient Identifiers auf Übereinstimmung prüfen(patient_identifier, fhir_bundle_metadata_eprescriptions)
 Webportal -> Webportal: Metadaten zu E-Rezepten des EU-Bürgers Webseite rendern(fhir_bundle_metadata_eprescriptions) :html_site
 Webportal -> Webportal: Webseite anzeigen(html_site)
