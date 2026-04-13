@@ -262,7 +262,7 @@ components:
         - $ref: './subdomains.yaml#/subdomains/dispensation-preparation'
         - $ref: './subdomains.yaml#/subdomains/dispensation-handling'
         - $ref: './subdomains.yaml#/subdomains/transaction-handling-eped-b'
-      x-external-reference: "list_dispensation_information"
+      x-external-reference: "list_dispensation_documents"
       x-medical-personal-information: true
       description: "Liste der Dispensationen, die an den EU-Bürger abgegeben wurden"
       required: [id, DispensationInformation]
