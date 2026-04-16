@@ -51,10 +51,11 @@ loop jeder weitere API-Request
             ncpehprx_access_token zwecks Bindungsprüfung.
         end note
 
-        WebApp -> Proxy: POST/GET/PUT /<ASL-Kanal-ID>/api_xyz mit Header: ""Authorization: DPoP <ncpehprx_access_token> DPoP <DPoP-Token-2>"" und Payload: ""<Chiffrat>""
+        WebApp -> Proxy: POST/GET/PUT /<ASL-Kanal-ID>/api_xyz mit Header:\n""Authorization: DPoP <ncpehprx_access_token>""\n""DPoP: <DPoP-Token-2>""\nund Payload: ""<Chiffrat>""
         note right #DodgerBlue
             Definition {Default-Auth-Header}:
-            ""Authorization: DPoP <ncpehprx_access_token> DPoP <DPoP-Token-2>""
+            ""Authorization: DPoP <ncpehprx_access_token>""
+            ""DPoP: <DPoP-Token-2>""
         end note
         note left
             Chiffrat gemäß
