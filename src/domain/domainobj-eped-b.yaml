@@ -9,6 +9,18 @@ x-subdomains:
 components:
   schemas:
 
+    AsymmetricKeyPair:
+      type: object
+      x-object-type: "Entity"
+      x-subdomains: 
+        - $ref: './subdomains.yaml#/subdomains/authentication-authorization'
+      x-medical-personal-information: false
+      description: "Asymm. Schlüsselpaar als Grundlage für die Generierung von DPoP-Tokens
+      properties:
+        id: { type: string, format: uuid }
+        PrK: { type: string }
+        PuK: { type: string }
+
     IdentityAssertion:
       type: object
       x-object-type: "Entity"
