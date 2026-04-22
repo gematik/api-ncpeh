@@ -101,7 +101,7 @@ note over NCPeH
     Aufnahme von nationalen Codes ist nicht erforderlich.
     Ins CDA-Dokument können ggf. gleich die eHDSI-Codes eingetragen werden.
 end note
-NCPeH -> NCPeH: CDA transkodieren(list_cda_dispensation) :list_cda_dispensation_transcoded
+NCPeH -> NCPeH: CDA Dokumente transkodieren(list_cda_dispensation) :list_cda_dispensation_transcoded
 NCPeH -> NCPeH: IHE XDR.Anfrage erstellen(LOINC_Code, Country_Code, patient_identifier, demographic_patient_data, IdentityAssertion) :xdr_request
 NCPeH -> NCPeH: IHE XDR.Anfrage um CDA erweitern(list_cda_dispensation_transcoded) :xdr_request
 NCPeH -> NCPeH: Informationen über XDR Service Endpoint des Land-A laden() :xdr_endpoint_country_a
