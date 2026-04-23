@@ -37,7 +37,6 @@ opt
         ""HPINDocument""
     end note
     Document -> User: Datenschutzbestimmungen werden angezeigt
-    User -> EUBuerger: Datenschutzbestimmungen werden genannt und zur Kenntnis genommen
 
     alt Datenschutzbestimmungen ausdrucken
         Document -> User: Ausdruck
@@ -45,8 +44,8 @@ opt
     else Datenschutzbestimmungen digital bereitstellen
         Document -> User: Link / QR-Code zum Download der Datenschutzbestimmungen
         & User -> EUBuerger
-    else Datenschutzbestimmungshinweis geben
-        User -> EUBuerger: Hinweis auf Website mit den Datenschutzbestimmungen wird gegeben
+    else Datenschutzbestimmungshinweis mündlich geben
+        User -> EUBuerger: Verweis auf Website mit den Datenschutzbestimmungen wird migeteilt
     end
     destroy Document
 end
