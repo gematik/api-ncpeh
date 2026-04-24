@@ -1,0 +1,88 @@
+@startuml
+!pragma PLS 8192
+
+autonumber
+skinparam maxMessageSize 300
+hide unlinked
+
+box "EU-Webportal" #AliceBlue
+  participant "WebApp\n**(ASL-Client)**" as WebApp
+  participant "Browser" as Browser
+  participant "Webserver" as Webserver
+end box
+box "NCPeH-Proxy" #FloralWhite
+    participant "HTTP-Proxy" as Proxy
+    participant "Auth-Service" as AuthService
+end box
+participant "NCPeH-FD\n**(ASL-Server)**" as NCPeH
+
+== ASL-Handshake mit VAU ==
+
+hnote over WebApp #DarkTurquoise
+  M1 Message:
+end note
+note over WebApp
+  Clientspezifische, zufällige Schlüssel (KEMs)
+  werden hier generiert und in M1 verpackt.
+end note
+WebApp -> Proxy: POST /ASL mit CBOR-codierter Payload: ""{MessageType: "M1", ECDH_PK, Kyber768_PK}""
+activate WebApp
+activate Proxy
+Proxy -> NCPeH: weiterleiten
+deactivate Proxy
+note over Proxy
+  Proxy leitet Handshake-Messages
+  unverändert an NCPeH-FD weiter.
+end note
+activate NCPeH
+NCPeH -> NCPeH: P-256/Kyber768-Geheimnis generieren (ECDH_PK, Kyber768_PK):ECDH_ct, Kyber768_ct
+NCPeH -> NCPeH: K1-Keys berechnen:K1_c2s, K1_s2c
+NCPeH -> NCPeH: VAU Keys verschlüsseln(K1_s2c):AEAD_ct
+
+hnote over NCPeH #DarkTurquoise
+  M2 Message:
+end note
+
+NCPeH --> Proxy: Response mit Header: ZETA-ASL-CID: <ASL-Kanal-ID> und CBOR-codierter Payload: ""{MessageType: "M2", ECDH_ct, Kyber768_ct, AEAD_ct}""
+activate Proxy
+Proxy --> WebApp: weiterleiten
+deactivate Proxy
+
+WebApp -> WebApp: K1-Keys berechnen:K1_c2s, K1_s2c
+WebApp -> WebApp: AEAD_ct entschlüsseln und VAU-Signatur verifizieren (AEAD_ct, ...)
+note right
+  AEAD_ct = "Transskript des Clients"
+end note
+WebApp -> WebApp: Geheimnisse aufbereiten, kapseln, konkatenieren, hashen:AEAD_ct, AEAD_ct_key_confirmation
+WebApp -> WebApp: K2-Keys durch Schlüsselableitung berechnen:K2_c2s_app_data, K2_s2c_app_data
+
+hnote over WebApp #DarkTurquoise
+  M3 Message:
+end note
+
+WebApp -> Proxy: POST /<ASL-Kanal-ID> mit CBOR-codierter Payload: ""{MessageType: "M3", AEAD_ct, AEAD_ct_key_confirmation}""
+
+activate Proxy
+Proxy -> NCPeH: weiterleiten
+deactivate Proxy
+NCPeH -> NCPeH: Geheimnisse entkapseln/entschlüsseln(AEAD_ct, VAU_PrK):AEAD_ct
+NCPeH -> NCPeH: Transkript des Clients verifizieren und Key Confirmation berechnen (AEAD_ct):AEAD_ct_key_confirmation
+NCPeH -> NCPeH: K2-Keys durch Schlüsselableitung berechnen:K2_c2s_app_data, K2_s2c_app_data
+
+
+hnote over NCPeH #DarkTurquoise
+  M4 Message:
+end note
+
+NCPeH --> Proxy: Response mit Header: ZETA-ASL-CID: <ASL-Kanal-ID> und CBOR-codierter Payload: ""{MessageType: "M4", AEAD_ct_key_confirmation}""
+deactivate NCPeH
+activate Proxy
+Proxy --> WebApp: weiterleiten
+deactivate Proxy
+deactivate WebApp
+
+hnote over WebApp, NCPeH #DarkTurquoise
+  ASL-Kanal ist nun etabliert. K2-Schlüssel sind vorhanden.
+end note
+
+@enduml

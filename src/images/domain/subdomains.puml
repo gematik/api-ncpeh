@@ -1,0 +1,110 @@
+@startyaml
+version: "0.1"
+
+meta:
+  owner: "gematik GmbH"
+  description: "Registry der fachlichen Subdomains für die Domäne der Land-B Szenarien"
+
+subdomains:
+
+# Authentisierung und Autorisierung des Leistungserbringers in Deutschland
+  authentication-authorization:
+    type: "Supporting"
+    description: "Authentisierung und Autorisierung des Leistungserbringers in Deutschland mittels Telematik-Infrastruktur, um die Berechtigungen des Leistungserbringers für die Durchführung von ePeD-B-Vorgängen festzustellen"
+    status: "proposed"
+
+  identity-role-mapping:
+    type: "Core"
+    description: "Abbildung der Identität des Leistungserbringers in Deutschland auf die Rollen, die er für die Durchführung von ePeD-B-Vorgängen benötigt"
+    status: "proposed"
+
+# Information der Betroffenen über ihre Rechte und Pflichten zum Schutz ihrer personenbezogenen und gesundheitlichen Daten
+  pin-documents-retrieval:
+    type: "Generic"
+    description: "Abruf der Dokumente, die die Rechte und Pflichten des EU-Bürgers und des Leistungserbringers zum Schutz ihrer personenbezogenen und gesundheitlichen Daten enthalten"
+    status: "proposed"
+
+  pin-documents-preparation:
+    type: "Generic"
+    description: "Vorbereitung der Dokumente, die die Rechte und Pflichten des EU-Bürgers und des Leistungserbringers zum Schutz ihrer personenbezogenen und gesundheitlichen Daten enthalten"
+    status: "proposed"
+
+  pin-documents-display:
+    type: "Generic"
+    description: "Anzeige der Dokumente, die die Rechte und Pflichten des EU-Bürgers und des Leistungserbringers zum Schutz ihrer personenbezogenen und gesundheitlichen Daten enthalten"
+    status: "proposed"
+
+# Identifikation des EU-Bürgers in der Apotheke vor Ort
+  ism-handling-retrieval:
+    type: "Generic"
+    description: "Abruf der International Search Mask"
+    status: "proposed"
+
+  ism-handling-preparation:
+    type: "Generic"
+    description: "Bereitstellung der International Search Mask"
+    status: "proposed"
+
+  ism-handling-display:
+    type: "Supporting"
+    description: "Anzeige der International Search Mask"
+    status: "proposed"
+
+  patient-identification-retrieval:
+    type: "Generic"
+    description: "Abruf persönlicher Daten"
+    status: "proposed"
+
+  patient-identification-preparation:
+    type: "Core"
+    description: "Bereitstellung persönlicher Daten"
+    status: "proposed"
+
+  patient-identification-display:
+    type: "Supporting"
+    description: "Anzeige persönlicher Daten"
+    status: "proposed"
+
+  audit-trail-creation:
+    type: "Generic"
+    description: ""
+    status: "proposed"
+
+  transaction-handling-eped-b:
+    type: "Core"
+    description: "Verwaltung eines einzelnen ePeD-B-Vorgangs für einen EU-Bürger"
+    status: "proposed"
+
+# Bestätigung des Behandlungsverhältnisses zum EU-Bürger
+  treatment-relationship:
+    type: "Core"
+    description: "Bestätigung des Behandlungsverhältnisses zum EU-Bürger"
+    status: "proposed"
+
+# Auflistung und Abruf der einlösbaren Rezepte des EU-Bürgers
+  prescription-settings:
+    type: "Supporting"
+    description: "Einstellungen für die Anzeige der einlösbaren Rezepte des EU-Bürgers"
+    status: "proposed"
+
+  prescription-retrieval:
+    type: "Generic"
+    description: "Abruf der einlösbaren Rezepte des EU-Bürgers"
+    status: "proposed"
+
+  prescription-display:
+    type: "Supporting"
+    description: "Anzeige der einlösbaren Rezepte des EU-Bürgers"
+    status: "proposed"
+
+ # Schreiben der Dispensierinformation und Abgabe des oder der Medikamente an den EU-Bürger
+  dispensation-preparation:
+    type: "Core"
+    description: "Vorbereitung der Dispensationsinformationen und Abgabe der Medikamente an den EU-Bürger"
+    status: "proposed"
+
+  dispensation-handling:
+    type: "Core"
+    description: "Verwaltung der Dispensationsinformationen"
+    status: "proposed"
+@endyaml

@@ -1,0 +1,178 @@
+@startuml
+!pragma PLS 8192
+
+skinparam maxMessageSize 250
+autonumber
+hide unlinked
+
+actor "LE-DE" as User
+box "EU-Webportal" #AliceBlue
+    participant "WebApp" as WebApp
+end box
+box "Hilfsmittel der gematik" #WhiteSmoke
+    participant "gematik\nAuthenticator" as AuthApp
+    participant "Konnektor" as Konnektor
+    participant "IDP-Dienst" as IDP
+end box
+box "NCPeH-Proxy" #FloralWhite
+    participant "HTTP-Proxy" as Proxy
+    participant "Auth-Service" as AuthService
+end box
+participant "NCPeH-FD" as NCPeH
+
+
+== Vorbedingungen ==
+group#Gold ref
+    WebApp -> NCPeH: UC "Etablierung eines ASL-Kanals in die VAU-Umgebung des NCPeH-FD"
+end
+
+AuthService -> WebApp: ncpehprx_access_token erhalten
+activate WebApp #LightSeaGreen
+
+AuthService -> Proxy: IdA_raw erhalten
+activate Proxy
+
+== Backend-Zugriff zum NCPeH-FD über ASL-Kanal mit DPoP-Absicherung ==
+
+|||
+loop jeder weitere API-Request
+    User -> WebApp: mit Szenario-Workflow interagieren, der API-Requests auslöst
+    group Aufruf/Nutzung durch funktionale Use Cases
+        WebApp ->o WebApp: {Autorisierter Request (Payload)}
+    end
+    WebApp -> WebApp: Payload mit AES/GCM verschlüsseln (Payload, K2_c2s_app_data):Chiffrat
+
+
+    group#GreenYellow Standard-Request
+
+        WebApp -> WebApp: DPoP-Proof JWT generieren (PrK, ...): DPoP-Token-2
+        note right
+            DPoP-Token-2 enthält Claim ""ath"" mit Hash von
+            ncpehprx_access_token zwecks Bindungsprüfung.
+        end note
+
+        WebApp -> Proxy: POST/GET/PUT /<ASL-Kanal-ID>/api_xyz mit Header:\n""Authorization: DPoP <ncpehprx_access_token>""\n""DPoP: <DPoP-Token-2>""\nund Payload: ""<Chiffrat>""
+        note right #DodgerBlue
+            Definition {Default-Auth-Header}:
+            ""Authorization: DPoP <ncpehprx_access_token>""
+            ""DPoP: <DPoP-Token-2>""
+        end note
+        note left
+            Chiffrat gemäß
+            A_26927-*
+        end note
+        Proxy -> Proxy: ncpehprx_access_token validieren (ncpehprx_access_token, GatewayPolicies)
+        note left
+            Validierungsschritte u.a.:
+            * Signaturprüfung, Ablaufzeit
+        end note
+        Proxy -> Proxy: DPoP-Token validieren (DPoP-Token-2, PuK, ath, ...)
+        note left
+            Validierungsschritte u.a.:
+            * Signaturprüfung mit PuK aus DPoP-Token-2 Header
+            (Prüfung gegen Hash aus Confirmation-Claim im ncpehprx_access_token)
+            * Berechnung Hash von ncpehprx_access_token und Vergleich mit ""ath"" Claim
+        end note
+    end
+
+    opt Falls kein SessionTupel aus ncpehprx_access_token und IdA_raw gespeichert
+        Proxy -> Proxy: Speichere für die Dauer der Gültigkeit der IdA_raw als SessionTupel (ncpehprx_access_token, IdA_raw)
+        note left #Yellow
+            Domänenobjekt:
+            ""SessionTupel""
+        end note
+        activate Proxy #LightSeaGreen
+    end
+    Proxy -> Proxy: Token validieren (ncpehprx_access_token, GatewayPolicies)
+    note left #Yellow
+        Domänenobjekt:
+        ""GatewayPolicies""
+    end note
+
+    Proxy -> Proxy: SessionTupel validieren (ncpehprx_access_token, IdA_raw, GatewayPolicies)
+    hnote left
+        Dauer der gemeinsamen Session: 4h
+    end note
+
+    Proxy -> Proxy: Request auswerten und Regeln anwenden (Request, GatewayPolicies)
+    note left
+        Mögliche Regeln u.a.:
+        * Routen basierend auf API-Pfad, HTTP-Methode, ...
+        * QoS basierend auf Attributen aus IdA_raw, ...
+    end note
+
+    alt #HoneyDew Validierung erfolgreich: ncpehprx_access_token und IdA_raw gültig
+        Proxy -> NCPeH: Request-Path und Payload weiterleiten (IdA_raw)
+        activate NCPeH
+        opt Falls kein SessionTupel aus\nIdA_raw und IdentityAssertion gespeichert
+            NCPeH -> NCPeH: Non-Repudiation of Receipt erstellen()  
+            NCPeH -> NCPeH: Token validieren (IdA_raw)
+            NCPeH -> NCPeH: Attribute extrahieren (IdA_raw): IdA_Claims
+            NCPeH -> NCPeH: Attribute transkodieren (IdA_Claims):Transkodierte_Attribute
+            NCPeH -> NCPeH: IdentityAssertion generieren und signieren (NCPeH_PrK_SEAL, Transkodierte_Attribute): IdentityAssertion
+            note left #Yellow
+                Domänenobjekt:
+                ""IdentityAssertion""
+            end note
+
+            NCPeH -> NCPeH: Speichere für die Dauer der Gültigkeit der IdentityAssertion als SessionTupel (IdA_raw, IdentityAssertion)
+            note left #Yellow
+                Domänenobjekt:
+                ""SessionTupel""
+            end note
+            activate NCPeH #LightSeaGreen
+            NCPeH -> NCPeH: HP Assurance Audit Trail Eintrag erstellen()
+            note left #Yellow
+                Domänenobjekt:
+                ""AuditTrailEntry""
+            end note
+        end
+        NCPeH -> NCPeH: SessionTupel (IdA_raw, IdentityAssertion) validieren
+        group Aufruf/Nutzung durch funktionale\nUse Cases abgeschlossen
+            NCPeH o-> NCPeH: {Autorisierter Request abgeschlossen (Payload)}
+        end
+
+        NCPeH -> NCPeH: Payload des Request-Bodys entschlüsseln (Payload, K2_c2s_app_data):Payload_decrypted
+        group Detailverarbeitung siehe funktionale Use Cases
+            NCPeH ->o NCPeH: {Payloadverarbeitung (Payload_decrypted)}
+            activate NCPeH #LightYellow
+            NCPeH o-> NCPeH: {Payloadverarbeitung abgeschlossen (Payload_decrypted)}
+            deactivate NCPeH
+        end
+        group Aufruf/Nutzung durch funktionale Use Cases
+            NCPeH ->o NCPeH: {Autorisierter Response (Payload_decrypted)}
+        end
+        NCPeH -> NCPeH: API-Antwort verschlüsseln (Payload_decrypted, K2_s2c_app_data):Chiffrat
+        note left
+            Chiffrat gemäß A_26930-*
+        end note
+
+        NCPeH --> Proxy: 200 OK mit Payload: ""<Chiffrat>""
+        deactivate NCPeH
+        deactivate NCPeH
+        Proxy -> Proxy: Response auswerten und Regeln anwenden (Response, GatewayPolicies)
+
+        Proxy --> WebApp: 200 OK mit Payload: ""<Chiffrat>""
+        note left
+            Chiffrat gemäß A_26930-*
+        end note
+
+        WebApp -> WebApp: Payload des Response-Bodys entschlüsseln (Payload, K2_s2c_app_data):Payload_decrypted
+        group Aufruf/Nutzung durch funktionale\nUse Cases abgeschlossen
+            WebApp o-> WebApp: {Autorisierter Response abgeschlossen (Payload)}
+        end
+        
+    else #MistyRose Validierung fehlgeschlagen: Eines der Tokens ungültig
+        Proxy --> WebApp: 403 Forbidden
+    note right
+        Payload erreicht NCPeH-FD nie
+    end note
+        deactivate Proxy
+        WebApp -> WebApp: Benutzer abgemeldet
+        deactivate WebApp
+    end
+    deactivate Proxy
+end
+    |||
+|||
+@enduml

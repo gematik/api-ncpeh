@@ -1,0 +1,39 @@
+@startuml ISM bereiststellen
+
+skinparam maxMessageSize 200
+autonumber
+
+box "NCPeH-Proxy" #FloralWhite
+    participant "HTTP-Proxy" as Proxy
+end box
+participant "NCPeH-FD" as NCPeH
+participant "eHDSI Configuration Service" as ConfServ
+
+== 1. Täglich Abruf von ServiceMetadata ==
+opt Geplanter täglicher Aktualisierungszeitpunkt erreicht
+    NCPeH -> ConfServ: SignedServiceMetadata relevanter NCPeH Land-A gemäß eHDSI abrufen
+    activate NCPeH 
+    activate ConfServ
+
+    ConfServ --> NCPeH: :Liste der SignedServiceMetadata
+    deactivate ConfServ
+
+    NCPeH -> NCPeH: Schema und Signatur validieren (SingedServiceMetadata) :ServiceMetadata
+    NCPeH -> NCPeH: Signatur validieren (ServiceMetadata)
+    NCPeH -> NCPeH: Länderzuordnung prüfen (ServiceMetadata)
+    NCPeH -> NCPeH: Serviceinformationen und ISM aktualisieren (ServiceMetadata)
+end
+deactivate NCPeH
+
+== 2. Integration von ISM ins EU-Webportal ==
+opt Geplanter täglicher Aktualisierungszeitpunkt erreicht
+    Proxy -> NCPeH: GET /ism
+    activate Proxy
+    activate NCPeH
+    NCPeH -> NCPeH: Alle ISM in FHIR-Bundle integrieren(ServiceMetadata.ISM): list_ism_international
+    NCPeH --> Proxy: :list_ism_international
+    deactivate NCPeH
+    Proxy -> Proxy: Jede ISM gegen Schema validieren (list_ism_international)
+end
+deactivate Proxy
+@enduml

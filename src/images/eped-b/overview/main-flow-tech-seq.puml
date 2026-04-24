@@ -1,0 +1,245 @@
+@startuml
+!pragma PLS 16384
+'!pragma teoz true
+'skinparam dpi 300
+'scale 0.5
+scale 1700 width
+
+'skinparam ParticipantPadding 10
+'skinparam MessagePadding 5
+'skinparam sequenceGroupMargin 5
+'skinparam sequenceGroupBodyPadding 2
+skinparam BoxPadding 0
+
+hide unlinked
+skinparam maxMessageSize 150
+autonumber
+
+box "Apotheke" #Snow
+    actor "EU-Bürger" as EUBuerger #LightGoldenRodYellow
+    actor "LE-DE" as User
+    entity "PIN-Dokument/\nHPIN-Dokument" as PINDocument
+    entity "Patienten-\nidentifikationsdaten" as PatientIdentifier
+    entity "Übersicht der\neinlösbaren Rezepte" as PrescriptionList
+    entity "Dispensierliste" as DispensationList
+    participant "EU-Webportal\n(im Browser am PoS)" as WebApp
+    participant "gematik\nAuthenticator" as AuthApp
+    box "Telematikinfrastruktur" #WhiteSmoke
+        participant "Konnektor" as Konnektor
+        participant "IDP-Dienst" as IDP
+    end box
+
+end box
+box "NCPeH-Proxy" #FloralWhite
+    participant "NCPeH-Proxy" as Proxy
+    participant "Auth-Service" as AuthService
+end box
+box "für EU-Ausland" #LightGoldenRodYellow
+    participant "NCPeH-Proxy\nund\nNCPeH-FD" as NCPeH
+    entity "Identitäts-\nnachweis\ndes LE-DE" as IdentityAssertion
+    entity "Nachweis der\nBehandlungs-\nbeziehung" as TRCAssertion
+end box
+
+== Vorbedingungen ==
+
+note over EUBuerger
+    Ist zahlungsfähig für
+    Sofortkauf eines Medikaments
+end note
+/note over User
+    Verfügt über einen HBA
+    mit gültiger PIN
+end note
+/note over WebApp
+    Eine Internetverbindung ist
+    am Arbeitsplatz-PC in der
+    Apotheke vorhanden.
+end note
+/note over AuthApp
+    Authenticator-App ist auf
+    dem Arbeitsplatz-PC in der
+    Apotheke installiert und
+    konfiguriert.
+end note
+/note over Konnektor
+    SMC-B und HBA
+    sind in
+    angeschlossenen
+    eH-KTs gesteckt.
+end note
+/note over NCPeH
+    * NCPeH-FD ist mit dem 
+    TESTA-ng verbunden
+    * Suchmasken für die
+    EU-Länder sind abrufbar
+end note
+
+
+
+== Gesamter Workflow des ePeD-B Szenarios ==
+
+EUBuerger -> User: Möchte ein oder mehrere Rezept(e) aus dem EU-Ausland einlösen und das Medikament kaufen
+User -> EUBuerger: Abfrage Herkunftsland
+EUBuerger --> User: Herkunftsland wird genannt
+User -> WebApp: Ruft EU-Webportal im Browser auf
+
+opt LE-DE ist noch nicht am EU-Webportal angemeldet
+    User -> WebApp: Klick auf "Anmelden"
+    AuthApp ->> User: Unterstützt bei der Anmeldung am EU-Webportal
+    & Konnektor <<->> AuthApp: LE-DE prüfen
+     
+    group#Gold ref
+        User -> WebApp: UC "Authentifizierung und Autorisierung des LE-DE" durchführen
+        |||
+        
+    end
+    
+    create IdentityAssertion
+    NCPeH --> IdentityAssertion: Identitätsnachweis des LE-DE wird erzeugt
+    note over IdentityAssertion #Yellow
+        Domänenobjekt:
+        ""IdentityAssertion""
+    end note
+end
+
+User -> WebApp: Wählt das Herkunftsland des EU-Bürgers aus
+opt
+    User -> WebApp: Öffnet Datenschutzbestimmungen des Herkunftslands, die vom EU-Webportal bereitgestellt werden
+    create PINDocument
+    WebApp --> PINDocument: Inhalt des Links anzeigen
+    note over PINDocument #Yellow
+        Domänenobjekte:
+        ""PINDocument""
+        ""HPINDocument""
+    end note
+
+    PINDocument -> User: Datenschutzbestimmungen werden angezeigt
+end
+User -> EUBuerger: Datenschutzbestimmungen werden genannt und zur Kenntnis genommen
+
+alt Datenschutzbestimmungen ausdrucken
+    PINDocument -> User: Ausdruck
+    & User -> EUBuerger
+else Datenschutzbestimmungen digital bereitstellen
+    PINDocument -> User: Link / QR-Code zum Download der Datenschutzbestimmungen
+    & User -> EUBuerger
+else Datenschutzbestimmungshinweis geben
+    User -> EUBuerger: Hinweis auf Website mit den Datenschutzbestimmungen wird gegeben
+end
+
+destroy PINDocument
+User --> WebApp: Bestätigt Kenntnisnahme der Datenschutzbestimmungen
+WebApp -> WebApp: zur Suchmaske weiterleiten
+
+group#Gold ref
+    WebApp -> NCPeH: UC "International Search Masks abrufen" durchführen
+    |||
+end
+
+WebApp -> User: Suchmaske wird angezeigt
+create PatientIdentifier
+User --> PatientIdentifier: Erfasst Identifikationsdaten des EU-Bürgers
+note over PatientIdentifier #Yellow
+    Domänenobjekte:
+    ""PatientIdentifier""
+    ""PatientIdentificationData""
+end note
+
+group#Gold ref
+    WebApp -> NCPeH: UC "Demographische Daten eines EU-Bürgers abrufen" durchführen
+    |||
+end
+alt Identifikationsdaten vollständig und korrekt 
+    WebApp --> PatientIdentifier: Bestätigung
+    PatientIdentifier --> User: Identifikationsdaten werden angezeigt
+    critical Identitätsbestätigung und Behandlungsbeziehung
+        User -> PatientIdentifier: Überprüft die angezeigten Identifikationsdaten auf Korrektheit bestätigt die Identität
+         User -> EUBuerger: Bereitschaft zur Behandlungsbeziehung abfragen
+            alt #HoneyDew
+                EUBuerger --> User: Bereitschaft zur Behandlungsbeziehung wird gegeben
+                User -> WebApp: Bestätigt Bereitschaft zur Behandlungsbeziehung
+            else #MistyRose
+                break 
+                EUBuerger --> User: Bereitschaft zur Behandlungsbeziehung wird nicht gegeben
+                User -> EUBuerger: Verabschiedung
+                User -> WebApp: Abbruch, Vorgang kann nicht fortgesetzt werden
+                end
+            end
+
+    end
+
+else Identifikationsdaten nicht auffindbar oder nicht ausreichend für eideutige Identifikation
+    loop bis Identifikationsdaten vollständig und korrekt oder LE-DE den Vorgang abbricht
+        WebApp --> PatientIdentifier: Fehlermeldung "Identifikationsdaten unvollständig oder fehlerhaft, bitte korrigieren"
+        User --> PatientIdentifier: Passt Identifikationsdaten des EU-Bürgers bzw. Suchparameter an
+        group#Gold ref
+            WebApp -> NCPeH: UC "Demographische Daten eines EU-Bürgers abrufen" durchführen
+            |||
+        end
+    end
+    break #MistyRose
+    WebApp --> User: Abbruch, Vorgang kann nicht fortgesetzt werden
+    User -> EUBuerger: Information über Abbruch des Einlöseprozesses, Verabschiedung
+    end
+end
+
+create TRCAssertion
+NCPeH --> TRCAssertion: Nachweis der Behandlungsbeziehung zwischen LE-DE und EU-Bürger wird erzeugt
+note over TRCAssertion #Yellow
+    Domänenobjekt:
+    ""TRCAssertion""
+end note
+
+group#Gold ref
+    WebApp -> NCPeH: UC "Liste der einlösbaren E-Rezepte eines EU-Bürgers abrufen" durchführen
+    'note left
+        'TODO was ist mit der Liste
+        'der nicht-einlösbaren Rezepte?
+    'end note
+    |||
+end
+
+create PrescriptionList
+WebApp --> PrescriptionList: anzeigen
+note over PrescriptionList #Yellow
+    Domänenobjekt:
+    ""PrescriptionList""
+end note
+PrescriptionList -> User: Übersicht über die einlösbaren Rezepte wird angezeigt
+
+User -> WebApp: Wählt ein oder mehrere Rezepte aus der Übersicht aus
+
+group#Gold ref
+    WebApp -> NCPeH: UC "Ausgewählte E-Rezepte eines EU-Bürgers abrufen" durchführen
+    |||
+end
+
+create DispensationList
+WebApp --> DispensationList: wird aus der Auswahl des LE-DE erzeugt und angezeigt
+note over DispensationList #Yellow
+    Domänenobjekte:
+    ""DispensationList""
+    ""DispensationInformation""
+end note
+
+alt #HoneyDew Auswahl bestätigt
+    User -> EUBuerger: Verkauf und Abgabe der Medikamente werden durchgeführt
+    User -> DispensationList: bestätigt die Auswahl der Rezepte und komplettiert die Dispensationinformationen
+else #MistyRose Auswahl nicht bestätigt
+    break
+        User --> WebApp: Abbruch der Auswahl, Vorgang kann nicht fortgesetzt werden
+        WebApp -> DispensationList: wird für ungültig erklärt und gelöscht
+        destroy DispensationList
+        NCPeH --> TRCAssertion: Nachweis der Behandlungsbeziehung wird ungültig, da Einlöseprozess abgebrochen wird
+        destroy TRCAssertion
+        User -> EUBuerger: Information über Abbruch des Einlöseprozesses, Verabschiedung
+    end
+end
+
+DispensationList -> WebApp: übermitteln
+group#Gold ref
+    WebApp -> NCPeH: UC "Dispensierinformationen an Land-A übermitteln" durchführen
+    |||
+end
+
+@enduml

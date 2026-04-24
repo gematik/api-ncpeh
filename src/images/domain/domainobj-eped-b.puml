@@ -1,0 +1,323 @@
+@startyaml
+
+openapi: 3.1.0
+info:
+  title: ePed-B Domain Objects
+  version: "0.1"
+
+x-subdomains:
+  $ref: './subdomains.yaml#/subdomains'
+
+components:
+  schemas:
+
+    IdentityAssertion:
+      type: object
+      x-object-type: "Entity"
+      x-subdomains: 
+        - $ref: './subdomains.yaml#/subdomains/authentication-authorization'
+        - $ref: './subdomains.yaml#/subdomains/identity-role-mapping'
+        - $ref: './subdomains.yaml#/subdomains/transaction-handling-eped-b'
+      x-medical-personal-information: false
+      description: "Identitätsnachweis des Leistungserbringers in Deutschland"
+      required: [id]
+      properties:
+        id: { type: string, format: uuid }
+        AccessRights: { $ref: '#/components/schemas/AccessRights' }
+
+    AccessRights:
+      type: object
+      x-object-type: "ValueObject"
+      x-subdomains: 
+        - $ref: './subdomains.yaml#/subdomains/authentication-authorization'
+        - $ref: './subdomains.yaml#/subdomains/identity-role-mapping'
+      x-medical-personal-information: false
+      description: "Zugriffsrechte des Leistungserbringers in Deutschland, die die Berechtigungen des Leistungserbringers für die Durchführung von ePeD-B-Vorgängen festlegen"
+
+    AuthorizationTask:
+      type: object
+      x-object-type: "Entity"
+      x-subdomains: 
+        - $ref: './subdomains.yaml#/subdomains/authentication-authorization'
+      x-medical-personal-information: false
+      description: "Autorisierungsauftrag, der die Informationen über die Autorisierung des Leistungserbringers in Deutschland für die Durchführung von ePeD-B-Vorgängen enthält"
+      required: [auth_req_id]
+      properties:
+        auth_req_id: { type: string, format: uuid }
+        Code_Verifier: { type: string }
+        redirect_uri: { type: string, format: uri }
+        state: { type: string }
+        code: { type: string }
+        ncpehprx_access_token: { type: string, format: jwt }
+        ncpehprx_refresh_token: { type: string, format: jwt }
+        IdA_raw: { type: string, format: jwt }
+        euwp_id_token: { type: string, format: jwt }
+
+    ExchangePolicy:
+      type: object
+      x-object-type: "Entity"
+      x-subdomains: 
+        - $ref: './subdomains.yaml#/subdomains/identity-role-mapping'
+      x-medical-personal-information: false
+      description: "Richtlinie für den Austausch von ID-Tokens des Upstream-IDPs"
+      required: [id]
+      properties:
+        id: { type: string, format: uuid }
+        PolicyDefinition: { type: string }
+
+    PINDocument:
+      type: object
+      x-object-type: "ValueObject"
+      x-subdomains: 
+        - $ref: './subdomains.yaml#/subdomains/pin-documents-retrieval'
+        - $ref: './subdomains.yaml#/subdomains/pin-documents-preparation'
+        - $ref: './subdomains.yaml#/subdomains/pin-documents-display'
+      x-medical-personal-information: false
+      description: "Ein Dokument, das die Rechte und Pflichten des EU-Bürgers zum Schutz seiner personenbezogenen und gesundheitlichen Daten enthält"
+      properties:
+        language: { type: string}
+        weblink: { type: string, format: uri }
+
+    HPINDocument:
+      type: object
+      x-object-type: "ValueObject"
+      x-subdomains: 
+        - $ref: './subdomains.yaml#/subdomains/pin-documents-retrieval'
+        - $ref: './subdomains.yaml#/subdomains/pin-documents-preparation'
+        - $ref: './subdomains.yaml#/subdomains/pin-documents-display'
+      x-medical-personal-information: false
+      description: "Ein Dokument, das die Rechte und Pflichten des Leistungserbringers zum Schutz seiner personenbezogenen und gesundheitlichen Daten enthält, das speziell für den Leistungserbringer in Deutschland erstellt wurde"
+      properties:
+        weblink: { type: string, format: uri }
+
+    PINAcknowledgement:
+      type: object
+      x-object-type: "Entity"
+      x-subdomains: 
+        - $ref: './subdomains.yaml#/subdomains/pin-documents-display'
+        - $ref: './subdomains.yaml#/subdomains/transaction-handling-eped-b'
+      x-medical-personal-information: false
+      description: "Ein Informationsobjekt, das die Bestätigung des EU-Bürgers dokumentiert, dass er über seine Rechte und Pflichten zum Schutz seiner personenbezogenen und gesundheitlichen Daten informiert wurde"
+      required: [id]
+      properties:
+        id: { type: string, format: uuid }
+
+    ISMNational:
+      type: object
+      x-object-type: "ValueObject"
+      x-subdomains: 
+        - $ref: './subdomains.yaml#/subdomains/ism-handling-retrieval'
+        - $ref: './subdomains.yaml#/subdomains/ism-handling-preparation'
+        - $ref: './subdomains.yaml#/subdomains/ism-handling-display'
+      x-external-reference: "list_ism_international"
+      x-medical-personal-information: false
+      description: "Eine International Search Mask des Herkunftslandes des EU-Bürgers, die die Identifikation des EU-Bürgers in der Apotheke vor Ort ermöglicht"
+
+    PatientIdentificationQuery:
+      type: object
+      x-object-type: "Entity"
+      x-subdomains: 
+        - $ref: './subdomains.yaml#/subdomains/patient-identification-retrieval'
+      x-external-reference: "patient_identification_query"
+      x-medical-personal-information: true
+      description: "Übermittlung von Identitätsmerkmalen zur Ermittlung und Befreitstellung von weiteren demographischen Daten."
+      required: [id]
+      properties:
+        id: { type: string, format: uuid }
+
+    PatientIdentificationData:
+      type: object
+      x-object-type: "Entity"
+      x-subdomains: 
+        - $ref: './subdomains.yaml#/subdomains/patient-identification-retrieval'
+        - $ref: './subdomains.yaml#/subdomains/patient-identification-preparation'
+        - $ref: './subdomains.yaml#/subdomains/patient-identification-display'
+        - $ref: './subdomains.yaml#/subdomains/treatment-relationship'
+        - $ref: './subdomains.yaml#/subdomains/transaction-handling-eped-b'
+      x-external-reference: "patient_demographics_data"
+      x-medical-personal-information: true
+      description: "Persönliche Daten des EU-Bürgers, die für die Identifikation des EU-Bürgers in der Apotheke vor Ort erforderlich sind"
+      required: [id, PatientIdentifier]
+      properties:
+        id: { type: string, format: uuid }
+        PatientIdentifier: { $ref: '#/components/schemas/PatientIdentifier' }
+
+    PatientIdentifier:
+      type: object
+      x-object-type: "ValueObject"
+      x-subdomains: 
+        - $ref: './subdomains.yaml#/subdomains/patient-identification-retrieval'
+        - $ref: './subdomains.yaml#/subdomains/patient-identification-preparation'
+        - $ref: './subdomains.yaml#/subdomains/patient-identification-display'
+      x-medical-personal-information: true
+      description: "Ein Identifikator, der die Identifikation des EU-Bürgers in der Apotheke vor Ort ermöglicht"
+
+    AuditTrailEntry:
+      type: object
+      x-object-type: "ValueObject"
+      x-subdomains: 
+        - $ref: './subdomains.yaml#/subdomains/audit-trail-creation'
+      x-medical-personal-information: false
+      description: "Ein Eintrag im Audit Trail, der die Identifikation des EU-Bürgers in der Apotheke vor Ort dokumentiert"
+
+    SessionTupel:
+      type: object
+      x-object-type: "Entity"
+      x-subdomains:
+        - $ref: './subdomains.yaml#/subdomains/transaction-handling-eped-b'
+      x-medical-personal-information: false
+      description: "Ein Tupel, das die Informationen über eine Sitzung enthält, die für die Verwaltung eines einzelnen ePeD-B-Vorgangs für einen EU-Bürger erforderlich sind"
+      required: [id]
+      properties:
+        id: { type: string, format: uuid }
+
+    TRCAssertion:
+      type: object
+      x-object-type: "Entity"
+      x-subdomains: 
+        - $ref: './subdomains.yaml#/subdomains/treatment-relationship'
+        - $ref: './subdomains.yaml#/subdomains/transaction-handling-eped-b'
+      x-medical-personal-information: true
+      description: "Ein Nachweis, der die Bestätigung des Behandlungsverhältnisses zum EU-Bürger enthält"
+      required: [id]
+      properties:
+        id: { type: string, format: uuid }
+
+    PrescriptionLanguage:
+      type: object
+      x-object-type: "ValueObject"
+      x-subdomains: 
+        - $ref: './subdomains.yaml#/subdomains/prescription-settings'
+        - $ref: './subdomains.yaml#/subdomains/prescription-display'
+      x-medical-personal-information: false
+      description: "Spracheinstellungen für die Rezepte des EU-Bürgers"
+
+    PrescriptionList:
+      type: object
+      x-object-type: "Entity"
+      x-subdomains: 
+        - $ref: './subdomains.yaml#/subdomains/prescription-display'
+      x-external-reference: "list_available_presciption"
+      x-medical-personal-information: true
+      description: "Liste der verfügbaren Rezepte, die an den EU-Bürger abgegeben werden können"
+      required: [id]
+      properties:
+        id: { type: string, format: uuid }
+        PrescriptionRedeemable: { $ref: '#/components/schemas/PrescriptionRedeemable' }
+        PrescriptionNonRedeemable: { $ref: '#/components/schemas/PrescriptionNonRedeemable' }
+
+    PrescriptionRedeemable:
+      type: object
+      x-object-type: "ValueObject"
+      x-subdomains: 
+        - $ref: './subdomains.yaml#/subdomains/prescription-settings'
+        - $ref: './subdomains.yaml#/subdomains/prescription-retrieval'
+        - $ref: './subdomains.yaml#/subdomains/prescription-display'
+      x-external-reference: "list_available_presciption"
+      x-medical-personal-information: true
+      description: "Einlösbares Rezept, das an den EU-Bürger abgegeben werden kann"
+      properties:
+        redeemable: { type: boolean, default: true, readOnly: true }
+        PrescriptionLanguage: { $ref: '#/components/schemas/PrescriptionLanguage' }
+
+    PrescriptionNonRedeemable:
+      type: object
+      x-object-type: "ValueObject"
+      x-subdomains: 
+        - $ref: './subdomains.yaml#/subdomains/prescription-display'
+      x-external-reference: "list_available_presciption"
+      x-medical-personal-information: true
+      description: "Nicht einlösbares Rezept, das nicht an den EU-Bürger abgegeben werden kann"
+      properties:
+        redeemable: { type: boolean, default: false, readOnly: true }
+
+    SelectedPrescriptionRetrievalList:
+      type: object
+      x-object-type: "Entity"
+      x-subdomains: 
+        - $ref: './subdomains.yaml#/subdomains/prescription-retrieval'
+      x-external-reference: "list_selected_presciption_retrieval"
+      x-medical-personal-information: true
+      description: "Liste der ausgewählten Rezepte, die abgerufen werden sollen."
+      required: [id]
+      properties:
+        id: { type: string, format: uuid }
+        PrescriptionRedeemable: { $ref: '#/components/schemas/SelectedPrescriptionRetrievalList' }
+
+    PrescriptionRetrievedList:
+      type: object
+      x-object-type: "Entity"
+      x-subdomains: 
+        - $ref: './subdomains.yaml#/subdomains/prescription-retrieval'
+      x-external-reference: "list_prescription_retrieved"
+      x-medical-personal-information: true
+      description: "Liste der abgerufenen Rezepte."
+      required: [id]
+      properties:
+        id: { type: string, format: uuid }
+        PrescriptionRedeemable: { $ref: '#/components/schemas/PrescriptionRetrievedList' }
+
+    DispensationList:
+      type: object
+      x-object-type: "Entity"
+      x-subdomains: 
+        - $ref: './subdomains.yaml#/subdomains/dispensation-preparation'
+        - $ref: './subdomains.yaml#/subdomains/dispensation-handling'
+        - $ref: './subdomains.yaml#/subdomains/transaction-handling-eped-b'
+      x-external-reference: "list_dispensation_information"
+      x-medical-personal-information: true
+      description: "Liste der Dispensationen, die an den EU-Bürger abgegeben wurden"
+      required: [id, DispensationInformation]
+      properties:
+        id: { type: string, format: uuid }
+        DispensationInformation: { $ref: '#/components/schemas/DispensationInformation' }
+
+    DispensationInformation:
+      type: object
+      x-object-type: "Entity"
+      x-subdomains: 
+        - $ref: './subdomains.yaml#/subdomains/dispensation-preparation'
+        - $ref: './subdomains.yaml#/subdomains/dispensation-handling'
+      x-medical-personal-information: true
+      description: "Informationen über die Dispensationen, die an den EU-Bürger abgegeben wurden, einschließlich der Informationen über die abgegebenen Medikamente und die Substitution eines Medikaments"
+      required: [id, PrescriptionRedeemable]
+      properties:
+        id: { type: string, format: uuid }
+        PrescriptionRedeemable: { $ref: '#/components/schemas/PrescriptionRedeemable' }
+        SubstitutionInformation: { $ref: '#/components/schemas/SubstitutionInformation' }
+
+    SubstitutionInformation:
+      type: object
+      x-object-type: "ValueObject"
+      x-subdomains: 
+        - $ref: './subdomains.yaml#/subdomains/dispensation-preparation'
+        - $ref: './subdomains.yaml#/subdomains/dispensation-handling'
+      x-medical-personal-information: true
+      description: "Informationen über die Substitution eines Medikaments"
+
+    GatewayPolicies:
+      type: object
+      x-object-type: "Entity"
+      x-subdomains: 
+        - $ref: './subdomains.yaml#/subdomains/transaction-handling-eped-b' 
+      x-medical-personal-information: false
+      description: "Richtlinien für die Durchführung von Land-B-Vorgängen, die vom NCPeH-Proxy verwendet werden, um die Einhaltung der Anforderungen an die Durchführung von ePeD-B-Vorgängen sicherzustellen"
+      required: [id]
+      properties:
+        id: { type: string, format: uuid }
+        GatewayPolicy: { $ref: '#/components/schemas/GatewayPolicy' }
+
+    GatewayPolicy:
+      type: object
+      x-object-type: "Entity"
+      x-subdomains:
+        - $ref: './subdomains.yaml#/subdomains/transaction-handling-eped-b' 
+      x-medical-personal-information: false
+      description: "einzelne Richtlinie für die Durchführung von Land-B-Vorgängen"
+      required: [id]
+      properties:
+        id: { type: string, format: uuid }
+        PolicyType: { type: string }
+        PolicyDefinition: { type: string }
+
+@endyaml

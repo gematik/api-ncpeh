@@ -1,0 +1,77 @@
+requirementDiagram
+
+direction RL
+
+requirement "Elastizität" {
+  text: "Dynamische Anpassung der Instanzen und Server an die Last"
+  verifyMethod: test
+}
+
+requirement "Leistungseffizienz und Skalierbarkeit" {
+  text: "Effiziente Ressourcennutzung und Anpassung an Last"
+  verifyMethod: test
+}
+
+requirement "Ressourceneffizienz" {
+  text: "Optimale Auslastung der vorhandenen Hardware"
+  verifyMethod: analysis
+}
+
+requirement "Beobachtbarkeit" {
+  text: "Transparenz über Systemzustände, Metriken und Events"
+  verifyMethod: inspection
+}
+
+element "Automatisches Scaling" {
+  type: "Cloud-native OS Feature"
+}
+
+element "Scheduling" {
+  type: "Cloud-native OS Feature"
+}
+
+element "Limits-Festlegung" {
+  type: "Cloud-native OS Feature"
+}
+
+element "Metriken- und Eventerfassung" {
+  type: "ermöglicht durch Cloud-native OS"
+}
+
+requirement "Wartbarkeit und Änderbarkeit" {
+  text: "Einfache Updates und saubere Trennung von Code und Konfiguration"
+  verifyMethod: demonstration
+}
+
+requirement "Portabilität" {
+  text: "Plattformunabhängige Ausführung der Anwendungen"
+  verifyMethod: demonstration
+}
+
+element "Rollierende Updates, Deployments und Rollbacks" {
+  type: "Cloud-native OS Feature"
+}
+
+element "Hinterlegen von Konfigurationen und Secrets" {
+type: "Cloud-native OS Feature"
+}
+
+element "interpretierbare Manifeste" {
+type: "Cloud-native OS Feature"
+}
+
+"Rollierende Updates, Deployments und Rollbacks" - satisfies -> "Wartbarkeit und Änderbarkeit"
+"Hinterlegen von Konfigurationen und Secrets" - satisfies -> "Wartbarkeit und Änderbarkeit"
+"interpretierbare Manifeste" - satisfies -> "Wartbarkeit und Änderbarkeit"
+
+"interpretierbare Manifeste" - satisfies -> "Portabilität"
+
+"Automatisches Scaling" - satisfies -> "Elastizität"
+
+"Limits-Festlegung" - satisfies -> "Ressourceneffizienz"
+"Scheduling" - satisfies -> "Ressourceneffizienz"
+
+"Scheduling" - satisfies -> "Leistungseffizienz und Skalierbarkeit"
+"Automatisches Scaling" - satisfies -> "Leistungseffizienz und Skalierbarkeit"
+
+"Metriken- und Eventerfassung" - satisfies -> "Beobachtbarkeit"
