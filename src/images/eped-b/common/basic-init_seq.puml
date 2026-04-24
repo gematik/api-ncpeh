@@ -1,0 +1,125 @@
+@startuml
+!pragma PLS 8192
+
+autonumber
+skinparam maxMessageSize 200
+hide unlinked
+
+actor "LE-DE" as User
+participant "Browser" as Browser
+box "EU-Webportal" #AliceBlue
+  participant "WebApp" as WebApp
+  participant "Webserver" as Webserver
+end box
+participant "gematik\nAuthenticator" as AuthApp
+participant "Konnektor" as Konnektor
+participant "IDP-Dienst" as IDP
+box "NCPeH-Proxy" #FloralWhite
+    participant "HTTP-Proxy" as Proxy
+    participant "Auth-Service" as AuthService
+end box
+participant "NCPeH-FD" as NCPeH
+
+== allgemeine Vorbedingungen ==
+
+note over Browser, NCPeH
+  **Keine Content-Auswertung der verschlüsselten Nutzdaten durch den Proxy vorgesehen.**
+  D.h., Auswertung des äußeren Message Header und URL-Pfadinformationen reicht für Routing/Token-Validierung etc. aus.
+end note
+
+note over Webserver, NCPeH
+  TLS-Zertifikate sind vorhanden und gültig
+end note
+
+note over Webserver
+  WebApp ist deployt
+  und erreichbar.
+end note
+
+hnote over Proxy
+  CORS-Policy aktiviert,
+  damit von der WebApp
+  Cross-Origin Requests
+  gestellt werden können.
+end note
+
+hnote over Webserver
+  kein CORS-Proxying
+end note
+
+note over Proxy
+  IP-Route zum NCPeH-FD
+  ist konfiguriert
+  und freigeschaltet.
+end note
+
+note over Proxy
+  mTLS ist konfiguriert.
+end note
+
+note over NCPeH
+  IP-Route zum HTTP-Proxy
+  ist konfiguriert
+  und freigeschaltet.
+end note
+
+note over NCPeH
+  mTLS ist konfiguriert.
+end note
+
+== Aufbau von Basis-Verbindungen, Client Bereitstellung für LE-DE und Basis-Kommunikationsmuster ==
+
+User -> Browser: Browser öffnen, URL eingeben oder Link zur WebApp anklicken
+
+group#Darkorange TLS-Verbindung
+  Browser -> Webserver: Verbindung aufbauen und WebApp anfordern
+  Webserver --> Browser: WebApp inkl. aller Bundles vollständig zurückliefern
+end
+
+Browser -> Browser: per Policy erzwungenen Integrity-Check der WebApp durchführen
+
+break #MistyRose Integrity-Check fehlerhaft
+  Browser -> Browser: WebApp nicht ausführen, Fehlermeldung anzeigen
+end
+
+create WebApp
+Browser -> WebApp: Webapp rendern und anzeigen
+
+note over WebApp, Browser
+  Client-side WebApp wird nun im Browser ausgeführt.
+end note
+
+User -> WebApp: mit WebApp interagieren, wodurch ein API-Request ausgelöst wird
+WebApp -> Browser: API-Request
+
+group#Darkorange TLS-Verbindung
+  opt keine bestehende TLS-Verbindung
+    Browser -> Proxy: TLS-Verbindung in der zugehörigen Browser-Sandbox aufbauen
+  end
+  Browser -> Proxy: SBOM der WebApp übermitteln
+  par
+    Proxy -> Proxy: SBOM anhand eigener SBOM validieren
+    else
+    Browser -> Proxy: API-Request senden
+  end
+end
+
+alt #HoneyDew Validierung erfolgreich
+  group#Darkorange mTLS-Verbindung
+    opt keine bestehende mTLS-Verbindung
+      Proxy <-> NCPeH: Verbindung aufbauen
+    end
+    Proxy -> NCPeH: API-Request verarbeiten und über Verbindung weiterleiten
+    NCPeH --> Proxy: API-Response über bestehende Verbindung zurückliefern
+  end
+  group#Darkorange TLS-Verbindung
+    Proxy --> Browser: API-Response über bestehende Verbindung zurückliefern
+  end
+else #MistyRose Validierung fehlerhaft
+  group#Darkorange TLS-Verbindung
+    Proxy --> Browser: Fehlermeldung über bestehende Verbindung zurückliefern
+    Proxy --> Browser: TLS.close_notify() aufrufen, um TLS-Verbindung aktiv zu schließen
+  end
+end
+
+@enduml

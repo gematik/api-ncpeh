@@ -23,12 +23,19 @@ participant "NCPeH-FD" as NCPeH
 
 == 1. Start EU-Webportal und Authentifizierung ==
 
-User -> WebApp: Ruft WebApp im Browser auf
-activate WebApp
+group#Gold ref
+    User -> WebApp: UC "Basis-Initialisierung der WebApp und der Kommunikation"
+    activate WebApp
+end
+
 User -> WebApp: Klick auf "Anmelden"
 
 opt Falls DPoP-Schlüsselpaar noch nicht vorhanden
   WebApp -> WebApp: Asymmetrisches Schlüsselpaar generieren (PrK, PuK)
+  note left #Yellow
+    Domänenobjekt:
+    ""DPoPAsymmetricKeyPair""
+  end note
 end
 
 WebApp -> WebApp: DPoP-Proof JWT generieren (PrK, ...): DPoP-Token-1

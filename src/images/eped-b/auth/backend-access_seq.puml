@@ -23,7 +23,7 @@ participant "NCPeH-FD" as NCPeH
 
 == Vorbedingungen ==
 group#Gold ref
-    WebApp -> NCPeH: Ende-zu-Ende ASL-Kanal Einrichtung
+    WebApp -> NCPeH: UC "Etablierung eines ASL-Kanals in die VAU-Umgebung des NCPeH-FD"
 end
 
 AuthService -> WebApp: ncpehprx_access_token erhalten
