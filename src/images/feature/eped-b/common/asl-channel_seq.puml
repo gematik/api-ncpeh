@@ -2,57 +2,19 @@
 !pragma PLS 8192
 
 autonumber
-skinparam maxMessageSize 200
+skinparam maxMessageSize 300
+hide unlinked
 
 box "EU-Webportal" #AliceBlue
-  participant "WebApp\n**(VAU-Client)**" as WebApp
+  participant "WebApp\n**(ASL-Client)**" as WebApp
   participant "Browser" as Browser
   participant "Webserver" as Webserver
 end box
-'participant "gematik\nAuthenticator" as AuthApp
-'participant "Konnektor" as Konnektor
-'participant "IDP-Dienst" as IDP
 box "NCPeH-Proxy" #FloralWhite
     participant "HTTP-Proxy" as Proxy
     participant "Auth-Service" as AuthService
 end box
-participant "NCPeH-FD\n**(VAU-Server)**" as NCPeH
-
-== allgemeine Vorbedingungen ==
-note over WebApp, NCPeH
-  **Keine Content-Auswertung der verschlüsselten Nutzdaten durch den Proxy vorgesehen.**
-  D.h., Auswertung des äußeren Message Header und URL-Pfadinformationen reicht für Routing/Token-Validierung etc. aus.
-end note
-
-== Vorbedingungen: Basis-Verbindungen und Client-Bereitstellung ==
-
-hnote over Webserver, Proxy #Darkorange
-  TLS Kanal ist etabliert.
-end note
-hnote over Proxy, NCPeH #Darkorange
-  TLS Kanal ist etabliert.
-end note
-
-Browser -> Webserver: WebApp per Link aufrufen
-hnote over Browser, Webserver #Darkorange
-  TLS Kanal ist etabliert.
-end note
-Webserver --> Browser: WebApp zurückliefern
-create WebApp
-Browser -> WebApp: Webapp rendern und anzeigen
-hnote over WebApp, Webserver #Darkorange
-  TLS Kanal ist etabliert.
-end note
-
-hnote over Webserver
-  SRI-Tags und CSPs
-  für WebApp zur Ersparnis
-  von CORS-Proxying
-end note
-
-note over WebApp, Browser
-  Client-side WebApp des EU-Webportals wird im Browser ausgeführt.
-end note
+participant "NCPeH-FD\n**(ASL-Server)**" as NCPeH
 
 == ASL-Handshake mit VAU ==
 
