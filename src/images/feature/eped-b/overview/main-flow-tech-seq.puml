@@ -222,6 +222,7 @@ note over DispensationList #Yellow
     ""DispensationInformation""
 end note
 
+
 alt #HoneyDew Auswahl bestätigt
     User -> EUBuerger: Verkauf und Abgabe der Medikamente werden durchgeführt
     User -> DispensationList: bestätigt die Auswahl der Rezepte und komplettiert die Dispensationinformationen
