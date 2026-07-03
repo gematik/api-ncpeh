@@ -1,0 +1,227 @@
+@startuml
+!pragma PLS 8192
+
+skinparam maxMessageSize 200
+autonumber
+hide unlinked
+scale 1625 width
+
+actor "LE-DE" as User
+box "EU-Webportal" #AliceBlue
+    participant "WebApp" as WebApp
+end box
+box "Apotheken-Umgebung" #LightSkyBlue
+    participant "AVS" as AVS
+    participant "Konnektor" as Konnektor
+end box
+box "Hilfsmittel" #WhiteSmoke
+    participant "IDP-Dienst" as IDP
+end box
+box "NCPeH-Proxy" #FloralWhite
+    participant "HTTP-Proxy" as Proxy
+    participant "Auth-Service" as AuthService
+end box
+participant "NCPeH-FD" as NCPeH
+
+== Annahmen ==
+note over AVS
+AVS darf Benutzerinformationen
+des dort angemeldeten Users beisteuern
+end note
+
+== Vorbedingungen ==
+note over AVS
+AVS-Client integriert
+einen Mini-Webserver
+
+AVS mit eigener client_id beim IDP registriert
+
+AVS_LOCAL_URI von außen erreichbar
+end note
+
+note over WebApp    
+WebApp im Browser des LE-DE,
+auf dem auch der AVS-Client läuft.
+end note
+
+
+== Start EU-Webportal und Vorbereitung ==
+
+group#Gold ref
+    User -> WebApp: UC "Basis-Initialisierung der WebApp und der Kommunikation"
+    activate WebApp
+end
+
+User -> WebApp: Klick auf "Anmelden"
+
+opt Falls DPoP-Schlüsselpaar noch nicht vorhanden
+  WebApp -> WebApp: Asymmetrisches Schlüsselpaar generieren (PrK, PuK)
+  note left #Yellow
+    Domänenobjekt:
+    ""DPoPAsymmetricKeyPair""
+  end note
+end
+
+WebApp -> WebApp: Generiere Nonce: nonce
+note left
+    Nonce zur Replay-Prävention
+end note
+
+== Lokaler Auth-Request an AVS ==
+group#FFAAAA critical
+    WebApp -> AVS: POST http://127.0.0.1:<AVS_PORT>/auth-request (PuK, nonce)
+end
+note right
+  Benutzung von localhost über spezifischen AVS-Port:
+  Browser erzwingt CORS mit Quelladresse der WebApp als Origin
+  AVS verifiziert den Origin-Header strikt
+  PuK-Übergabe für spätere DPoP-Bindung
+end note
+activate AVS
+
+AVS -> User: "EU-Webportal möchte sich jetzt gerade anmelden. Zulassen?"
+User --> AVS: Bestätigung (Consent erteilt)
+
+== Authenticator-Flow durch AVS ==
+
+AVS -> AVS: Erstelle PKCE (Code Verifier, Challenge, state)
+
+loop durchführen, jeweils einmal für HBA und einmal für SMC-B mit Loop-Variable [n]
+    AVS -> IDP: GET /auth?...
+    note left
+    Auth-Request enthält u.a. folgende Requestparameter und Werte:
+    ""response_type=code""
+    ""client_id=<AVS_CLIENT_ID>""
+    ""nonce=<nonce>""
+    ""scope=<SCOPE>""
+end note
+
+    activate IDP
+    IDP --> AVS: :Challenge
+
+    AVS -> Konnektor: ExternalAuthenticate (CardHandle=<aktuelle Karte aus [n]>, Challenge)
+    activate Konnektor
+    opt falls PIN nicht gecached
+        Konnektor -> User: PIN Abfrage am eH-KT für abgelaufene Freigabe
+        User --> Konnektor: Pin-Eingabe am eH-KT (:PIN)
+    end
+    Konnektor --> AVS: ExternalAuthenticateResponse (:signierte Challenge)
+    deactivate Konnektor
+
+    AVS -> IDP: POST /auth (signierte Challenge)
+    IDP -> IDP: Validiere (Signatur, Zertifikate)
+
+== Auth-Grant und ID-Token Abruf ==
+
+    opt Validierung erfolgreich
+        IDP -> AVS: 302 Redirect zu <AVS_LOCAL_URI> (code=<AUTH_CODE>)
+        
+        AVS -> IDP: POST /token (code, Code Verifier)
+        IDP -> IDP: Token Request validieren
+        IDP --> AVS: 200 OK (:id_token[n])
+    end
+    deactivate IDP
+end
+
+AVS -> AVS: Prüfe, ob beide id_token[n] erfolgreich empfangen wurden
+group#FFAAAA critical
+    AVS -> AVS: Ermittle Benutzerinformationen: Benutzerinformationen
+    note left
+        Vertrauenswürdigkeit: unvalidierte
+        Benutzerinformationen aus dem
+        Usermanagement des AVS
+    end note
+end
+
+== TokenExchange am Auth-Service ==
+
+AVS -> Proxy: POST /token-exchange (id_token[1..2], PuK, Benutzerinformationen)
+activate Proxy
+Proxy -> AuthService: Request weiterleiten
+deactivate Proxy
+activate AuthService
+
+AuthService -> AuthService: Tokens validieren (id_token[1..2])
+AuthService -> AuthService: Replay-Prüfung (JTI/Nonce check)
+
+group Policy für neues Access-Token "ncpehprx_access_token"
+    AuthService -> AuthService: Prüfe ExchangePolicy (id_token[1..2])
+    note left
+        ""grant_type=urn:ietf:params:oauth:grant-type:token-exchange""
+        ""subject_token=<id_token>""
+        ""requested_token_type=urn:ietf:params:oauth:token-type:access_token""
+        **""audience=ncpeh-proxy""**
+    end note
+    note right #Yellow
+        Domänenobjekt:
+        ""ExchangePolicy""
+    end note
+
+    AuthService -> AuthService: Prüfung der Rolle des LE-DE auf Zugriffsberechtigung
+    AuthService -> AuthService: Generiere ncpehprx_access_token
+    AuthService -> AuthService: Binde PuK (JWK-Thumbprint) an ncpehprx_access_token
+end
+
+group Policy für neues ID-Token "IdA_raw"
+    AuthService -> AuthService: Prüfe ExchangePolicy (id_token[1..2])
+    note left
+        ""grant_type=urn:ietf:params:oauth:grant-type:token-exchange""
+        ""subject_token=<id_token>""
+        ""subject_token_type=urn:ietf:params:oauth:token-type:id_token""
+        ""requested_token_type=urn:ietf:params:oauth:token-type:id_token""
+        **""audience=ncpeh-fd""**
+    end note
+    note right #Yellow
+        Domänenobjekt:
+        ""ExchangePolicy""
+    end note
+
+    AuthService -> AuthService: Mapping der Claims (id_token[1..2].Claims):IdA_Claims
+    AuthService -> AuthService: Generiere und signiere neue IdA-Vorstufe (IdA_Claims):IdA_raw
+end
+
+group Policy für neues ID-Token "euwp_id_token"
+        AuthService -> AuthService: Prüfe ExchangePolicy (id_token[1..2])
+        note left
+            ""grant_type=urn:ietf:params:oauth:grant-type:token-exchange""
+            ""subject_token=<id_token>""
+            ""subject_token_type=urn:ietf:params:oauth:token-type:id_token""
+            ""requested_token_type=urn:ietf:params:oauth:token-type:id_token""
+            **""audience=eu-webportal""**
+        end note
+        note right #Yellow
+            Domänenobjekt:
+            ""ExchangePolicy""
+        end note
+
+    AuthService -> AuthService: Mapping der Claims:Disp_Claims
+    AuthService -> AuthService: Übernahme der Benutzerinformationen (Disp_Claims, Benutzerinformationen): Disp_Claims
+    AuthService -> AuthService: Generiere und signiere ID-Token (Disp_Claims):euwp_id_token
+end
+
+AuthService --> Proxy: 200 OK (:ncpehprx_access_token, :IdA_raw, :euwp_id_token)
+deactivate AuthService
+activate Proxy
+Proxy --> AVS: Response weiterleiten
+deactivate Proxy
+
+== Bereitstellung der Tokens an die WebApp ==
+
+group#FFAAAA critical
+    AVS --> WebApp: 200 OK Response auf initialen Auth-Request (:ncpehprx_access_token, :euwp_id_token)
+end
+
+deactivate AVS
+
+== Backend-Zugriff ==
+
+opt ASL-Kanal noch nicht etabliert
+    group#Gold ref
+        WebApp -> NCPeH: UC "Etablierung eines ASL-Kanals in die VAU-Umgebung des NCPeH-FD"
+    end
+end
+
+group#Gold ref
+    User -> NCPeH: UC "Nutzung einer autorisierten Verbindung zum NCPeH-FD"
+end
+@enduml
