@@ -134,14 +134,22 @@ par Authenticator Flow
                 Benutzerinformationen aus dem
                 Usermanagement des AVS
             end note
-
-            AVS -> Proxy: POST /token (code, state, redirect_uri, Benutzerinformationen)
+            AVS -> AVS: Ein signiertes JWT erzeugen(Auth_Codes, state, redirect_uri, auth_req_id, Benutzerinformationen) :signed_avs_context_jwt
+            AVS -> Proxy: POST /token (signed_avs_context_jwt)
+            note left
+                ""grant_type=urn:ietf:params:oauth:grant-type:token-exchange""
+                ""subject_token_type=urn:ietf:params:oauth:token-type:jwt""
+                ""subject_token=signed_avs_context_jwt""
+                ""requested_token_type=urn:ietf:params:oauth:token-type:access_token""
+                ""auth_req_id, poll_uri, scope"""
+            end note
             activate Proxy           
             Proxy -> AuthService: Request weiterleiten
             deactivate Proxy
+            AuthService -> AuthService: JWT validieren und Daten extrachieren(signed_avs_context_jwt)
             AuthService -> AuthService: Autorisierungsauftrag finden (state):Autorisierungsauftrag
             AuthService -> AuthService: Autorisierungsauftrag ergänzen (code)
-            AuthService --> AVS: 200 OK
+            AuthService --> AVS: 202 Accepted: :token_exchange_response<auth_req_id, poll_uri, interval, expires_in>
         end
 
         == 4. TokenExchange Auth-Code zu ID-Token ==
@@ -224,7 +232,7 @@ par Authenticator Flow
 else EU-Webportal pollt
 
     group#Gold ref        
-        AVS -> WebApp: UC "Basis-Initialisierung der WebApp und der Kommunikation"(auth_req_id, poll_uri)
+        AVS -> WebApp: UC "Basis-Initialisierung der WebApp und der Kommunikation"(poll_uri, auth_req_id, interval, expires_in)
         activate WebApp
     end
   
@@ -237,14 +245,17 @@ else EU-Webportal pollt
     WebApp -> WebApp: DPoP-Proof JWT generieren (PrK, ...): DPoP-Token-1
 
 
-    loop solange Pollen, bis expires_in erreicht ist, alle Sekunden gemäß interval
+    loop solange Pollen bis Access Token verfügbar oder bis expires_in erreicht ist, alle Sekunden gemäß interval
         WebApp -> Proxy: Access-Token Request POST poll_uri (auth_req_id, DPoP-Token-1, PuK, ...)
         note left
+            CIBA Token Polling
             Polling mit DPoP-Token-1 und PuK
             zur Bindung der Access-Token-Response
-            an den ursprünglichen
-            Authentifizierungsversuch.
+            an den ursprünglichen Authentifizierungsversuch.
+            grant_type=urn:openid:params:grant-type:ciba,
+            auth_req_id, client_id
         end note
+    
         activate Proxy
         Proxy -> AuthService: Request weiterleiten
         deactivate Proxy
