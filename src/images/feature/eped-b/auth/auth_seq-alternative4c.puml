@@ -42,5 +42,6 @@ WebApp -> Proxy: Access Token abrufen (Zufallszahl)
 Proxy -> Proxy: Zufallszahl prüfen
 Proxy -> Proxy: Access Token generieren
 Proxy --> WebApp: :ncpehprx_access_token
+WebApp --> User: Anmeldung erfolgreich
 
 @enduml
