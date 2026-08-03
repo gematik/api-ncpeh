@@ -1,0 +1,45 @@
+@startuml
+!pragma PLS 8192
+
+skinparam maxMessageSize 200
+autonumber
+hide unlinked
+scale 1625 width
+
+actor "LE-DE" as User
+box "EU-Webportal" #AliceBlue
+    participant "WebApp" as WebApp
+end box
+box "Apotheken-Umgebung" #LightSkyBlue
+    participant "AVS" as AVS
+end box
+box "NCPeH-Proxy" #FloralWhite
+    participant "NCPeH-Proxy" as Proxy
+end box
+
+
+
+User -> AVS: Button "Am EU-Webportal anmelden" drücken
+
+== Anmeldung ==
+
+AVS -> Proxy: Anmeldung
+Proxy -> Proxy: Zufallszahl erzeugen (hohe Entropie)
+
+Proxy --> AVS: Zufallszahl
+
+AVS -> AVS: Zufallszahl mit HBA und SMC-B signieren
+
+AVS -> Proxy: Signierte Zufallszahl übermitteln()
+
+Proxy -> Proxy: Signaturen validieren (signierte Zufallszahl)
+Proxy -> Proxy: Public Keys speichern(signierte Zufallszahl)
+Proxy --> AVS: 200 OK
+
+AVS -> WebApp: EU-Webportal aufrufen(Zufallszahl)
+
+WebApp -> Proxy: Access Token abrufen (Zufallszahl)
+Proxy -> Proxy: Access Token generieren
+Proxy --> WebApp: :ncpehprx_access_token
+
+@enduml
