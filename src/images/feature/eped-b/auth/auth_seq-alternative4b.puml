@@ -33,18 +33,19 @@ AVS -> AVS: Zufallszahl mit HBA und SMC-B signieren
 AVS -> Proxy: Signierte Zufallszahl übermitteln
 
 Proxy -> Proxy: Signaturen validieren
-Proxy -> Proxy: Signierte Zuffalszahl speichern
+Proxy -> Proxy: Signierte Zufallszahl speichern
 Proxy --> AVS: 200 OK
 
-AVS -> AVS: Signierte Zuffalszahl speichern
+AVS -> AVS: Zuffalszahl speichern
 
 == 2. Anmeldung ==
 
-AVS -> WebApp: EU-Webportal aufrufen und signierte Zuffalszahl übergeben
-WebApp -> Proxy: Signierte Zuffalszahl weiterleiten
-Proxy -> Proxy: Signierte Zuffalszahl prüfen
+AVS -> WebApp: EU-Webportal aufrufen und signierte Zufallszahl übergeben
+WebApp -> Proxy: Zufallszahl weiterleiten
+Proxy -> Proxy: Zufallszahl prüfen
 alt Registrierung vorhanden
-    Proxy --> WebApp: Positives Prüfergebnis
+    Proxy -> Proxy: Access Token generieren() :ncpehprx_access_token
+    Proxy --> WebApp: :ncpehprx_access_token
     WebApp --> User: Anmeldung erfolgreich
 else Registrierung nicht vorhanden
     Proxy --> WebApp: Negatives Prüfergebnis
