@@ -1,0 +1,58 @@
+@startuml
+title Launchpad – Backchannel-Authentifizierung mit Magic-URL-Übergabe
+
+actor "Nutzer (LE)" as User
+participant "Primärsystem\n(SMC-B)" as PS
+participant "Launchpad\n(Web-App)" as LP
+participant "IDP-Dienst" as IDP
+participant "Lokaler Browser" as Browser
+
+== Initiierung (Backchannel) ==
+User -> PS: "Am Web-Portal anmelden" drücken
+PS -> LP: POST /backchannel/login/init
+LP -> LP: state, nonce, PKCE-verifier erzeugen (hohe Entropie)
+LP -> LP: Login-Session speichern (TTL ~5 min)
+LP --> PS: { login_session, authorization_url }
+
+== Authentifizierung gegen IDP-Dienst ==
+PS -> IDP: GET authorization_url
+IDP --> PS: Challenge (NJWT)
+PS -> PS: Challenge mit SMC-B signieren
+PS -> IDP: signierte Challenge (verschlüsselt) übermitteln
+IDP --> PS: 302 Location: redirect_uri?code&state\n(nur ausgelesen, nicht weiterverfolgt)
+
+== Abschluss & Token-Tausch (Backchannel) ==
+PS -> LP: POST /backchannel/login/complete\n{ login_session, code, state }
+LP -> LP: Login-Session einlösen (einmalig) + state prüfen
+LP -> IDP: Token-Request (code + PKCE-verifier)
+IDP --> LP: id_token (verifizierte Identität)
+LP -> LP: Browser-Session anlegen;\nMagic-Token erzeugen (>=256 bit)
+LP --> PS: { magic_url }
+
+== Übergabe an den Browser (Frontchannel) ==
+PS -> Browser: Magic-URL im lokalen Browser öffnen
+Browser -> LP: GET /l/{token}
+LP -> LP: Magic-Token einlösen (einmalig) -> Session-Cookie
+LP --> Browser: 303 Redirect -> /  (Set-Cookie)
+Browser -> LP: GET /
+LP --> Browser: Angemeldet – verifizierte Identität
+Browser --> User: Anmeldung erfolgreich
+
+note over PS, IDP
+  Sicherheit:
+  * Kein IDP-Token (code / id_token / access_token)
+    gelangt je in eine Browser-URL.
+  * PKCE-verifier bleibt serverseitig bei Launchpad —
+    die authorization_url allein genügt nicht zum Token-Tausch.
+  * state / nonce gegen CSRF & Replay prüfen (konstante Zeit).
+end note
+
+note over LP, Browser
+  Magic-URL:
+  * einmalig — sofortige Invalidierung beim ersten Aufruf
+  * nur SHA-256-Hash gespeichert, kurze TTL (~90 s)
+  * im Pfad statt Query; Referrer-Policy: no-referrer
+  * Cookie: HttpOnly, Secure, SameSite=Lax
+  Backchannel hinter Shared-Secret / Loopback.
+end note
+@enduml
