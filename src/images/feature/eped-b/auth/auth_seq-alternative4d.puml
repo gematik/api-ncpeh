@@ -3,9 +3,9 @@ title Launchpad – Backchannel-Authentifizierung mit Magic-URL-Übergabe
 
 actor "Nutzer (LE)" as User
 participant "Primärsystem\n(SMC-B)" as PS
+participant "Lokaler Browser" as Browser
 participant "Launchpad\n(Web-App)" as LP
 participant "IDP-Dienst" as IDP
-participant "Lokaler Browser" as Browser
 
 == Initiierung (Backchannel) ==
 User -> PS: "Am Web-Portal anmelden" drücken
@@ -53,6 +53,5 @@ note over LP, Browser
   * nur SHA-256-Hash gespeichert, kurze TTL (~90 s)
   * im Pfad statt Query; Referrer-Policy: no-referrer
   * Cookie: HttpOnly, Secure, SameSite=Lax
-  Backchannel hinter Shared-Secret / Loopback.
 end note
 @enduml
