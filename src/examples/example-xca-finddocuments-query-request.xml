@@ -1,0 +1,20 @@
+<AdhocQueryRequest>
+    <ResponseOption returnComposedObjects="true" returnType="LeafClass"/>
+    <AdhocQuery id="urn:uuid:14d4debf-8f97-4251-9a74-a90016b0af0d">
+        <Slot name="$XDSDocumentEntryPatientId">
+            <ValueList>
+                <Value>'B123456789|A2C4E6^^^&amp;1.2.276.0.76.3.1.580.147&amp;ISO'</Value>
+            </ValueList>
+        </Slot>
+        <Slot name="$XDSDocumentEntryStatus">
+            <ValueList>
+                <Value>('urn:oasis:names:tc:ebxml-regrep:StatusType:Approved')</Value>
+            </ValueList>
+        </Slot>
+        <Slot name="$XDSDocumentEntryClassCode">
+            <ValueList>
+                <Value>('57833-6^^2.16.840.1.113883.6.1')</Value>
+            </ValueList>
+        </Slot>
+    </AdhocQuery>
+</AdhocQueryRequest>

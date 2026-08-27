@@ -1,0 +1,10 @@
+<RetrieveDocumentSetResponse>
+   <RegistryResponse status="urn:oasis:names:tc:ebxml-regrep:ResponseStatusType:Success"/>
+   <DocumentResponse>
+      <HomeCommunityId>urn:oid:2.16.17.710.860.1000.990.1</HomeCommunityId>
+      <RepositoryUniqueId>2.16.620.1.101.10.3.29.54290</RepositoryUniqueId>
+      <DocumentUniqueId>1.2.84.116.1.800.254.370.349.563.1605.469.534.1338^PS.PDF</DocumentUniqueId>
+      <mimeType>text/xml</mimeType>
+      <Document>... CDA LEVEL 1 EMBEDDED PDF/A BASE64 ENCODED...</Document>
+   </DocumentResponse>
+</RetrieveDocumentSetResponse>

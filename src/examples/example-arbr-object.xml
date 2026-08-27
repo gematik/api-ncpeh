@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AcceptanceRejectionByRecipient version="1">
+    <EventCode>Acceptance</EventCode>
+    <EvidenceIdentifier>f4fbc592-c12d-4a7d-a641-a8770d06dca8</EvidenceIdentifier>
+    <EvidenceIssuerPolicyID>
+        <PolicyID>urn:oid:1.2.3.5</PolicyID>
+    </EvidenceIssuerPolicyID>
+    <EvidenceIssuerDetails>
+        <CertificateDetails>
+            <X509Certificate>MIIF0zCCBLug...</X509Certificate>
+        </CertificateDetails>
+    </EvidenceIssuerDetails>
+    <SenderAuthenticationDetails>
+        <AuthenticationTime>2018-06-25T07:22:15.375Z</AuthenticationTime>
+        <AuthenticationMethod>http://uri.etsi.org/REM/AuthMethod#Strong</AuthenticationMethod>
+    </SenderAuthenticationDetails>
+    <EventTime>2018-06-25T07:22:15.373Z</EventTime>
+    <SubmissionTime>2018-06-25T07:22:15.269Z</SubmissionTime>
+    <SenderDetails>
+        <CertificateDetails>
+            <X509Certificate>MIIFDjCCA...</X509Certificate>
+        </CertificateDetails>
+    </SenderDetails>
+    <RecipientsDetails>
+        <EntityDetails>
+            <CertificateDetails>
+                <X509Certificate>MIIF0zCCBLug...</X509Certificate>
+            </CertificateDetails>
+        </EntityDetails>
+    </RecipientsDetails>
+    <SenderMessageDetails isNotification="false">
+        <MessageSubject>ITI-55</MessageSubject>
+        <UAMessageIdentifier>_b0bdd6b9-9a02-498f-bd32-4bfd1e891624</UAMessageIdentifier>
+        <MessageIdentifierByREMMD>_b0bdd6b9-9a02-498f-bd32-4bfd1e891624</MessageIdentifierByREMMD>
+        <DigestMethod Algorithm="SHA256"/>
+        <DigestValue>Ry5yXa8Fr...</DigestValue>
+    </SenderMessageDetails>
+    <Signature
+        xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+        <SignedInfo>
+            <CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>
+            <SignatureMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"/>
+            <Reference URI="">
+                <Transforms>
+                    <Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
+                    <Transform Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315#WithComments"/>
+                </Transforms>
+                <DigestMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"/>
+                <DigestValue>x3oUZL5Re38...</DigestValue>
+            </Reference>
+        </SignedInfo>
+        <SignatureValue>FvLmfVMdyR...</SignatureValue>
+        <KeyInfo>
+            <X509Data>
+                <X509Certificate>MIIF0zCCBLug...</X509Certificate>
+            </X509Data>
+            <KeyValue>
+                <RSAKeyValue>
+                    <Modulus>8YbeqFFiKip+ti...</Modulus>
+                    <Exponent>AQAB</Exponent>
+                </RSAKeyValue>
+            </KeyValue>
+        </KeyInfo>
+    </Signature>
+</AcceptanceRejectionByRecipient>

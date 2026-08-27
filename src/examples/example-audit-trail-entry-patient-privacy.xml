@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<AuditMessage>
+    <EventIdentification EventActionCode="E" EventDateTime="2018-04-26T08:55:47.847+02:00" EventOutcomeIndicator="0">
+        <EventID code="ITI-55" displayName="XCPD::CrossGatewayPatientDiscovery" codeSystemName="IHE Transactions"/>
+        <EventTypeCode code="EHDSI-11" displayName="eHDSI Identity Service Find Traits" codeSystemName="eHDSI Transaction"/>
+    </EventIdentification>
+    <ActivePArticipant UserID="POC" UserIsRequestor="true">
+        <RoleIDCode code="Resident Physician" codeSystem="1.3.6.1.4.1.12559.11.10.1.3.2.2.2"/>
+    </ActivePArticipant>
+    <ActivePArticipant UserID="CY&lt;peter.max@liferay.com@CY&gt;" AlternativeUserID="Peter Max" UserIsRequestor="true">
+        <RoleIDCode code="medical doctor"/>
+    </ActivePArticipant>
+    <ActivePArticipant UserID="CN=ncp.sp.test.cy, O=University of Cyprus, C=CY" UserIsRequestor="true" NetworkAccessPointID="194.42.17.185" NetworkAccessPointTypeCode="2">
+        <RoleIDCode code="ServiceConsumer" displayName="eHealth DSI Service Consumer" codeSystem="eHealth DSI"/>
+    </ActivePArticipant>
+    <ActivePArticipant UserID="CN=itsg, O=ITSG GmbH, C=DE" UserIsRequestor="false" NetworkAccessPointID="185.251.178.100" NetworkAccessPointTypeCode="2">
+        <RoleIDCode code="ServiceProvider" displayName="eHDSI Service Provider" codeSystem="eHealth DSI"/>
+    </ActivePArticipant>
+    <AuditSourceIdentification AuditSourceID="OID des Betreibers des NCPeH-FD"/>
+    <ParticipantObjectIdentification
+                    ParticipantObjectID="B123456789|A2C4E6^^^&amp;1.2.276.0.76.3.1.580.147&amp;ISO"
+                    ParticipantObjectTypeCode="1" ParticipantObjectTypeCodeRole="1">
+        <ParticipantObjectIDTypeCode code="2" displayName="Patient Number" codeSystemName="RFC-3881"/>
+        <ParticipantObjectName>Patient</ParticipantObjectName>
+    </ParticipantObjectIdentification>
+    <ParticipantObjectIdentification ParticipantObjectID="urn:uuid:0f31268e-261c-43f3-aeae-9ddd43eb433e" ParticipantObjectTypeCode="4">
+        <ParticipantObjectIDTypeCode code="req" displayName="Request Message" codeSystemName="eHealth DSI Msg"/>
+        <ParticipantObjectDetail type="securityheader" value="..."/>
+    </ParticipantObjectIdentification>
+    <ParticipantObjectIdentification ParticipantObjectID="urn:uuid:cefa11d5-7d80-49a7-833c-8e8c21834057" ParticipantObjectTypeCode="4">
+        <ParticipantObjectIDTypeCode code="rsp" displayName="Response Message" codeSystemName="eHealth DSI Msg"/>
+        <ParticipantObjectDetail type="securityheader" value="..."/>
+    </ParticipantObjectIdentification>
+</AuditMessage> 

@@ -1,0 +1,91 @@
+<AuditMessage>
+    <EventIdentification 
+     EventActionCode="E" 
+     EventDateTime="2021-11-16T09:30:20.880+02:00" 
+     EventOutcomeIndicator="0">
+        <EventID 
+         code="EHDSI-94" 
+         displayName="eHDSI Transformation Service Translate Document" 
+         codeSystemName="eHealth DSI Transaction"/>
+        <EventTypeCode 
+         code="EHDSI-94" 
+         displayName="ncpTransformationMgr::Translate" 
+         codeSystemName="eHDSI Transactions"/>
+    </EventIdentification>
+    <ActivePArticipant 
+     UserID="ncp-ppt.de.ehealth.testa.eu" 
+     UserIsRequestor="false" 
+     NetworkAccessPointID="10.200.200.15" 
+     NetworkAccessPointTypeCode="2">
+        <RoleIDCode 
+         code="ServiceProvider" 
+         displayName="Service Provider" 
+         codeSystem="eHealth DSI"/>
+    </ActivePArticipant>
+    <AuditSourceIdentification AuditSourceID="DE-1"/>
+    <ParticipantObjectIdentification 
+     ParticipantObjectID="2.16.17.710.813.1000.990.1.1^PS.XML" 
+     ParticipantObjectTypeCode="4" 
+     ParticipantObjectDataLifeCycle="5">
+        <ParticipantObjectIDTypeCode 
+         code="in" 
+         displayName="Input Data" 
+         codeSystemName="eHealth DSI Translation"/>
+    </ParticipantObjectIdentification>
+    <ParticipantObjectIdentification 
+     ParticipantObjectID="2.16.17.710.813.1000.990.1.1^PS.XML" 
+     ParticipantObjectTypeCode="4" 
+     ParticipantObjectDataLifeCycle="5">
+        <ParticipantObjectIDTypeCode 
+         code="out" 
+         displayName="Output Data" 
+         codeSystemName="eHealth DSI Translation"/>
+    </ParticipantObjectIdentification>
+    <ParticipantObjectIdentification 
+     ParticipantObjectID="urn:uuid:c563d942-7083-400d-9ef7-d76cd6568211" 
+     ParticipantObjectTypeCode="4">
+        <ParticipantObjectIDTypeCode 
+         code="req" 
+         displayName="Request Message" 
+         codeSystemName="eHealth DSI Msg"/>
+        <ParticipantObjectDetail 
+         type="securityheader" 
+         value="W05vIHNlY3VyaXR5IGhlYWRlciBwcm92aWRlZF0="/>
+    </ParticipantObjectIdentification>
+    <ParticipantObjectIdentification 
+     ParticipantObjectID="urn:uuid:c563d942-7083-400d-9ef7-d76cd6568211" 
+     ParticipantObjectTypeCode="4">
+        <ParticipantObjectIDTypeCode 
+         code="rsp" 
+         displayName="Response Message" 
+         codeSystemName="eHealth DSI Msg"/>
+        <ParticipantObjectDetail 
+         type="securityheader" 
+         value="W05vIHNlY3VyaXR5IGhlYWRlciBwcm92aWRlZF0="/>
+    </ParticipantObjectIdentification>
+    <Signature xmlns="http://www.w3.org/2000/09/xmldsig#">
+        <SignedInfo>
+            <CanonicalizationMethod
+             Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315#WithComments"/>
+            <SignatureMethod 
+             Algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"/>
+            <Reference URI="">
+                <Transforms>
+                    <Transform 
+                     Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
+                </Transforms>
+                <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"/>
+                <DigestValue>vQWcEwp...</DigestValue>
+            </Reference>
+        </SignedInfo>
+        <SignatureValue>... BASE64 SIGNATURE VALUE ...</SignatureValue>
+        <KeyInfo>
+            <KeyValue>
+                <RSAKeyValue>
+                    <Modulus>... BASE64 KEY ...</Modulus>
+                    <Exponent>AQAB</Exponent>
+                </RSAKeyValue>
+            </KeyValue>
+        </KeyInfo>
+    </Signature>
+</AuditMessage>
