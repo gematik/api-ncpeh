@@ -3,7 +3,7 @@
    <DocumentResponse>
       <HomeCommunityId>urn:oid:1.2.276.0.76.4.291</HomeCommunityId>
       <RepositoryUniqueId>1.2.276.0.76.4.299</RepositoryUniqueId>
-      <DocumentUniqueId>160.000.000.000.123.76^eP.XML</DocumentUniqueId>
+      <DocumentUniqueId>1.2.276.0.76.4.299^160.000.000.000.123.76|eP.XML</DocumentUniqueId>
       <mimeType>text/xml</mimeType>
       <Document>PENsaW5pY2FsRG9jdW1lbn...</Document>
    </DocumentResponse>
