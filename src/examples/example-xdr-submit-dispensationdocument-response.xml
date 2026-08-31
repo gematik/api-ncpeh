@@ -5,9 +5,6 @@
     xmlns:ns4="urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0"
     xmlns:ns3="urn:ihe:iti:xds-b:2007">
     <ns2:RegistryErrorList>
-        <ns2:RegistryError
-               codeContext="The dispensing information was successfully saved. The dispensed e-prescription has the following ID= 12345678."
-               errorCode="WARNING_ED_GENERIC"
-               severity="urn:oasis:names:tc:ebxml-regrep:ErrorSeverityType:Warning" />
+        <ns2:RegistryError codeContext="The dispensing information was successfully saved. The dispensed e-prescription has the following ID= 12345678." errorCode="WARNING_ED_GENERIC" severity="urn:oasis:names:tc:ebxml-regrep:ErrorSeverityType:Warning" />
     </ns2:RegistryErrorList>
-</ns2:RegistryResponse>
+</ns2:RegistryResponse> 

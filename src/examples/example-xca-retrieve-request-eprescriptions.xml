@@ -1,10 +1,8 @@
 <RetrieveDocumentSetRequest>
-   <DocumentRequest>
-      <HomeCommunityId>urn:oid:1.2.276.0.76.4.291</HomeCommunityId>
-      <RepositoryUniqueId>1.2.276.0.76.4.299</RepositoryUniqueId>
-      <DocumentUniqueId>160.000.000.000.123.76^eP.XML</DocumentUniqueId>
-   </DocumentRequest>
-   <DocumentRequest>
-      ...
-   </DocumentRequest>
+    <DocumentRequest>
+        <HomeCommunityId>urn:oid:1.2.276.0.76.4.291</HomeCommunityId>
+        <RepositoryUniqueId>1.2.276.0.76.4.299</RepositoryUniqueId>
+        <DocumentUniqueId>1.2.276.0.76.4.299^160.000.000.000.123.76|eP.XML</DocumentUniqueId>
+    </DocumentRequest>
+    <DocumentRequest>...</DocumentRequest>
 </RetrieveDocumentSetRequest>

@@ -1,220 +1,170 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<soapenv:Body xmlns:soapenv="http://www.w3.org/2003/05/soap-envelope">
-   <xdr:ProvideAndRegisterDocumentSetRequest xmlns:xdr="urn:ihe:iti:xds-b:2007">
-      <ns3:SubmitObjectsRequest xmlns="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0"
-                                xmlns:ns2="urn:oasis:names:tc:ebxml-regrep:xsd:rs:3.0"
-                                xmlns:ns3="urn:oasis:names:tc:ebxml-regrep:xsd:lcm:3.0"
-                                xmlns:ns4="urn:ihe:iti:xds-b:2007"
-                                xmlns:ns5="urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0">
-         <RegistryObjectList>
-            <ExtrinsicObject id="urn:uuid:f8d6175f-3bb7-46e9-ac09-606383dcabab"
-                             mimeType="text/xml"
-                             objectType="urn:uuid:7edca82f-054d-47f2-a032-9b2a5b5186c1"
-                             status="urn:oasis:names:tc:ebxml-regrep:StatusType:Approved">
-               <Slot name="languageCode">
-                  <ValueList>
-                     <Value>lt-LT</Value>
-                  </ValueList>
-               </Slot>
-               <Slot name="sourcePatientId">
-                  <ValueList>
-                     <Value>B123456789|A2C4E6^^^&amp;1.2.276.0.76.3.1.580.147&amp;ISO</Value>
-                  </ValueList>
-               </Slot>
-               <Slot name="sourcePatientInfo">
-                  <ValueList>
-                     <Value>PID-3|B123456789|A2C4E6^^^&amp;1.2.276.0.76.3.1.580.147&amp;ISO</Value>
-                     <Value>PID-5|Johanna Gräfin von Oberberg</Value>
-                     <Value>PID-7|19800626152026.030+0300</Value>
-                  </ValueList>
-               </Slot>
-               <!-- healthCareFacilityTypeCode -->
-               <Classification classificationScheme="urn:uuid:f33fb8ac-18af-42cc-ae0e-ed0b0bdb91e1"
-                               classifiedObject="urn:uuid:f8d6175f-3bb7-46e9-ac09-606383dcabab"
-                               id="urn:uuid:b23dd8a1-e993-463d-b10b-abd75158626d"
-                               nodeRepresentation="LT">
-                  <Slot name="codingScheme">
-                     <ValueList>
-                        <Value>1.0.3166.1</Value>
-                     </ValueList>
-                  </Slot>
-                  <Name>
-                     <LocalizedString value="Lithuania"/>
-                  </Name>
-               </Classification>
-               <!-- practiceSettingCode -->
-               <Classification classificationScheme="urn:uuid:cccf5598-8b07-4b77-a05e-ae952c785ead"
-                               classifiedObject="urn:uuid:f8d6175f-3bb7-46e9-ac09-606383dcabab"
-                               id="urn:uuid:01bedd3e-bc25-48e0-b57e-27186868878f"
-                               nodeRepresentation="Not Used">
-                  <Slot name="codingScheme">
-                     <ValueList>
-                        <Value>eHDSI Practice Setting Codes-Not Used</Value>
-                     </ValueList>
-                  </Slot>
-                  <Name>
-                     <LocalizedString value="Not Used"/>
-                  </Name>
-               </Classification>
-               <!-- confidentialityCode -->
-               <Classification classificationScheme="urn:uuid:f4f85eac-e6cb-4883-b524-f2705394840f"
-                               classifiedObject="urn:uuid:f8d6175f-3bb7-46e9-ac09-606383dcabab"
-                               id="urn:uuid:0e5097bc-ef5d-42ec-8081-a1f62d63f3cd"
-                               nodeRepresentation="N">
-                  <Slot name="codingScheme">
-                     <ValueList>
-                        <Value>2.16.840.1.113883.5.25</Value>
-                     </ValueList>
-                  </Slot>
-                  <Name>
-                     <LocalizedString value="Normal"/>
-                  </Name>
-               </Classification>
-               <!-- classCode -->
-               <Classification classificationScheme="urn:uuid:41a5887f-8865-4c09-adf7-e362475b143a"
-                               classifiedObject="urn:uuid:f8d6175f-3bb7-46e9-ac09-606383dcabab"
-                               id="urn:uuid:c3a7f947-dcd4-4b2a-bd74-6f158158398d"
-                               nodeRepresentation="60593-1">
-                  <Slot name="codingScheme">
-                     <ValueList>
-                        <Value>2.16.840.1.113883.6.1</Value>
-                     </ValueList>
-                  </Slot>
-                  <Name>
-                     <LocalizedString value="Medication dispensed"/>
-                  </Name>
-               </Classification>
-               <!-- formatCode -->
-               <Classification classificationScheme="urn:uuid:a09d5840-386c-46f2-b5ad-9c3699a4309d"
-                               classifiedObject="urn:uuid:f8d6175f-3bb7-46e9-ac09-606383dcabab"
-                               id="urn:uuid:97bb44ff-5b0d-455f-afef-b4a1bd8f579a"
-                               nodeRepresentation="urn:epSOS:ep:dis:2010">
-                  <Slot name="codingScheme">
-                     <ValueList>
-                        <Value>eHDSI formatCodes</Value>
-                     </ValueList>
-                  </Slot>
-                  <Name>
-                     <LocalizedString value="eHDSI coded eDispensation"/>
-                  </Name>
-               </Classification>
-               <!-- typeCode -->
-               <Classification classificationScheme="urn:uuid:f0306f51-975f-434e-a61c-c59651d33983"
-                               classifiedObject="urn:uuid:f8d6175f-3bb7-46e9-ac09-606383dcabab"
-                               id="urn:uuid:70324b06-6de5-4664-a860-e67b545591ec"
-                               nodeRepresentation="60593-1">
-                  <Slot name="codingScheme">
-                     <ValueList>
-                        <Value>2.16.840.1.113883.6.1</Value>
-                     </ValueList>
-                  </Slot>
-                  <Name>
-                     <LocalizedString value="eDispensation"/>
-                  </Name>
-               </Classification>
-               <ExternalIdentifier id="urn:uuid:52a2eb98-72c3-491a-8c58-80693f30934f"
-                                   identificationScheme="urn:uuid:58a6f841-87b3-4a3e-92fd-a8ffeff98427"
-                                   objectType="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:ExternalIdentifier"
-                                   registryObject="urn:uuid:f8d6175f-3bb7-46e9-ac09-606383dcabab"
-                                   value="B123456789|A2C4E6^^^&amp;1.2.276.0.76.3.1.580.147&amp;ISO">
-                  <Name>
-                     <LocalizedString value="XDSDocumentEntry.patientId"/>
-                  </Name>
-               </ExternalIdentifier>
-               <ExternalIdentifier id="urn:uuid:bef1f945-9eed-4cac-89fb-99eb9b0ab246"
-                                   identificationScheme="urn:uuid:2e82c1f6-a085-4c72-9da3-8640a32e42ab"
-                                   objectType="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:ExternalIdentifier"
-                                   registryObject="urn:uuid:f8d6175f-3bb7-46e9-ac09-606383dcabab"
-                                   value="1.3.6.1.4.1.28284.6.2.4.4^3y5COceLhApapiKC">
-                  <Name>
-                     <LocalizedString value="XDSDocumentEntry.uniqueId"/>
-                  </Name>
-               </ExternalIdentifier>
-            </ExtrinsicObject>
-            <RegistryPackage id="urn:uuid:15cd166f-5d2b-4e18-b9b2-71f41eaebaf6"
-                             objectType="urn:uuid:a54d6aa5-d40d-43f9-88c5-b4633d873bdd">
-               <Slot name="submissionTime">
-                  <ValueList>
-                     <Value>20230626032026</Value>
-                  </ValueList>
-               </Slot>
-               <Name>
-                  <LocalizedString value="eDispensation"/>
-               </Name>
-               <Description>
-                  <LocalizedString value="Description of eDispensation"/>
-               </Description>
-               <Classification classificationScheme="urn:uuid:a7058bb9-b4e4-4307-ba5b-e3f0ab85e12d"
-                               classifiedObject="urn:uuid:15cd166f-5d2b-4e18-b9b2-71f41eaebaf6"
-                               id="urn:uuid:036fd6db-b262-499a-940c-75f0586bc345"
-                               nodeRepresentation="">
-                  <Slot name="authorInstitution">
-                     <ValueList>
-                        <Value>General Hospital^^^^^&amp;2.16.840.1.113883.2.11.4.6&amp;ISO^^^^1000139817</Value>
-                     </ValueList>
-                  </Slot>
-                  <Slot name="authorPerson">
-                     <ValueList>
-                        <Value>Rasa Keraitė^^^&amp;2.16.840.1.113883.2.11.4.6:1000139817&amp;ISO</Value>
-                     </ValueList>
-                  </Slot>
-               </Classification>
-               <Classification classificationScheme="urn:uuid:aa543740-bdda-424e-8c96-df4873be8500"
-                               classifiedObject="urn:uuid:15cd166f-5d2b-4e18-b9b2-71f41eaebaf6"
-                               id="urn:uuid:dd8c32b9-4e15-484d-a459-8683de77bb26"
-                               nodeRepresentation="60593-1">
-                  <Slot name="codingScheme">
-                     <ValueList>
-                        <Value>2.16.840.1.113883.6.1</Value>
-                     </ValueList>
-                  </Slot>
-                  <Name>
-                     <LocalizedString value="eDispensation"/>
-                  </Name>
-               </Classification>
-               <ExternalIdentifier id="urn:uuid:0abc413c-75f4-4a60-ba62-22873e150173"
-                                   identificationScheme="urn:uuid:96fdda7c-d067-4183-912e-bf5ee74998a8"
-                                   objectType="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:ExternalIdentifier"
-                                   registryObject="urn:uuid:15cd166f-5d2b-4e18-b9b2-71f41eaebaf6"
-                                   value="2.16.840.1.113883.2.11.300.451">
-                  <Name>
-                     <LocalizedString value="XDSSubmissionSet.uniqueId"/>
-                  </Name>
-               </ExternalIdentifier>
-               <ExternalIdentifier id="urn:uuid:b3a7d356-c363-493a-b176-75e8b8f7051c"
-                                   identificationScheme="urn:uuid:6b5aea1a-874d-4603-a4bc-96a0a7b38446"
-                                   objectType="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:ExternalIdentifier"
-                                   registryObject="urn:uuid:15cd166f-5d2b-4e18-b9b2-71f41eaebaf6"
-                                   value="B123456789|A2C4E6^^^&amp;1.2.276.0.76.3.1.580.147&amp;ISO">
-                  <Name>
-                     <LocalizedString value="XDSSubmissionSet.patientId"/>
-                  </Name>
-               </ExternalIdentifier>
-               <ExternalIdentifier id="urn:uuid:f3aac6fb-312a-46c0-9c55-39d748f062e5"
-                                   identificationScheme="urn:uuid:554ac39e-e3fe-47fe-b233-965d2a147832"
-                                   objectType="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:ExternalIdentifier"
-                                   registryObject="urn:uuid:15cd166f-5d2b-4e18-b9b2-71f41eaebaf6"
-                                   value="1.3.6.1.4.1.21367.2009.1.2.1">
-                  <Name>
-                     <LocalizedString value="XDSSubmissionSet.sourceId"/>
-                  </Name>
-               </ExternalIdentifier>
-            </RegistryPackage>
-            <Classification classificationNode="urn:uuid:a54d6aa5-d40d-43f9-88c5-b4633d873bdd"
-                            classifiedObject="urn:uuid:15cd166f-5d2b-4e18-b9b2-71f41eaebaf6"
-                            id="urn:uuid:592d32ab-d3e3-4911-a6d3-8fd5de784e5a"/>
-            <Association associationType="urn:oasis:names:tc:ebxml-regrep:AssociationType:HasMember"
-                         id="urn:uuid:eaea52a2-46bb-405a-85cd-742f755dd066"
-                         sourceObject="urn:uuid:15cd166f-5d2b-4e18-b9b2-71f41eaebaf6"
-                         targetObject="urn:uuid:f8d6175f-3bb7-46e9-ac09-606383dcabab">
-               <Slot name="SubmissionSetStatus">
-                  <ValueList>
-                     <Value>Original</Value>
-                  </ValueList>
-               </Slot>
-            </Association>
-         </RegistryObjectList>
-      </ns3:SubmitObjectsRequest>
-      <xdr:Document id="urn:uuid:f8d6175f-3bb7-46e9-ac09-606383dcabab">...</xdr:Document>
-   </xdr:ProvideAndRegisterDocumentSetRequest>
+<soapenv:Body
+    xmlns:soapenv="http://www.w3.org/2003/05/soap-envelope">
+    <xdr:ProvideAndRegisterDocumentSetRequest
+        xmlns:xdr="urn:ihe:iti:xds-b:2007">
+        <ns3:SubmitObjectsRequest
+            xmlns="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0"
+            xmlns:ns2="urn:oasis:names:tc:ebxml-regrep:xsd:rs:3.0"
+            xmlns:ns3="urn:oasis:names:tc:ebxml-regrep:xsd:lcm:3.0"
+            xmlns:ns4="urn:ihe:iti:xds-b:2007"
+            xmlns:ns5="urn:oasis:names:tc:ebxml-regrep:xsd:query:3.0">
+            <RegistryObjectList>
+                <ExtrinsicObject id="urn:uuid:f8d6175f-3bb7-46e9-ac09-606383dcabab" mimeType="text/xml" objectType="urn:uuid:7edca82f-054d-47f2-a032-9b2a5b5186c1" status="urn:oasis:names:tc:ebxml-regrep:StatusType:Approved">
+                    <Slot name="languageCode">
+                        <ValueList>
+                            <Value>lt-LT</Value>
+                        </ValueList>
+                    </Slot>
+                    <Slot name="sourcePatientId">
+                        <ValueList>
+                            <Value>B123456789|A2C4E6^^^&amp;1.2.276.0.76.3.1.580.147&amp;ISO</Value>
+                        </ValueList>
+                    </Slot>
+                    <Slot name="sourcePatientInfo">
+                        <ValueList>
+                            <Value>PID-3|B123456789|A2C4E6^^^&amp;1.2.276.0.76.3.1.580.147&amp;ISO</Value>
+                            <Value>PID-5|Johanna Gräfin von Oberberg</Value>
+                            <Value>PID-7|19800626152026.030+0300</Value>
+                        </ValueList>
+                    </Slot>
+                    <!-- healthCareFacilityTypeCode -->
+                    <Classification classificationScheme="urn:uuid:f33fb8ac-18af-42cc-ae0e-ed0b0bdb91e1" classifiedObject="urn:uuid:f8d6175f-3bb7-46e9-ac09-606383dcabab" id="urn:uuid:b23dd8a1-e993-463d-b10b-abd75158626d" nodeRepresentation="LT">
+                        <Slot name="codingScheme">
+                            <ValueList>
+                                <Value>1.0.3166.1</Value>
+                            </ValueList>
+                        </Slot>
+                        <Name>
+                            <LocalizedString value="Lithuania"/>
+                        </Name>
+                    </Classification>
+                    <!-- practiceSettingCode -->
+                    <Classification classificationScheme="urn:uuid:cccf5598-8b07-4b77-a05e-ae952c785ead" classifiedObject="urn:uuid:f8d6175f-3bb7-46e9-ac09-606383dcabab" id="urn:uuid:01bedd3e-bc25-48e0-b57e-27186868878f" nodeRepresentation="Not Used">
+                        <Slot name="codingScheme">
+                            <ValueList>
+                                <Value>eHDSI Practice Setting Codes-Not Used</Value>
+                            </ValueList>
+                        </Slot>
+                        <Name>
+                            <LocalizedString value="Not Used"/>
+                        </Name>
+                    </Classification>
+                    <!-- confidentialityCode -->
+                    <Classification classificationScheme="urn:uuid:f4f85eac-e6cb-4883-b524-f2705394840f" classifiedObject="urn:uuid:f8d6175f-3bb7-46e9-ac09-606383dcabab" id="urn:uuid:0e5097bc-ef5d-42ec-8081-a1f62d63f3cd" nodeRepresentation="N">
+                        <Slot name="codingScheme">
+                            <ValueList>
+                                <Value>2.16.840.1.113883.5.25</Value>
+                            </ValueList>
+                        </Slot>
+                        <Name>
+                            <LocalizedString value="Normal"/>
+                        </Name>
+                    </Classification>
+                    <!-- classCode -->
+                    <Classification classificationScheme="urn:uuid:41a5887f-8865-4c09-adf7-e362475b143a" classifiedObject="urn:uuid:f8d6175f-3bb7-46e9-ac09-606383dcabab" id="urn:uuid:c3a7f947-dcd4-4b2a-bd74-6f158158398d" nodeRepresentation="60593-1">
+                        <Slot name="codingScheme">
+                            <ValueList>
+                                <Value>2.16.840.1.113883.6.1</Value>
+                            </ValueList>
+                        </Slot>
+                        <Name>
+                            <LocalizedString value="Medication dispensed"/>
+                        </Name>
+                    </Classification>
+                    <!-- formatCode -->
+                    <Classification classificationScheme="urn:uuid:a09d5840-386c-46f2-b5ad-9c3699a4309d" classifiedObject="urn:uuid:f8d6175f-3bb7-46e9-ac09-606383dcabab" id="urn:uuid:97bb44ff-5b0d-455f-afef-b4a1bd8f579a" nodeRepresentation="urn:epSOS:ep:dis:2010">
+                        <Slot name="codingScheme">
+                            <ValueList>
+                                <Value>eHDSI formatCodes</Value>
+                            </ValueList>
+                        </Slot>
+                        <Name>
+                            <LocalizedString value="eHDSI coded eDispensation"/>
+                        </Name>
+                    </Classification>
+                    <!-- typeCode -->
+                    <Classification classificationScheme="urn:uuid:f0306f51-975f-434e-a61c-c59651d33983" classifiedObject="urn:uuid:f8d6175f-3bb7-46e9-ac09-606383dcabab" id="urn:uuid:70324b06-6de5-4664-a860-e67b545591ec" nodeRepresentation="60593-1">
+                        <Slot name="codingScheme">
+                            <ValueList>
+                                <Value>2.16.840.1.113883.6.1</Value>
+                            </ValueList>
+                        </Slot>
+                        <Name>
+                            <LocalizedString value="eDispensation"/>
+                        </Name>
+                    </Classification>
+                    <ExternalIdentifier id="urn:uuid:52a2eb98-72c3-491a-8c58-80693f30934f" identificationScheme="urn:uuid:58a6f841-87b3-4a3e-92fd-a8ffeff98427" objectType="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:ExternalIdentifier" registryObject="urn:uuid:f8d6175f-3bb7-46e9-ac09-606383dcabab" value="B123456789|A2C4E6^^^&amp;1.2.276.0.76.3.1.580.147&amp;ISO">
+                        <Name>
+                            <LocalizedString value="XDSDocumentEntry.patientId"/>
+                        </Name>
+                    </ExternalIdentifier>
+                    <ExternalIdentifier id="urn:uuid:bef1f945-9eed-4cac-89fb-99eb9b0ab246" identificationScheme="urn:uuid:2e82c1f6-a085-4c72-9da3-8640a32e42ab" objectType="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:ExternalIdentifier" registryObject="urn:uuid:f8d6175f-3bb7-46e9-ac09-606383dcabab" value="1.2.276.0.76.4.299^160.000.000.000.123.76|eP.XML">
+                        <Name>
+                            <LocalizedString value="XDSDocumentEntry.uniqueId"/>
+                        </Name>
+                    </ExternalIdentifier>
+                </ExtrinsicObject>
+                <RegistryPackage id="urn:uuid:15cd166f-5d2b-4e18-b9b2-71f41eaebaf6" objectType="urn:uuid:a54d6aa5-d40d-43f9-88c5-b4633d873bdd">
+                    <Slot name="submissionTime">
+                        <ValueList>
+                            <Value>20230626032026</Value>
+                        </ValueList>
+                    </Slot>
+                    <Name>
+                        <LocalizedString value="eDispensation"/>
+                    </Name>
+                    <Description>
+                        <LocalizedString value="Description of eDispensation"/>
+                    </Description>
+                    <Classification classificationScheme="urn:uuid:a7058bb9-b4e4-4307-ba5b-e3f0ab85e12d" classifiedObject="urn:uuid:15cd166f-5d2b-4e18-b9b2-71f41eaebaf6" id="urn:uuid:036fd6db-b262-499a-940c-75f0586bc345" nodeRepresentation="">
+                        <Slot name="authorInstitution">
+                            <ValueList>
+                                <Value>General Hospital^^^^^&amp;2.16.840.1.113883.2.11.4.6&amp;ISO^^^^1000139817</Value>
+                            </ValueList>
+                        </Slot>
+                        <Slot name="authorPerson">
+                            <ValueList>
+                                <Value>Rasa Keraitė^^^&amp;2.16.840.1.113883.2.11.4.6:1000139817&amp;ISO</Value>
+                            </ValueList>
+                        </Slot>
+                    </Classification>
+                    <Classification classificationScheme="urn:uuid:aa543740-bdda-424e-8c96-df4873be8500" classifiedObject="urn:uuid:15cd166f-5d2b-4e18-b9b2-71f41eaebaf6" id="urn:uuid:dd8c32b9-4e15-484d-a459-8683de77bb26" nodeRepresentation="60593-1">
+                        <Slot name="codingScheme">
+                            <ValueList>
+                                <Value>2.16.840.1.113883.6.1</Value>
+                            </ValueList>
+                        </Slot>
+                        <Name>
+                            <LocalizedString value="eDispensation"/>
+                        </Name>
+                    </Classification>
+                    <ExternalIdentifier id="urn:uuid:0abc413c-75f4-4a60-ba62-22873e150173" identificationScheme="urn:uuid:96fdda7c-d067-4183-912e-bf5ee74998a8" objectType="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:ExternalIdentifier" registryObject="urn:uuid:15cd166f-5d2b-4e18-b9b2-71f41eaebaf6" value="2.16.840.1.113883.2.11.300.451">
+                        <Name>
+                            <LocalizedString value="XDSSubmissionSet.uniqueId"/>
+                        </Name>
+                    </ExternalIdentifier>
+                    <ExternalIdentifier id="urn:uuid:b3a7d356-c363-493a-b176-75e8b8f7051c" identificationScheme="urn:uuid:6b5aea1a-874d-4603-a4bc-96a0a7b38446" objectType="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:ExternalIdentifier" registryObject="urn:uuid:15cd166f-5d2b-4e18-b9b2-71f41eaebaf6" value="B123456789|A2C4E6^^^&amp;1.2.276.0.76.3.1.580.147&amp;ISO">
+                        <Name>
+                            <LocalizedString value="XDSSubmissionSet.patientId"/>
+                        </Name>
+                    </ExternalIdentifier>
+                    <ExternalIdentifier id="urn:uuid:f3aac6fb-312a-46c0-9c55-39d748f062e5" identificationScheme="urn:uuid:554ac39e-e3fe-47fe-b233-965d2a147832" objectType="urn:oasis:names:tc:ebxml-regrep:ObjectType:RegistryObject:ExternalIdentifier" registryObject="urn:uuid:15cd166f-5d2b-4e18-b9b2-71f41eaebaf6" value="1.3.6.1.4.1.21367.2009.1.2.1">
+                        <Name>
+                            <LocalizedString value="XDSSubmissionSet.sourceId"/>
+                        </Name>
+                    </ExternalIdentifier>
+                </RegistryPackage>
+                <Classification classificationNode="urn:uuid:a54d6aa5-d40d-43f9-88c5-b4633d873bdd" classifiedObject="urn:uuid:15cd166f-5d2b-4e18-b9b2-71f41eaebaf6" id="urn:uuid:592d32ab-d3e3-4911-a6d3-8fd5de784e5a"/>
+                <Association associationType="urn:oasis:names:tc:ebxml-regrep:AssociationType:HasMember" id="urn:uuid:eaea52a2-46bb-405a-85cd-742f755dd066" sourceObject="urn:uuid:15cd166f-5d2b-4e18-b9b2-71f41eaebaf6" targetObject="urn:uuid:f8d6175f-3bb7-46e9-ac09-606383dcabab">
+                    <Slot name="SubmissionSetStatus">
+                        <ValueList>
+                            <Value>Original</Value>
+                        </ValueList>
+                    </Slot>
+                </Association>
+            </RegistryObjectList>
+        </ns3:SubmitObjectsRequest>
+        <xdr:Document id="urn:uuid:f8d6175f-3bb7-46e9-ac09-606383dcabab">...</xdr:Document>
+    </xdr:ProvideAndRegisterDocumentSetRequest>
 </soapenv:Body>
