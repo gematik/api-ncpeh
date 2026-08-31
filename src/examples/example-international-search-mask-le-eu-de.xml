@@ -1,57 +1,18 @@
-<ism:searchFields xmlns:ism="http://ec.europa.eu/sante/ehncp/ism">
-    <ism:country 
-     code="DE" 
-     friendlyName="Germany" 
-     label="label.ism.addressCountry">
-        <ism:patientSearch 
-         friendlyName="International Search Mask for Germany" 
-         scope="All">
+<ism:searchFields
+    xmlns:ism="http://ec.europa.eu/sante/ehncp/ism">
+    <ism:country code="DE" friendlyName="Germany" label="label.ism.addressCountry">
+        <ism:patientSearch friendlyName="International Search Mask for Germany" scope="ALL">
             <ism:identifier type="CHOICE">
                 <ism:ids display="Patient identification for Patient Summary">
-                    <ism:id 
-                     contextualDescription="Health insurance number" 
-                     domain="1.2.276.0.76.3.1.580.147" 
-                     format="[A-Z][0-9]{9}" min="10" max="10" 
-                     label="label.ism.nationalPersonIdentifier" 
-                     mandatory="true" 
-                     originalContextualDescription="Krankenversichertennummer"/>
-                    <ism:id 
-                     contextualDescription="Access code for Patient Summary" 
-                     domain="1.2.276.0.76.4.298" 
-                     format="[A-Za-z0-9]{6}" min="6" max="6" 
-                     label="label.ism.accessCode" 
-                     mandatory="true" 
-                     originalContextualDescription="Zugriffscode für die Patientenkurzakte"/>
+                    <ism:id contextualDescription="Health insurance number" domain="1.2.276.0.76.3.1.580.147" format="^[A-Z][0-9]{9}$" label="label.ism.nationalPersonIdentifier" mandatory="true" originalContextualDescription="Krankenversichertennummer"/>
+                    <ism:id contextualDescription="Access code for Patient Summary" domain="1.2.276.0.76.4.298" format="^[A-Za-z0-9]{6}$" label="label.ism.accessCode" mandatory="true" originalContextualDescription="Zugriffscode für die Patientenkurzakte"/>
                 </ism:ids>
                 <ism:ids display="Patient identification for ePrescription">
-                    <ism:id 
-                     contextualDescription="Health insurance number" 
-                     domain="1.2.276.0.76.3.1.580.147" 
-                     format="[A-Z][0-9]{9}" min="10" max="10" 
-                     label="label.ism.nationalPersonIdentifier" 
-                     mandatory="true" 
-                     originalContextualDescription="Krankenversichertennummer"/>
-                    <ism:id 
-                     contextualDescription="Access code for ePrescription/eDispensation (limited to one hour)" 
-                     domain="1.2.276.0.76.4.299" 
-                     format="[A-Za-z0-9]{6}" min="6" max="6" 
-                     label="label.ism.accessCode" 
-                     mandatory="true" 
-                     originalContextualDescription="Zugriffscode für eRezept/eDispensierung"/>
+                    <ism:id contextualDescription="Health insurance number" domain="1.2.276.0.76.3.1.580.147" format="^[A-Z][0-9]{9}$" label="label.ism.nationalPersonIdentifier" originalContextualDescription="Krankenversichertennummer" />
+                    <ism:id contextualDescription="Access code for ePrescription/eDispensation (limited to one hour)" domain="1.2.276.0.76.4.299" format="^[A-Za-z0-9]{6}$" label="label.ism.accessCode" mandatory="true" originalContextualDescription="Zugriffscode für eRezept/eDispensierung"/>
                 </ism:ids>
             </ism:identifier>
-            <ism:media 
-             description="Picture of the front of the german electronic health card" 
-             fileExtension="JPG" 
-             label="label.ism.media[0]" 
-             mediaName="DE_Front_Patient_Health_Card">
-                <ism:mediaContent>... PICTURE BASE64 ENCODED ...</ism:mediaContent>
-            </ism:media>
-            <ism:media 
-             description="Picture of European Health Insurance Card" 
-             fileExtension="JPG" 
-             label="label.ism.media[1]" 
-             mediaName="DE_Back_Patient_Health_Card">
+            <ism:media description="Picture of the german electronic health card and european health insurance card" fileExtension="JPG" label="label.ism.media" mediaName="DE_Patient_Health_Card">
                 <ism:mediaContent>... PICTURE BASE64 ENCODED ...</ism:mediaContent>
             </ism:media>
         </ism:patientSearch>
