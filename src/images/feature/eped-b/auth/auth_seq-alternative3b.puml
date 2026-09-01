@@ -125,24 +125,10 @@ par Authenticator Flow
         == 3. AUTH_CODE Grant ==
 
         opt Validierung erfolgreich
-            IDP -> AVS: 302 Redirect zu redirect_uri vom NCPeH-Auth-Service (code=<AUTH_CODE>)
+            IDP --> AVS: 302 Redirect zu redirect_uri vom NCPeH-Auth-Service (code=<AUTH_CODE>)
             deactivate IDP
             
-            AVS -> AVS: Ermittle Benutzerinformationen: Benutzerinformationen
-            note left
-                Vertrauenswürdigkeit: unvalidierte
-                Benutzerinformationen aus dem
-                Usermanagement des AVS
-            end note
-            AVS -> AVS: Ein signiertes JWT erzeugen(Auth_Codes, state, redirect_uri, auth_req_id, Benutzerinformationen) :signed_avs_context_jwt
-            AVS -> Proxy: POST /token (signed_avs_context_jwt)
-            note left
-                ""grant_type=urn:ietf:params:oauth:grant-type:token-exchange""
-                ""subject_token_type=urn:ietf:params:oauth:token-type:jwt""
-                ""subject_token=signed_avs_context_jwt""
-                ""requested_token_type=urn:ietf:params:oauth:token-type:access_token""
-                ""auth_req_id, poll_uri, scope"""
-            end note
+            AVS -> Proxy: POST /Auth-Endpoint(code,state,redirect_uri)
             activate Proxy           
             Proxy -> AuthService: Request weiterleiten
             deactivate Proxy
@@ -174,58 +160,11 @@ par Authenticator Flow
     == 5. erneuter TokenExchange und Polling durch EU-Webportal ==
     AuthService -> AuthService: Tokens validieren (Autorisierungsauftrag.id_token[1..2])
 
-    group Policy für neues Access-Token "ncpehprx_access_token"
-        AuthService -> AuthService: Prüfe ExchangePolicy (id_token[1..2])
-        note left
-            ""grant_type=urn:ietf:params:oauth:grant-type:token-exchange""
-            ""subject_token=<id_token>""
-            ""requested_token_type=urn:ietf:params:oauth:token-type:access_token""
-            **""audience=ncpeh-proxy""**
-        end note
-        note right #Yellow
-            Domänenobjekt:
-            ""ExchangePolicy""
-        end note
-
-        AuthService -> AuthService: Prüfung der Rolle des LE-DE auf Zugriffsberechtigung
-        AuthService -> AuthService: Generiere ncpehprx_access_token
-        AuthService -> AuthService: Binde PuK (JWK-Thumbprint) an ncpehprx_access_token
-    end
-    group Policy für neues ID-Token "IdA_raw"
-        AuthService -> AuthService: Prüfe ExchangePolicy (id_token[1..2])
-        note left
-            ""grant_type=urn:ietf:params:oauth:grant-type:token-exchange""
-            ""subject_token=<id_token>""
-            ""subject_token_type=urn:ietf:params:oauth:token-type:id_token""
-            ""requested_token_type=urn:ietf:params:oauth:token-type:id_token""
-            **""audience=ncpeh-fd""**
-        end note
-        note right #Yellow
-            Domänenobjekt:
-            ""ExchangePolicy""
-        end note
-
-        AuthService -> AuthService: Mapping der Claims (id_token[1..2].Claims):IdA_Claims
-        AuthService -> AuthService: Generiere und signiere neue IdA-Vorstufe (IdA_Claims):IdA_raw
-    end
-    group Policy für neues ID-Token "euwp_id_token"
-        AuthService -> AuthService: Prüfe ExchangePolicy (id_token[1..2])
-        note left
-            ""grant_type=urn:ietf:params:oauth:grant-type:token-exchange""
-            ""subject_token=<id_token>""
-            ""subject_token_type=urn:ietf:params:oauth:token-type:id_token""
-            ""requested_token_type=urn:ietf:params:oauth:token-type:id_token""
-            **""audience=eu-webportal""**
-        end note
-        note right #Yellow
-            Domänenobjekt:
-            ""ExchangePolicy""
-        end note
-
-        AuthService -> AuthService: Mapping der Claims:Disp_Claims
-        AuthService -> AuthService: Übernahme der Benutzerinformationen (Disp_Claims, Benutzerinformationen): Disp_Claims
-        AuthService -> AuthService: Generiere und signiere ID-Token (Disp_Claims):euwp_id_token
-    end
+    note over AuthService 
+    Autorisierung und Policy 
+    für neues Access-Token "ncpehprx_access_token" 
+    durchführen
+    end note   
 
     AuthService -> AuthService: Autorisierungsauftrag ergänzen (ncpehprx_access_token, IdA_raw, euwp_id_token)
 
