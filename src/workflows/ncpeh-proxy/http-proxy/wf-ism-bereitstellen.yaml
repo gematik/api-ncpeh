@@ -1,0 +1,98 @@
+arazzo: 1.1.0
+info:
+  title: ISM Bereitstellen Workflow
+  version: 1.0.0
+  description: Workflow-Definition der ISM-Bereitstellung inklusive Error Handling und Retry
+sourceDescriptions:
+  - name: ism-service
+    url: ./I_ISM_Service.yaml
+    type: openapi
+  - name: proxy-basic
+    url: ./I_HTTP-Proxy_basic.yaml
+    type: openapi
+workflows:
+  - workflowId: ism-bereitstellen-workflow
+    summary: Workflow der ISM-Bereitstellung mit Error Handling
+    description: Ereignisbasierter Workflow zur Bereitstellung der ISM-Bereitstellung für die WebApp des EU-Webportals.
+    inputs:
+      type: object
+      properties:
+        ismListPayload:
+          $ref: './domainobj-eped-b.yaml#/components/schemas/ISMInternationalList'
+    steps:
+      - stepId: notifyIsmUpdateStep
+        description: Proxy über das Vorliegen neuer ISMs aus ServiceMetadata benachrichtigt.
+        operationId: ism-service.notifyIsmUpdate
+        successCriteria:
+          - condition: $statusCode == 202
+        onFailure:
+          - name: handleUnauthorized
+            criteria:
+              - condition: $statusCode == 401
+            type: end
+
+      - stepId: renderIsmStep
+        description: Proxy rendert die abgerufenen ISM-Listen-Daten intern als HTML.
+        operationId: ism-service.postIsmRender
+        requestBody:
+          contentType: application/json
+          payload: $inputs.ismListPayload
+
+        successCriteria:
+          - condition: $statusCode == 200
+        onFailure:
+          - name: handleBadRequest
+            criteria:
+              - condition: $statusCode == 400
+            type: end
+          - name: retryOnServerError
+            criteria:
+              - condition: $statusCode == 500
+            type: retry
+            retryAfter: 5
+            retryLimit: 3
+        outputs:
+          renderedHtml: $response.body
+          x-schema: 
+            $ref: './domainobj-eped-b.yaml#/components/schemas/ISMInternationalListHtml'
+
+      - stepId: triggerBuildStep
+        description: Proxy triggert den Buildprozess über den konfigurierten Webhook.
+        operationId: proxy-basic.triggerWebAppBuild
+        successCriteria:
+          - condition: $statusCode == 202
+        onFailure:
+          - name: abortOnWebhookFailure
+            type: end
+
+      - stepId: getIsmHtmlStep
+        description: Buildprozess ruft die gerenderten HTML-Ansichten statisch ab.
+        operationId: ism-service.getIsmHtml
+        successCriteria:
+          - condition: $statusCode == 200
+        onFailure:
+          - name: retryOnServerError
+            criteria:
+              - condition: $statusCode == 500
+            type: retry
+            retryAfter: 5
+            retryLimit: 3
+        outputs:
+          fetchedHtml: $response.body
+          x-schema: 
+            $ref: './domainobj-eped-b.yaml#/components/schemas/ISMInternationalListHtml'
+
+      - stepId: getFlagAssetsStep
+        description: Buildprozess lädt in einem Loop die benötigten Flaggen-Ressourcen nach entsprechend diesem Bsp.
+        operationId: ism-service.getFlagAsset
+        parameters:
+          - name: countryCode
+            in: path
+            value: "PL"
+        successCriteria:
+          - condition: $statusCode == 200
+        onFailure:
+          - name: handleNotFound
+            criteria:
+              - condition: $statusCode == 404
+            type: end
