@@ -1,0 +1,89 @@
+@startuml ISM bereiststellen (detailliert)
+
+skinparam maxMessageSize 200
+autonumber
+
+actor "LE-DE" as User
+
+participant "EU-Webportal\n(im Browser)" as WebApp
+participant "Buildprozess\n(im Hintergrund)" as Buildprozess
+
+box "NCPeH-Proxy" #FloralWhite
+    participant "HTTP-Proxy" as Proxy
+end box
+participant "NCPeH-FD" as NCPeH
+participant "eHDSI Configuration Service" as ConfServ
+
+== 1. Täglich Abruf von ServiceMetadata ==
+== ism-handling-retrieval ==
+
+opt Geplanter täglicher Aktualisierungszeitpunkt erreicht
+    NCPeH -> ConfServ: SignedServiceMetadata relevanter NCPeH Land-A gemäß eHDSI abrufen
+    activate NCPeH 
+    activate ConfServ
+
+    ConfServ --> NCPeH: :Liste der SignedServiceMetadata
+    deactivate ConfServ
+
+    NCPeH -> NCPeH: Schema und Signatur validieren (SignedServiceMetadata) :ServiceMetadata
+    NCPeH -> NCPeH: Signatur validieren (ServiceMetadata)
+    NCPeH -> NCPeH: Länderzuordnung prüfen (ServiceMetadata)
+    NCPeH -> NCPeH: Serviceinformationen und ISM aktualisieren (ServiceMetadata)
+end
+deactivate NCPeH
+
+== 2. Integration von ISM ins EU-Webportal ==
+
+opt Neue ServiceMetadata im NCPeH-FD verfügbar
+    NCPeH -> Proxy: POST /events/ism/update
+    note left: Ereignisbasierter Workflow statt Polling
+    activate Proxy
+    Proxy -> NCPeH: GET /ismlist
+    activate NCPeH
+    note left: Hinweis: Auflösung der Objekte über ""domainobj-eped-b.yaml""
+    NCPeH -> NCPeH: Alle ISM in FHIR-Bundle integrieren(ServiceMetadata.ISM):ISMInternationalList
+    note left: jedes Listenelement als base64-enc FHIR Entry (Bundle.entry)
+    NCPeH --> Proxy: :ISMInternationalList
+    note left: Liste ohne zusätzlichen Integritätsschutz auf Nachrichtenebene
+    deactivate NCPeH
+    Proxy -> Proxy: FHIR-Bundle validieren (ISMInternationalList)
+
+== ism-handling-preparation ==
+    Proxy -> Proxy: POST /ism/render (ISMInternationalList):ISMInternationalListHtml
+    'WebApp -> Proxy: POST /ism (ism_international_specific_html)
+    
+    Proxy -> Buildprozess: POST /events/app/build
+    note left: Ereignisbasierter Workflow statt Polling
+    activate Buildprozess
+        Buildprozess -> Proxy: GET /ism
+        note right: kein Lazyloading der ISMs über WebApp, sondern statische Bereitstellung in WebApp-DeploymentArtifact
+        note left: TODO: Request absichern oder hat der BP automatisch Zugriff?\nz.B. weil er ein Sidecar im selben Namespace ist
+        Proxy --> Buildprozess: :ISMInternationalListHtml
+        
+        loop für jedes Land in ISMInternationalListHtml
+            Buildprozess -> Proxy: GET /assets/flags/{countryCode}
+            note left: Endpoint für Ressourcen
+            Proxy --> Buildprozess: :Flagge als Bild
+        end
+        
+        Buildprozess -> Buildprozess: Webapp bauen (ISMInternationalListHtml, FlagList, ...)
+        note right: weitere Schritte für diesen UC nicht relevant, daher nicht aufgeführt
+    deactivate Buildprozess
+    ... Anschließend Deployment der Webapp auf dem Webserver ...
+end
+
+== ism-handling-display ==
+    ... später: Benutzung durch LE-DE ...
+    WebApp -> User: Übersicht aller verfügbaren Länder anzeigen
+    activate WebApp
+    User -> WebApp: Auswahl eines Landes für detaillierte ISM-Informationen (ISMInternationalHtml)
+    WebApp -> WebApp: HTML-Resource laden (ISMInternationalHtml)
+    User -> WebApp: Ausfüllen der detaillierten ISM-Ansicht (ISMInternationalHtml)
+    WebApp -> WebApp: Validierung der Eingaben (ISMInternationalHtml)
+    deactivate WebApp
+
+== UC-Ende ==
+    note over Proxy: ""WebApp -> Proxy: POST /ism (PatientIdentificationQuery)"" nicht mehr Bestandteil des UC 
+
+deactivate Proxy
+@enduml

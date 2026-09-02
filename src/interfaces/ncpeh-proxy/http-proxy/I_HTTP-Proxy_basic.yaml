@@ -1,0 +1,46 @@
+openapi: 3.1.0
+info:
+  title: allgemeine HTTP-Proxy Interfaces (NCPeH-Proxy)
+  version: 1.0.0
+  description: OpenAPI 3 Beschreibung für allgemeine Schnittstellen am HTTP-Proxy des NCPeH-Proxy
+components:
+  securitySchemes:
+    mTLS:
+      type: mutualTLS
+      description: Mutual TLS für die Absicherung der internen Kommunikation.
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: XXXXX-API-KEY
+      description: API-Key für den internen Dienstzugriff.
+security:
+  - mTLS: []
+paths:
+  /health:
+    get:
+      summary: Health Check
+      description: Überprüft den Status (Readiness/Liveness) des Proxy-Dienstes.
+      operationId: checkHealth
+      responses:
+        '200':
+          description: Dienst ist erreichbar und bereit
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "UP"
+        '500':
+          description: Dienst ist nicht verfügbar
+
+webhooks:
+  events/app/build:
+    post:
+      summary: WebApp-Build triggern
+      description: Webhook, der vom Proxy aufgerufen wird, um den Buildprozess der WebApp anzustoßen.
+      operationId: triggerWebAppBuild
+      responses:
+        '202':
+          description: Build-Prozess erfolgreich angestoßen

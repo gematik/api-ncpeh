@@ -1,0 +1,112 @@
+openapi: 3.1.0
+info:
+  title: HTTP-Proxy Interfaces für die Bereitsstellung von ISMs
+  version: 1.0.0
+  description: OpenAPI 3 Beschreibung für ISM-bezogene Schnittstellen am HTTP-Proxy des NCPeH-Proxy
+components:
+  securitySchemes:
+    mTLS:
+      type: mutualTLS
+      description: Mutual TLS für die Absicherung der internen Kommunikation.
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: XXXXX-API-KEY
+      description: API-Key für den internen Dienstzugriff.
+security:
+  - mTLS: []
+paths:
+  /ism:
+    get:
+      summary: Bereitstellung der ISM-HTML-Ansichten
+      description: Statische Bereitstellung der International Search Masks in HTML-Format für den Buildprozess der WebApp.
+      operationId: getIsmHtml
+      responses:
+        '200':
+          description: Erfolgreicher Abruf der ISM-HTML-Liste
+          content:
+            application/json:
+              schema:
+                $ref: './domainobj-eped-b.yaml#/components/schemas/ISMInternationalListHtml'
+            text/html:
+              schema:
+                $ref: './domainobj-eped-b.yaml#/components/schemas/ISMInternationalListHtml'
+        '500':
+          description: Interner Serverfehler (z.B. Fehler beim Abruf oder Rendering)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Internal Server Error"
+
+  /ism/render:
+    post:
+      summary: Internes Rendering der ISM-Ansichten
+      description: Interne Operation des HTTP-Proxy, um die ISM-Liste in HTML-Ansichten zu rendern.
+      operationId: postIsmRender
+      security:
+        - mTLS: []
+        - ApiKeyAuth: []
+      requestBody:
+        description: Die zu rendernde Liste der ISM
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: './domainobj-eped-b.yaml#/components/schemas/ISMInternationalList'
+      responses:
+        '200':
+          description: Erfolgreich gerenderte HTML-Ressourcen
+          content:
+            application/json:
+              schema:
+                $ref: './domainobj-eped-b.yaml#/components/schemas/ISMInternationalListHtml'
+            text/html:
+              schema:
+                $ref: './domainobj-eped-b.yaml#/components/schemas/ISMInternationalListHtml'
+        '400':
+          description: Ungültiges Format der übergebenen ISM-Liste
+        '500':
+          description: Interner Fehler beim Rendering-Prozess
+
+  /assets/flags/{countryCode}:
+    get:
+      summary: Abruf von Flaggen-Ressourcen
+      description: Stellt die Länderflaggen für das EU-Webportal bereit.
+      operationId: getFlagAsset
+      parameters:
+        - name: countryCode
+          in: path
+          required: true
+          description: Der ISO-Ländercode für die gewünschte Flagge.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Erfolgreicher Abruf der Flagge
+          content:
+            image/png:
+              schema:
+                type: string
+                format: binary
+            image/svg+xml:
+              schema:
+                type: string
+        '404':
+          description: Flagge für den angegebenen Ländercode nicht gefunden
+
+  /events/ism/update:
+    post:
+      summary: Benachrichtigung über aktualisierte ISM-Daten
+      description: Endpoint, um den Proxy über neue ServiceMetadata zu informieren.
+      operationId: notifyIsmUpdate
+      security:
+        - mTLS: []
+      responses:
+        '202':
+          description: Benachrichtigung akzeptiert, Verarbeitung gestartet
+        '401':
+          description: Fehlende oder ungültige Authentifizierung

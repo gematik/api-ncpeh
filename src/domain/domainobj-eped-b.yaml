@@ -112,16 +112,47 @@ components:
       properties:
         id: { type: string, format: uuid }
 
-    ISMNational:
+    ISMInternational:
       type: object
       x-object-type: "ValueObject"
       x-subdomains: 
         - $ref: './subdomains.yaml#/subdomains/ism-handling-retrieval'
         - $ref: './subdomains.yaml#/subdomains/ism-handling-preparation'
+      x-medical-personal-information: false
+      description: "Eine International Search Mask des Herkunftslandes des EU-Bürgers als schemakonforme XML-Repräsentation, die die Identifikation des EU-Bürgers in der Apotheke vor Ort ermöglicht"
+
+    ISMInternationalHtml:
+      type: object
+      x-object-type: "ValueObject"
+      x-subdomains: 
+        - $ref: './subdomains.yaml#/subdomains/ism-handling-preparation'
         - $ref: './subdomains.yaml#/subdomains/ism-handling-display'
+      x-medical-personal-information: false
+      description: "HTML-Repräsentation einer International Search Mask entsprechend der Vorgaben der ISMInternational"
+
+    ISMInternationalList:
+      type: object
+      x-object-type: "ValueObject"
+      x-fhir-object-type: "https://hl7.org/fhir/R4/bundle-definitions.html#Bundle"
+      x-subdomains: 
+        - $ref: './subdomains.yaml#/subdomains/ism-handling-retrieval'
+        - $ref: './subdomains.yaml#/subdomains/ism-handling-preparation'
       x-external-reference: "list_ism_international"
       x-medical-personal-information: false
-      description: "Eine International Search Mask des Herkunftslandes des EU-Bürgers, die die Identifikation des EU-Bürgers in der Apotheke vor Ort ermöglicht"
+      description: "Eine Liste aller verfügbaren International Search Mask möglicher Herkunftsländer von EU-Bürgern"
+      properties:
+        ISMInternational: { $ref: '#/components/schemas/ISMInternational' }
+
+    ISMInternationalListHtml:
+      type: object
+      x-object-type: "ValueObject"
+      x-subdomains: 
+        - $ref: './subdomains.yaml#/subdomains/ism-handling-preparation'
+        - $ref: './subdomains.yaml#/subdomains/ism-handling-display'
+      x-medical-personal-information: false
+      description: "HTML-Repräsentation einer Liste aller verfügbaren International Search Mask möglicher Herkunftsländer von EU-Bürgern"
+      properties:
+        ISMInternational: { $ref: '#/components/schemas/ISMInternational' }
 
     PatientIdentificationQuery:
       type: object
