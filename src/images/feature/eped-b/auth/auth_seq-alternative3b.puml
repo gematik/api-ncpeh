@@ -23,39 +23,17 @@ box "NCPeH-Proxy" #FloralWhite
 end box
 participant "NCPeH-FD" as NCPeH
 
-== Annahmen ==
-note over AVS
-LE-DE ist im AVS registriert, und
-die personenbezogenen Daten von LE-DE 
-im AVS sind eindeutig LE-DE zugeordnet.
-
-AVS darf Benutzerinformationen
-des dort angemeldeten Users beisteuern
-end note
-
 == Vorbedingungen ==
 note over AVS
-AVS-Client integriert
-einen Mini-Webserver
-
 AVS mit eigener client_id beim IDP registriert
 end note
 
-note over WebApp    
-WebApp durch AVS ist noch nicht ausgeführt
-end note
-
-
-== Überprüfen des EU-Webportals auf eine aktive Sitzung oder Anmeldung ==
+== Anmeldung am EU-Webportal im AVS ==
 
 User -> AVS: Klick auf "Anmelden"
 activate AVS
 
-AVS -> WebApp: Information über die aktuelle Session abrufen()
-WebApp --> AVS :SessionInfo
-
-
-==  Wenn(SessionInfo ist leer oder abgelaufen) THEN Authenticator-Flow durch AVS ==
+==  Authenticator-Flow durch AVS ==
 
 AVS -> Proxy: Decoupled Auth Request POST /auth-decoupled
 activate Proxy
@@ -225,7 +203,6 @@ else EU-Webportal pollt
              note left
                 Status: ""AUTHENTICATED""
              end note
-            WebApp --> AVS: 200 OK
         end
     end
 |||
