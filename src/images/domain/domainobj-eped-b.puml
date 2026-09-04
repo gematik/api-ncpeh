@@ -3,13 +3,25 @@
 openapi: 3.1.0
 info:
   title: ePed-B Domain Objects
-  version: "0.1"
+  version: "0.2"
 
 x-subdomains:
   $ref: './subdomains.yaml#/subdomains'
 
 components:
   schemas:
+
+    DPoPAsymmetricKeyPair:
+      type: object
+      x-object-type: "Entity"
+      x-subdomains: 
+        - $ref: './subdomains.yaml#/subdomains/authentication-authorization'
+      x-medical-personal-information: false
+      description: "Asymm. Schlüsselpaar als Grundlage für die Generierung von DPoP-Tokens"
+      properties:
+        id: { type: string, format: uuid }
+        PrK: { type: string }
+        PuK: { type: string }
 
     IdentityAssertion:
       type: object
@@ -102,16 +114,55 @@ components:
       properties:
         id: { type: string, format: uuid }
 
-    ISMNational:
+    ISMInternational:
       type: object
       x-object-type: "ValueObject"
       x-subdomains: 
         - $ref: './subdomains.yaml#/subdomains/ism-handling-retrieval'
         - $ref: './subdomains.yaml#/subdomains/ism-handling-preparation'
+      x-medical-personal-information: false
+      description: "Eine International Search Mask des Herkunftslandes des EU-Bürgers als schemakonforme XML-Repräsentation, die die Identifikation des EU-Bürgers in der Apotheke vor Ort ermöglicht"
+
+    ISMInternationalHtml:
+      type: object
+      x-object-type: "ValueObject"
+      x-subdomains: 
+        - $ref: './subdomains.yaml#/subdomains/ism-handling-preparation'
         - $ref: './subdomains.yaml#/subdomains/ism-handling-display'
+      x-medical-personal-information: false
+      description: "HTML-Repräsentation einer International Search Mask entsprechend der Vorgaben der ISMInternational"
+
+    ISMInternationalList:
+      type: object
+      x-object-type: "ValueObject"
+      x-fhir-object-type: "Bundle"
+      x-fhir-bundle-type: "collection"
+      x-subdomains: 
+        - $ref: './subdomains.yaml#/subdomains/ism-handling-retrieval'
+        - $ref: './subdomains.yaml#/subdomains/ism-handling-preparation'
       x-external-reference: "list_ism_international"
       x-medical-personal-information: false
-      description: "Eine International Search Mask des Herkunftslandes des EU-Bürgers, die die Identifikation des EU-Bürgers in der Apotheke vor Ort ermöglicht"
+      description: "Eine Liste aller verfügbaren International Search Mask möglicher Herkunftsländer von EU-Bürgern"
+      properties:
+        ISMInternational: 
+          type: array
+          x-fhir-mapping: "Bundle.entry.resource"
+          items:
+            $ref: '#/components/schemas/ISMInternational'
+
+    ISMInternationalHtmlList:
+      type: object
+      x-object-type: "ValueObject"
+      x-subdomains: 
+        - $ref: './subdomains.yaml#/subdomains/ism-handling-preparation'
+        - $ref: './subdomains.yaml#/subdomains/ism-handling-display'
+      x-medical-personal-information: false
+      description: "HTML-Repräsentation einer Liste aller verfügbaren International Search Mask möglicher Herkunftsländer von EU-Bürgern"
+      properties:
+        ISMInternationalHtml: 
+          type: array
+          items:
+            $ref: '#/components/schemas/ISMInternationalHtml'
 
     PatientIdentificationQuery:
       type: object
@@ -203,8 +254,14 @@ components:
       required: [id]
       properties:
         id: { type: string, format: uuid }
-        PrescriptionRedeemable: { $ref: '#/components/schemas/PrescriptionRedeemable' }
-        PrescriptionNonRedeemable: { $ref: '#/components/schemas/PrescriptionNonRedeemable' }
+        PrescriptionRedeemable: 
+          type: array
+          items:
+            $ref: '#/components/schemas/PrescriptionRedeemable'
+        PrescriptionNonRedeemable: 
+          type: array
+          items:
+            $ref: '#/components/schemas/PrescriptionNonRedeemable'
 
     PrescriptionRedeemable:
       type: object
@@ -242,7 +299,10 @@ components:
       required: [id]
       properties:
         id: { type: string, format: uuid }
-        PrescriptionRedeemable: { $ref: '#/components/schemas/SelectedPrescriptionRetrievalList' }
+        SelectedPrescriptionRetrieval: 
+          type: array
+          items:
+            $ref: '#/components/schemas/PrescriptionRedeemable'
 
     PrescriptionRetrievedList:
       type: object
@@ -255,7 +315,10 @@ components:
       required: [id]
       properties:
         id: { type: string, format: uuid }
-        PrescriptionRedeemable: { $ref: '#/components/schemas/PrescriptionRetrievedList' }
+        PrescriptionRetrieved: 
+          type: array
+          items:
+            $ref: '#/components/schemas/PrescriptionRedeemable'
 
     DispensationList:
       type: object
@@ -264,13 +327,16 @@ components:
         - $ref: './subdomains.yaml#/subdomains/dispensation-preparation'
         - $ref: './subdomains.yaml#/subdomains/dispensation-handling'
         - $ref: './subdomains.yaml#/subdomains/transaction-handling-eped-b'
-      x-external-reference: "list_dispensation_information"
+      x-external-reference: "list_dispensation_documents"
       x-medical-personal-information: true
       description: "Liste der Dispensationen, die an den EU-Bürger abgegeben wurden"
       required: [id, DispensationInformation]
       properties:
         id: { type: string, format: uuid }
-        DispensationInformation: { $ref: '#/components/schemas/DispensationInformation' }
+        DispensationInformation: 
+          type: array
+          items:
+            $ref: '#/components/schemas/DispensationInformation'
 
     DispensationInformation:
       type: object
@@ -305,7 +371,10 @@ components:
       required: [id]
       properties:
         id: { type: string, format: uuid }
-        GatewayPolicy: { $ref: '#/components/schemas/GatewayPolicy' }
+        GatewayPolicy: 
+          type: array
+          items:
+            $ref: '#/components/schemas/GatewayPolicy'
 
     GatewayPolicy:
       type: object
@@ -319,5 +388,4 @@ components:
         id: { type: string, format: uuid }
         PolicyType: { type: string }
         PolicyDefinition: { type: string }
-
 @endyaml

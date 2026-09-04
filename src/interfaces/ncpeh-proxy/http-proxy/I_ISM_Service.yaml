@@ -27,10 +27,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: './domainobj-eped-b.yaml#/components/schemas/ISMInternationalListHtml'
+                $ref: './domainobj-eped-b.yaml#/components/schemas/ISMInternationalHtmlList'
             text/html:
               schema:
-                $ref: './domainobj-eped-b.yaml#/components/schemas/ISMInternationalListHtml'
+                $ref: './domainobj-eped-b.yaml#/components/schemas/ISMInternationalHtmlList'
         '500':
           description: Interner Serverfehler (z.B. Fehler beim Abruf oder Rendering)
           content:
@@ -63,10 +63,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: './domainobj-eped-b.yaml#/components/schemas/ISMInternationalListHtml'
+                $ref: './domainobj-eped-b.yaml#/components/schemas/ISMInternationalHtmlList'
             text/html:
               schema:
-                $ref: './domainobj-eped-b.yaml#/components/schemas/ISMInternationalListHtml'
+                $ref: './domainobj-eped-b.yaml#/components/schemas/ISMInternationalHtmlList'
         '400':
           description: Ungültiges Format der übergebenen ISM-Liste
         '500':

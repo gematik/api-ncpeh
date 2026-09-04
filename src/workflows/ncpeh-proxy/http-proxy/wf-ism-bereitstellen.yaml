@@ -10,15 +10,13 @@ sourceDescriptions:
   - name: proxy-basic
     url: ./I_HTTP-Proxy_basic.yaml
     type: openapi
+  - name: ism-service-fd
+    url: ./I_ISM_Service_FD.yaml
+    type: openapi
 workflows:
   - workflowId: ism-bereitstellen-workflow
     summary: Workflow der ISM-Bereitstellung mit Error Handling
     description: Ereignisbasierter Workflow zur Bereitstellung der ISM-Bereitstellung für die WebApp des EU-Webportals.
-    inputs:
-      type: object
-      properties:
-        ismListPayload:
-          $ref: './domainobj-eped-b.yaml#/components/schemas/ISMInternationalList'
     steps:
       - stepId: notifyIsmUpdateStep
         description: Proxy über das Vorliegen neuer ISMs aus ServiceMetadata benachrichtigt.
@@ -31,13 +29,29 @@ workflows:
               - condition: $statusCode == 401
             type: end
 
+      - stepId: getIsmListStep
+        description: Proxy ruft die aktuellen ISM-Daten vom NCPeH-FD ab.
+        operationId: ism-service-fd.getIsmList
+        successCriteria:
+          - condition: $statusCode == 200
+        onFailure:
+          - name: retryOnServerError
+            criteria:
+              - condition: $statusCode == 500
+            type: retry
+            retryAfter: 5
+            retryLimit: 3
+        outputs:
+          ismListPayload: $response.body
+          x-schema: 
+            $ref: './domainobj-eped-b.yaml#/components/schemas/ISMInternationalList'
+
       - stepId: renderIsmStep
         description: Proxy rendert die abgerufenen ISM-Listen-Daten intern als HTML.
         operationId: ism-service.postIsmRender
         requestBody:
           contentType: application/json
-          payload: $inputs.ismListPayload
-
+          payload: $steps.getIsmListStep.outputs.ismListPayload
         successCriteria:
           - condition: $statusCode == 200
         onFailure:
@@ -78,7 +92,7 @@ workflows:
             retryAfter: 5
             retryLimit: 3
         outputs:
-          fetchedHtml: $response.body
+          fetchedHtml: $steps.renderIsmStep.outputs.renderedHtml
           x-schema: 
             $ref: './domainobj-eped-b.yaml#/components/schemas/ISMInternationalListHtml'
 

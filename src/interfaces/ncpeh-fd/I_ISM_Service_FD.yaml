@@ -1,0 +1,29 @@
+openapi: 3.1.0
+info:
+  title: NCPeH-FD Interfaces für die Bereitsstellung von ISMs
+  version: 1.0.0
+  description: OpenAPI 3 Beschreibung für ISM-bezogene Schnittstellen am NCPeH-FD.
+components:
+  securitySchemes:
+    mTLS:
+      type: mutualTLS
+      description: Mutual TLS für die Absicherung der internen Kommunikation.
+security:
+  - mTLS: []
+paths:
+  /ismlist:
+    get:
+      summary: Abruf der aktuellen ISM-Liste
+      description: Stellt die aktuellen International Search Masks als Liste zur Verfügung (gekapselt in ein FHIR-Bundle).
+      operationId: getIsmList
+      security:
+        - mTLS: []
+      responses:
+        '200':
+          description: Erfolgreicher Abruf der ISM-Liste
+          content:
+            application/json:
+              schema:
+                $ref: './domainobj-eped-b.yaml#/components/schemas/ISMInternationalList'
+        '500':
+          description: Interner Serverfehler beim Bereitstellen der ISM-Liste
