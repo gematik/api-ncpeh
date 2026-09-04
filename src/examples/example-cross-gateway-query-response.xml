@@ -2,7 +2,7 @@
     <RegistryObjectList>
         <!-- ExtrinsicObject zur ePrescription 160.000.000.000.123.76^eP.XML (CDA Level 3) -->
         <ExtrinsicObject 
-         home="urn:oid:1.2.246.556.12001.4.1000.990.1" 
+         home="urn:oid:1.2.276.0.76.4.291" 
          id="urn:uuid:cb804da7-407c-4590-b394-ad3d7617995d" 
          lid="urn:uuid:cb804da7-407c-4590-b394-ad3d7617995d" 
          mimeType="text/xml" 
@@ -175,7 +175,7 @@
         </ExtrinsicObject>
         <!-- ExtrinsicObject zur ePrescription 160.000.000.000.123.76^eP.PDF (CDA Level 1) -->
         <ExtrinsicObject 
-         home="urn:oid:1.2.246.556.12001.4.1000.990.1" 
+         home="urn:oid:1.2.276.0.76.4.291" 
          id="urn:uuid:740c850d-67c3-4481-bb0b-8bf32a17e034" 
          lid="urn:uuid:740c850d-67c3-4481-bb0b-8bf32a17e034" 
          mimeType="text/xml" 
