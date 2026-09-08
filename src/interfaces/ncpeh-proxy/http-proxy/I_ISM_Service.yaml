@@ -3,7 +3,30 @@ info:
   title: HTTP-Proxy Interfaces für die Bereitsstellung von ISMs
   version: 1.0.0
   description: OpenAPI 3 Beschreibung für ISM-bezogene Schnittstellen am HTTP-Proxy des NCPeH-Proxy
+servers:
+  - url: "{protocol}://{hostname}/{basepath}/{apipath}/{apiversion}"
+    variables:
+      protocol:
+        default: https
+      hostname:
+        default: "dummyhostname:443"
+      basepath:
+        default: "http-proxy"
+      apipath:
+        default: "api"
+      apiversion:
+        default: "v1"
+    description: HTTP-Proxy API des NCPeH-Proxy (Version 1)
+
 components:
+  parameters:
+    x-useragent:
+      name: x-useragent
+      in: header
+      description: Identifiziert den aufrufenden Client zur Nachverfolgbarkeit.
+      required: false
+      schema:
+        type: string
   securitySchemes:
     mTLS:
       type: mutualTLS
@@ -18,9 +41,16 @@ security:
 paths:
   /ism:
     get:
+      tags:
+        - UC_ISM_bereitstellen
       summary: Bereitstellung der ISM-HTML-Ansichten
       description: Statische Bereitstellung der International Search Masks in HTML-Format für den Buildprozess der WebApp.
       operationId: getIsmHtml
+      parameters:
+        - $ref: '#/components/parameters/x-useragent'
+      security:
+        - mTLS: []
+        - ApiKeyAuth: []
       responses:
         '200':
           description: Erfolgreicher Abruf der ISM-HTML-Liste
@@ -44,9 +74,13 @@ paths:
 
   /ism/render:
     post:
+      tags:
+        - UC_ISM_bereitstellen
       summary: Internes Rendering der ISM-Ansichten
       description: Interne Operation des HTTP-Proxy, um die ISM-Liste in HTML-Ansichten zu rendern.
       operationId: postIsmRender
+      parameters:
+        - $ref: '#/components/parameters/x-useragent'
       security:
         - mTLS: []
         - ApiKeyAuth: []
@@ -55,6 +89,12 @@ paths:
         required: true
         content:
           application/json:
+            schema:
+              $ref: './domainobj-eped-b.yaml#/components/schemas/ISMInternationalList'
+          application/fhir+json:
+            schema:
+              $ref: './domainobj-eped-b.yaml#/components/schemas/ISMInternationalList'
+          application/fhir+xml:
             schema:
               $ref: './domainobj-eped-b.yaml#/components/schemas/ISMInternationalList'
       responses:
@@ -69,40 +109,66 @@ paths:
                 $ref: './domainobj-eped-b.yaml#/components/schemas/ISMInternationalHtmlList'
         '400':
           description: Ungültiges Format der übergebenen ISM-Liste
+        '401':
+          description: Authentifizierung fehlgeschlagen
+        '403':
+          description: Zugriff verweigert
         '500':
           description: Interner Fehler beim Rendering-Prozess
 
-  /assets/flags/{countryCode}:
+  /assets/flags:
     get:
-      summary: Abruf von Flaggen-Ressourcen
-      description: Stellt die Länderflaggen für das EU-Webportal bereit.
-      operationId: getFlagAsset
+      tags:
+        - Assets
+        - UC_ISM_bereitstellen
+      summary: Abruf von Flaggen-Ressourcen (Batch)
+      description: Stellt die Länderflaggen für das EU-Webportal im Batch bereit.
+      operationId: getFlagAssets
       parameters:
-        - name: countryCode
-          in: path
+        - name: countryCodes
+          in: query
           required: true
-          description: Der ISO-Ländercode für die gewünschte Flagge.
+          description: Kommaseparierte Liste von ISO-Ländercodes.
           schema:
             type: string
+        - $ref: '#/components/parameters/x-useragent'
+      security:
+        - mTLS: []
+        - ApiKeyAuth: []
       responses:
         '200':
-          description: Erfolgreicher Abruf der Flagge
+          description: Erfolgreicher Abruf der Flaggen
           content:
-            image/png:
+            application/json:
               schema:
-                type: string
-                format: binary
-            image/svg+xml:
-              schema:
-                type: string
+                type: object
+                additionalProperties:
+                  type: string
+                  format: byte
+                  description: Base64-kodierte Flaggen-Bilddaten
         '404':
-          description: Flagge für den angegebenen Ländercode nicht gefunden
+          description: Flagge für mindestens einen angegebenen Ländercode nicht gefunden
+        '406':
+          description: Angefragter Mime-Type im Accept-Header kann nicht bedient werden
+        '408':
+          description: Anfrage hat zu lange gedauert (Timeout)
+        '429':
+          description: Zuviele Anfragen pro Zeiteinheit
+        '500':
+          description: Interner Serverfehler beim Bereitstellen der Flaggen
+
 
   /events/ism/update:
     post:
+      tags:
+        - Webhooks
+        - Events
+        - UC_ISM_bereitstellen
       summary: Benachrichtigung über aktualisierte ISM-Daten
-      description: Endpoint, um den Proxy über neue ServiceMetadata zu informieren.
+      description: Endpoint, um den Proxy über neue ISMs aus ServiceMetadata zu informieren.
       operationId: notifyIsmUpdate
+      parameters:
+        - $ref: '#/components/parameters/x-useragent'
       security:
         - mTLS: []
       responses:

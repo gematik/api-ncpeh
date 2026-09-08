@@ -3,7 +3,30 @@ info:
   title: NCPeH-FD Interfaces für die Bereitsstellung von ISMs
   version: 1.0.0
   description: OpenAPI 3 Beschreibung für ISM-bezogene Schnittstellen am NCPeH-FD.
+servers:
+  - url: "{protocol}://{hostname}/{basepath}/{apipath}/{apiversion}"
+    variables:
+      protocol:
+        default: https
+      hostname:
+        default: "dummyhostname:443"
+      basepath:
+        default: "ncpeh-fd"
+      apipath:
+        default: "api"
+      apiversion:
+        default: "v1"
+    description: NCPeH-FD API (Version 1)
+
 components:
+  parameters:
+    x-useragent:
+      name: x-useragent
+      in: header
+      description: Identifiziert den aufrufenden Client zur Nachverfolgbarkeit.
+      required: false
+      schema:
+        type: string
   securitySchemes:
     mTLS:
       type: mutualTLS
@@ -13,17 +36,34 @@ security:
 paths:
   /ismlist:
     get:
+      tags:
+        - ISM_Ressources
+        - UC_ISM_bereitstellen
       summary: Abruf der aktuellen ISM-Liste
       description: Stellt die aktuellen International Search Masks als Liste zur Verfügung (gekapselt in ein FHIR-Bundle).
       operationId: getIsmList
+      parameters:
+        - $ref: '#/components/parameters/x-useragent'
       security:
         - mTLS: []
       responses:
         '200':
           description: Erfolgreicher Abruf der ISM-Liste
           content:
-            application/json:
+            application/fhir+json:
               schema:
                 $ref: './domainobj-eped-b.yaml#/components/schemas/ISMInternationalList'
+            application/fhir+xml:
+              schema:
+                $ref: './domainobj-eped-b.yaml#/components/schemas/ISMInternationalList'
+        '404':
+          description: ISM-Dateien wurden nicht gefunden
+        '406':
+          description: Angefragter Mime-Type im Accept-Header kann nicht bedient werden
+        '408':
+          description: Anfrage hat zu lange gedauert (Timeout)
+        '429':
+          description: Zuviele Anfragen pro Zeiteinheit
         '500':
           description: Interner Serverfehler beim Bereitstellen der ISM-Liste
+

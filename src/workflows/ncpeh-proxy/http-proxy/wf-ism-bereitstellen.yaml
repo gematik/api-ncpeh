@@ -97,12 +97,12 @@ workflows:
             $ref: './domainobj-eped-b.yaml#/components/schemas/ISMInternationalListHtml'
 
       - stepId: getFlagAssetsStep
-        description: Buildprozess lädt in einem Loop die benötigten Flaggen-Ressourcen nach entsprechend diesem Bsp.
-        operationId: ism-service.getFlagAsset
+        description: Buildprozess lädt die benötigten Flaggen-Ressourcen im Batch herunter.
+        operationId: ism-service.getFlagAssets
         parameters:
-          - name: countryCode
-            in: path
-            value: "PL"
+          - name: countryCodes
+            in: query
+            value: "PL,FR,PT"
         successCriteria:
           - condition: $statusCode == 200
         onFailure:

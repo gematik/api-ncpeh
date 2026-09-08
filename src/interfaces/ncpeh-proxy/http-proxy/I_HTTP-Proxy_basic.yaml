@@ -3,7 +3,30 @@ info:
   title: allgemeine HTTP-Proxy Interfaces (NCPeH-Proxy)
   version: 1.0.0
   description: OpenAPI 3 Beschreibung für allgemeine Schnittstellen am HTTP-Proxy des NCPeH-Proxy
+servers:
+  - url: "{protocol}://{hostname}/{basepath}/{apipath}/{apiversion}"
+    variables:
+      protocol:
+        default: https
+      hostname:
+        default: "dummyhostname:443"
+      basepath:
+        default: "http-proxy"
+      apipath:
+        default: "api"
+      apiversion:
+        default: "v1"
+    description: HTTP-Proxy API des NCPeH-Proxy (Version 1)
+
 components:
+  parameters:
+    x-useragent:
+      name: x-useragent
+      in: header
+      description: Identifiziert den aufrufenden Client zur Nachverfolgbarkeit.
+      required: false
+      schema:
+        type: string
   securitySchemes:
     mTLS:
       type: mutualTLS
@@ -18,9 +41,13 @@ security:
 paths:
   /health:
     get:
+      tags:
+        - Common
       summary: Health Check
       description: Überprüft den Status (Readiness/Liveness) des Proxy-Dienstes.
       operationId: checkHealth
+      parameters:
+        - $ref: '#/components/parameters/x-useragent'
       responses:
         '200':
           description: Dienst ist erreichbar und bereit
@@ -38,9 +65,21 @@ paths:
 webhooks:
   events/app/build:
     post:
+      tags:
+        - Common
+        - UC_ISM_bereitstellen
       summary: WebApp-Build triggern
       description: Webhook, der vom Proxy aufgerufen wird, um den Buildprozess der WebApp anzustoßen.
       operationId: triggerWebAppBuild
+      parameters:
+        - $ref: '#/components/parameters/x-useragent'
+      security:
+        - mTLS: []
+        - ApiKeyAuth: []
       responses:
         '202':
           description: Build-Prozess erfolgreich angestoßen
+        '401':
+          description: Fehlende oder ungültige Authentifizierung
+        '403':
+          description: Zugriff verweigert
