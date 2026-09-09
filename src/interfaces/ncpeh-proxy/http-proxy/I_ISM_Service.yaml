@@ -43,6 +43,7 @@ paths:
     get:
       tags:
         - UC_ISM_bereitstellen
+        - I_ISM_Service
       summary: Bereitstellung der ISM-HTML-Ansichten
       description: Statische Bereitstellung der International Search Masks in HTML-Format für den Buildprozess der WebApp.
       operationId: getIsmHtml
@@ -76,6 +77,7 @@ paths:
     post:
       tags:
         - UC_ISM_bereitstellen
+        - I_ISM_Service
       summary: Internes Rendering der ISM-Ansichten
       description: Interne Operation des HTTP-Proxy, um die ISM-Liste in HTML-Ansichten zu rendern.
       operationId: postIsmRender
@@ -121,6 +123,7 @@ paths:
       tags:
         - Assets
         - UC_ISM_bereitstellen
+        - I_ISM_Service
       summary: Abruf von Flaggen-Ressourcen (Batch)
       description: Stellt die Länderflaggen für das EU-Webportal im Batch bereit.
       operationId: getFlagAssets
@@ -164,6 +167,7 @@ paths:
         - Webhooks
         - Events
         - UC_ISM_bereitstellen
+        - I_ISM_Service
       summary: Benachrichtigung über aktualisierte ISM-Daten
       description: Endpoint, um den Proxy über neue ISMs aus ServiceMetadata zu informieren.
       operationId: notifyIsmUpdate

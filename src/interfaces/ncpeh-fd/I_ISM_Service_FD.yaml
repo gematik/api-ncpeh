@@ -39,6 +39,7 @@ paths:
       tags:
         - ISM_Ressources
         - UC_ISM_bereitstellen
+        - I_ISM_Service
       summary: Abruf der aktuellen ISM-Liste
       description: Stellt die aktuellen International Search Masks als Liste zur Verfügung (gekapselt in ein FHIR-Bundle).
       operationId: getIsmList
