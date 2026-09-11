@@ -53,10 +53,10 @@ paths:
           content:
             application/fhir+json:
               schema:
-                $ref: './domainobj-eped-b.yaml#/components/schemas/ISMInternationalList'
+                $ref: '../../domain/domainobj-eped-b.yaml#/components/schemas/ISMInternationalList'
             application/fhir+xml:
               schema:
-                $ref: './domainobj-eped-b.yaml#/components/schemas/ISMInternationalList'
+                $ref: '../../domain/domainobj-eped-b.yaml#/components/schemas/ISMInternationalList'
         '404':
           description: ISM-Dateien wurden nicht gefunden
         '406':
