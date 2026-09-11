@@ -16,7 +16,7 @@ sourceDescriptions:
 workflows:
   - workflowId: ism-bereitstellen-workflow
     summary: Workflow der ISM-Bereitstellung mit Error Handling
-    description: Ereignisbasierter Workflow zur Bereitstellung der ISM-Bereitstellung für die WebApp des EU-Webportals.
+    description: Ereignisbasierter Workflow zur Bereitstellung der ISM für die WebApp des EU-Webportals.
     steps:
       - stepId: notifyIsmUpdateStep
         description: Proxy über das Vorliegen neuer ISMs aus ServiceMetadata benachrichtigt.
