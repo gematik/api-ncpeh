@@ -49,7 +49,7 @@ opt Neue ServiceMetadata im NCPeH-FD verfügbar
     Proxy -> Proxy: FHIR-Bundle validieren (ISMInternationalList)
 
 == ism-handling-preparation ==
-    Proxy -> Proxy: POST /ism/render (ISMInternationalList):ISMInternationalListHtml
+    Proxy -> Proxy: POST /ism/render (ISMInternationalList):ISMInternationalHtmlList
     'WebApp -> Proxy: POST /ism (ism_international_specific_html)
     
     Proxy -> Buildprozess: POST /events/app/build
@@ -58,13 +58,13 @@ opt Neue ServiceMetadata im NCPeH-FD verfügbar
         Buildprozess -> Proxy: GET /ism
         note right: kein Lazyloading der ISMs über WebApp, sondern statische Bereitstellung in WebApp-DeploymentArtifact
         note left: TODO: Request absichern oder hat der BP automatisch Zugriff?\nz.B. weil er ein Sidecar im selben Namespace ist
-        Proxy --> Buildprozess: :ISMInternationalListHtml
+        Proxy --> Buildprozess: :ISMInternationalHtmlList
         
         Buildprozess -> Proxy: GET /assets/flags?countryCodes={countryCodes}
         note left: Batch-Endpoint für benötigte Länderflaggen
         Proxy --> Buildprozess: :Map der Flaggen als Base64-kodierte Bilddaten
         
-        Buildprozess -> Buildprozess: Webapp bauen (ISMInternationalListHtml, FlagList, ...)
+        Buildprozess -> Buildprozess: Webapp bauen (ISMInternationalHtmlList, FlagList, ...)
         note right: weitere Schritte für diesen UC nicht relevant, daher nicht aufgeführt
     deactivate Buildprozess
     ... Anschließend Deployment der Webapp auf dem Webserver ...
