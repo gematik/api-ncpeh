@@ -99,7 +99,8 @@ paths:
               $ref: '../../../domain/domainobj-eped-b.yaml#/components/schemas/ISMInternationalList'
           application/fhir+xml:
             schema:
-              $ref: '../../../domain/domainobj-eped-b.yaml#/components/schemas/ISMInternationalList'
+              type: string
+              contentMediaType: application/fhir+xml
       responses:
         '200':
           description: Erfolgreich gerenderte HTML-Ressourcen
