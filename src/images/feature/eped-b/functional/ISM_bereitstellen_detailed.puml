@@ -60,11 +60,9 @@ opt Neue ServiceMetadata im NCPeH-FD verfügbar
         note left: TODO: Request absichern oder hat der BP automatisch Zugriff?\nz.B. weil er ein Sidecar im selben Namespace ist
         Proxy --> Buildprozess: :ISMInternationalListHtml
         
-        loop für jedes Land in ISMInternationalListHtml
-            Buildprozess -> Proxy: GET /assets/flags/{countryCode}
-            note left: Endpoint für Ressourcen
-            Proxy --> Buildprozess: :Flagge als Bild
-        end
+        Buildprozess -> Proxy: GET /assets/flags?countryCodes={countryCodes}
+        note left: Batch-Endpoint für benötigte Länderflaggen
+        Proxy --> Buildprozess: :Map der Flaggen als Base64-kodierte Bilddaten
         
         Buildprozess -> Buildprozess: Webapp bauen (ISMInternationalListHtml, FlagList, ...)
         note right: weitere Schritte für diesen UC nicht relevant, daher nicht aufgeführt
