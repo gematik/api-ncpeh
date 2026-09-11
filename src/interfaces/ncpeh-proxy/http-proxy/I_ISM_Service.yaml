@@ -58,10 +58,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: './domainobj-eped-b.yaml#/components/schemas/ISMInternationalHtmlList'
+                $ref: '../../../domain/domainobj-eped-b.yaml#/components/schemas/ISMInternationalHtmlList'
             text/html:
               schema:
-                $ref: './domainobj-eped-b.yaml#/components/schemas/ISMInternationalHtmlList'
+                $ref: '../../../domain/domainobj-eped-b.yaml#/components/schemas/ISMInternationalHtmlList'
         '500':
           description: Interner Serverfehler (z.B. Fehler beim Abruf oder Rendering)
           content:
@@ -92,23 +92,23 @@ paths:
         content:
           application/json:
             schema:
-              $ref: './domainobj-eped-b.yaml#/components/schemas/ISMInternationalList'
+              $ref: '../../../domain/domainobj-eped-b.yaml#/components/schemas/ISMInternationalList'
           application/fhir+json:
             schema:
-              $ref: './domainobj-eped-b.yaml#/components/schemas/ISMInternationalList'
+              $ref: '../../../domain/domainobj-eped-b.yaml#/components/schemas/ISMInternationalList'
           application/fhir+xml:
             schema:
-              $ref: './domainobj-eped-b.yaml#/components/schemas/ISMInternationalList'
+              $ref: '../../../domain/domainobj-eped-b.yaml#/components/schemas/ISMInternationalList'
       responses:
         '200':
           description: Erfolgreich gerenderte HTML-Ressourcen
           content:
             application/json:
               schema:
-                $ref: './domainobj-eped-b.yaml#/components/schemas/ISMInternationalHtmlList'
+                $ref: '../../../domain/domainobj-eped-b.yaml#/components/schemas/ISMInternationalHtmlList'
             text/html:
               schema:
-                $ref: './domainobj-eped-b.yaml#/components/schemas/ISMInternationalHtmlList'
+                $ref: '../../../domain/domainobj-eped-b.yaml#/components/schemas/ISMInternationalHtmlList'
         '400':
           description: Ungültiges Format der übergebenen ISM-Liste
         '401':
