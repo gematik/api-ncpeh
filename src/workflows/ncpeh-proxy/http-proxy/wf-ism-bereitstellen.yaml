@@ -43,8 +43,6 @@ workflows:
             retryLimit: 3
         outputs:
           ismListPayload: $response.body
-          x-schema: 
-            $ref: './domainobj-eped-b.yaml#/components/schemas/ISMInternationalList'
 
       - stepId: renderIsmStep
         description: Proxy rendert die abgerufenen ISM-Listen-Daten intern als HTML.
@@ -67,8 +65,6 @@ workflows:
             retryLimit: 3
         outputs:
           renderedHtml: $response.body
-          x-schema: 
-            $ref: './domainobj-eped-b.yaml#/components/schemas/ISMInternationalListHtml'
 
       - stepId: triggerBuildStep
         description: Proxy triggert den Buildprozess über den konfigurierten Webhook.
@@ -93,8 +89,6 @@ workflows:
             retryLimit: 3
         outputs:
           fetchedHtml: $steps.renderIsmStep.outputs.renderedHtml
-          x-schema: 
-            $ref: './domainobj-eped-b.yaml#/components/schemas/ISMInternationalListHtml'
 
       - stepId: getFlagAssetsStep
         description: Buildprozess lädt die benötigten Flaggen-Ressourcen im Batch herunter.
