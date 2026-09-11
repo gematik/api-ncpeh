@@ -61,7 +61,8 @@ paths:
                 $ref: '../../../domain/domainobj-eped-b.yaml#/components/schemas/ISMInternationalHtmlList'
             text/html:
               schema:
-                $ref: '../../../domain/domainobj-eped-b.yaml#/components/schemas/ISMInternationalHtmlList'
+                type: string
+                contentMediaType: text/html
         '500':
           description: Interner Serverfehler (z.B. Fehler beim Abruf oder Rendering)
           content:
@@ -108,7 +109,8 @@ paths:
                 $ref: '../../../domain/domainobj-eped-b.yaml#/components/schemas/ISMInternationalHtmlList'
             text/html:
               schema:
-                $ref: '../../../domain/domainobj-eped-b.yaml#/components/schemas/ISMInternationalHtmlList'
+                type: string
+                contentMediaType: text/html
         '400':
           description: Ungültiges Format der übergebenen ISM-Liste
         '401':
