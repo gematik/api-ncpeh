@@ -5,13 +5,13 @@ info:
   description: Workflow-Definition der ISM-Bereitstellung inklusive Error Handling und Retry
 sourceDescriptions:
   - name: ism-service
-    url: ./I_ISM_Service.yaml
+    url: ../../../interfaces/ncpeh-proxy/http-proxy/I_ISM_Service.yaml
     type: openapi
   - name: proxy-basic
-    url: ./I_HTTP-Proxy_basic.yaml
+    url: ../../../interfaces/ncpeh-proxy/http-proxy/I_HTTP-Proxy_basic.yaml
     type: openapi
   - name: ism-service-fd
-    url: ./I_ISM_Service_FD.yaml
+    url: ../../../interfaces/ncpeh-fd/I_ISM_Service_FD.yaml
     type: openapi
 workflows:
   - workflowId: ism-bereitstellen-workflow
