@@ -48,7 +48,7 @@ workflows:
         description: Proxy rendert die abgerufenen ISM-Listen-Daten intern als HTML.
         operationId: ism-service.postIsmRender
         requestBody:
-          contentType: application/json
+          contentType: application/fhir+json
           payload: $steps.getIsmListStep.outputs.ismListPayload
         successCriteria:
           - condition: $statusCode == 200
