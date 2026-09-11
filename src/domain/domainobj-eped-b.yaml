@@ -169,7 +169,7 @@ components:
         - $ref: './subdomains.yaml#/subdomains/patient-identification-retrieval'
       x-external-reference: "patient_identification_query"
       x-medical-personal-information: true
-      description: "Übermittlung von Identitätsmerkmalen zur Ermittlung und Befreitstellung von weiteren demographischen Daten."
+      description: "Übermittlung von Identitätsmerkmalen zur Ermittlung und Bereitstellung von weiteren demographischen Daten."
       required: [id]
       properties:
         id: { type: string, format: uuid }

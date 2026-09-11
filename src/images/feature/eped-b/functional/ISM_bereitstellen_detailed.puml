@@ -1,4 +1,4 @@
-@startuml ISM bereiststellen (detailliert)
+@startuml ISM bereitstellen (detailliert)
 
 skinparam maxMessageSize 200
 autonumber

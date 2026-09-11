@@ -1,6 +1,6 @@
 openapi: 3.1.0
 info:
-  title: HTTP-Proxy Interfaces für die Bereitsstellung von ISMs
+  title: HTTP-Proxy Interfaces für die Bereitstellung von ISMs
   version: 1.0.0
   description: OpenAPI 3 Beschreibung für ISM-bezogene Schnittstellen am HTTP-Proxy des NCPeH-Proxy
 servers:
@@ -156,7 +156,7 @@ paths:
         '408':
           description: Anfrage hat zu lange gedauert (Timeout)
         '429':
-          description: Zuviele Anfragen pro Zeiteinheit
+          description: Zu viele Anfragen pro Zeiteinheit
         '500':
           description: Interner Serverfehler beim Bereitstellen der Flaggen
 

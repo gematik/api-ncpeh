@@ -1,4 +1,4 @@
-@startuml ISM bereiststellen
+@startuml ISM bereitstellen
 
 skinparam maxMessageSize 200
 autonumber
@@ -18,7 +18,7 @@ opt Geplanter täglicher Aktualisierungszeitpunkt erreicht
     ConfServ --> NCPeH: :Liste der SignedServiceMetadata
     deactivate ConfServ
 
-    NCPeH -> NCPeH: Schema und Signatur validieren (SingedServiceMetadata) :ServiceMetadata
+    NCPeH -> NCPeH: Schema und Signatur validieren (SignedServiceMetadata) :ServiceMetadata
     NCPeH -> NCPeH: Signatur validieren (ServiceMetadata)
     NCPeH -> NCPeH: Länderzuordnung prüfen (ServiceMetadata)
     NCPeH -> NCPeH: Serviceinformationen und ISM aktualisieren (ServiceMetadata)
