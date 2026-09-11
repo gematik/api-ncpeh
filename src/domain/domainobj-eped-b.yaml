@@ -189,7 +189,10 @@ components:
       required: [id, PatientIdentifier]
       properties:
         id: { type: string, format: uuid }
-        PatientIdentifier: { $ref: '#/components/schemas/PatientIdentifier' }
+        PatientIdentifier:
+          type: array
+          items:
+            $ref: '#/components/schemas/PatientIdentifier'
 
     PatientIdentifier:
       type: object
