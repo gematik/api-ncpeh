@@ -88,7 +88,7 @@ workflows:
             retryAfter: 5
             retryLimit: 3
         outputs:
-          fetchedHtml: $steps.renderIsmStep.outputs.renderedHtml
+          fetchedHtml: $response.body
 
       - stepId: getFlagAssetsStep
         description: Buildprozess lädt die benötigten Flaggen-Ressourcen im Batch herunter.
