@@ -11,13 +11,25 @@ participant "Buildprozess\n(im Hintergrund)" as Buildprozess
 box "NCPeH-Proxy" #FloralWhite
     participant "HTTP-Proxy" as Proxy
 end box
+
+actor "Systemadministrator" as Administrator
+box "NCPeH-FD" #EAF2F8
+control "Scheduler" as Scheduler <<internal>>
 participant "NCPeH-FD" as NCPeH
+end box
+
 participant "eHDSI Configuration Service" as ConfServ
 
-== 1. Täglich Abruf von ServiceMetadata ==
+== Vorbedingung ==
+Administrator -> Scheduler: legt an
+
+== 1. Täglicher Abruf von ServiceMetadata ==
 == ism-handling-retrieval ==
 
+
+
 opt Geplanter täglicher Aktualisierungszeitpunkt erreicht
+    Scheduler -> NCPeH: Trigger: \nAktualisierungsprozess von ISM anderer NCPeH Land-A starten
     NCPeH -> ConfServ: SignedServiceMetadata relevanter NCPeH Land-A gemäß eHDSI abrufen
     activate NCPeH 
     activate ConfServ
