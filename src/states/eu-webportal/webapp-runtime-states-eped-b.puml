@@ -1,0 +1,177 @@
+@startuml webapp-runtime-states-eped-b
+'!pragma teoz true 
+title Zustandsmodell WebApp für ePeD-B (zur Laufzeit)
+hide empty description
+'scale 350 width
+'left to right direction
+'skinparam stateDiagramEdgeLabelStyle node
+skinparam nodesep 5
+skinparam ranksep 5
+skinparam linetype polyline
+'skinparam linetype ortho
+
+state WebAppReady {
+  [*] -up-> inWebAppReady : Start
+  state inWebAppReady <<entryPoint>>
+  state outWebAppReady <<exitPoint>>
+  state NotAuthenticated
+
+  state Idle
+  
+  note right of NotAuthenticated
+    * Notwendig für Transition von inWebAppReady wg. Auth-Alternative 2
+    * Nicht notwendig für Auth-Alternative 3b-2
+  end note
+  
+  inWebAppReady --> NotAuthenticated : Startup [OK]\n/ Zeige Login
+    
+  state Authenticating {
+    state inAuth <<entryPoint>>
+    state outAuth <<exitPoint>>
+    
+    NotAuthenticated --> inAuth : UI Klick [Anmelden]\n/ Initiiere Login
+    inWebAppReady --> inAuth : Bootstrap-Cookie vorhanden\n/ Starte Session Upgrade
+    inAuth --> IdentityCheck : Start Authentifizierung [OK]\n/ Zeige Wartescreen mit Hinweis Karten und PINs
+    
+    state IdentityCheck {
+      IdentityCheck : Output: ""IdentityAssertion""
+      IdentityCheck : Output: ""AuthorizationTask.ncpehprx_access_token""
+      IdentityCheck : Output: ""AuthorizationTask.euwp_id_token""
+      IdentityCheck : \nPrüfung durch Auth-Service und ggf. Authenticator
+    }
+
+    state Authenticated {
+        Authenticated : Input: ""IdentityAssertion""
+        Authenticated : Input: ""AuthorizationTask.ncpehprx_access_token""
+    }
+
+    IdentityCheck --> Authenticated : Auth [Token und IdA erhalten]\n/ Cache Token und IdA
+    Authenticated --> outAuth : [Access-Token und IdA bekannt]
+  }
+  
+  state EpedBActivity {
+    state inEpedB <<entryPoint>>
+    state outEpedB <<exitPoint>>
+    state outEpedBLogout <<exitPoint>>
+    state outEpedBAborted <<exitPoint>>
+
+    inEpedB --> HomeCountrySelection : Start des Workflows [OK]\n/ Zeige Länderauswahl
+    outAuth --> inEpedB : TODO Weitere Bedingungen??? \n/ Starte Workflow
+    
+    state HomeCountrySelection {
+      HomeCountrySelection : Output: ""PINDocument""
+      HomeCountrySelection : Output: ""HPINDocument""
+      HomeCountrySelection : Output: ""PINAcknowledgement""
+      HomeCountrySelection : \nLand des EU-Bürgers auswählen und Datenschutz bestätigen
+    }
+    
+    state PatientIdentification {
+      state inPatientIdentification <<entryPoint>>
+      state outPatientIdentification <<exitPoint>> 
+      state outPatientIdentificationFail <<exitPoint>>
+      
+      HomeCountrySelection --> inPatientIdentification : UI Klick [Datenschutz bestätigt]\n/ Initialisiere Suche
+      
+      state ISMInputAccept {
+        ISMInputAccept : Input: ""ISMInternationalHtmlList.ISMInternationalHtml""
+        ISMInputAccept : Output: LE-DE Eingaben
+      }
+
+      inPatientIdentification --> ISMInputAccept : Laden [OK]\n/ Zeige länderspezifisches ISM-Formular
+      
+      state ISMInputValid {
+        ISMInputValid : Output: ""PatientIdentificationQuery""
+      }
+
+      state ISMInputInvalid 
+      state PatientNotFound
+
+      ISMInputAccept --> ISMInputValid : LE-DE Eingaben [Eingaben valide]\n/ Query vorbereiten
+      ISMInputAccept --> ISMInputInvalid : LE-DE Eingaben [Eingaben invalide]
+      ISMInputInvalid --> ISMInputAccept : Korrigieren [Eingaben invalide]\n/ Zeige Warnung
+      ISMInputValid --> ISMDataCheck : Suche [Eingaben valide]\n/ Query senden
+      
+      state ISMDataCheck {
+        ISMDataCheck : Output: ""PatientIdentificationData""
+        ISMDataCheck : \nIdentität des EU-Bürgers überprüfen
+      }
+
+      ISMDataCheck --> PatientNotFound : Fehler [Patient nicht gefunden]\n/ Zeige Warnung
+      PatientNotFound --> ISMInputAccept : LE-DE neue Eingaben\n[keine PatientIdentifier vorhanden]\n/ TODO bisherige Eingaben zurücksetzen??
+      ISMDataCheck --> outPatientIdentification : Erfolg [Patient gefunden und Identität bestätigt]
+      PatientNotFound --> outPatientIdentificationFail : Fehler [Identität nicht bestätigt]\n/ Abbruch
+      
+    }
+    state PatientRelationshipConfirmed {
+      PatientRelationshipConfirmed : Output: ""TRCAssertion""
+    }
+
+    outPatientIdentification --> PatientRelationshipConfirmed : Erfolg [Patient gefunden und Identität bestätigt]\n/ Erzeuge TRCAssertion
+
+    outPatientIdentificationFail --> ActivityAborted : Propagiere Abbruch [OK]\n/ Bereinige Eingaben
+
+    state PrescriptionListing {
+      state inPrescriptionListing <<entryPoint>>
+      state outPrescriptionListing <<exitPoint>>
+      state outPrescriptionListingFail <<exitPoint>>
+      state PrescriptionNotFound
+      PrescriptionListing : Output: ""PrescriptionList""
+
+
+      state PrescriptionSelection {
+        PrescriptionSelection : Output: ""SelectedPrescriptionRetrievalList""
+        PrescriptionSelection : \nEinlösbare Rezepte auswählen
+      }
+
+      state PrescriptionRetrieved {
+        PrescriptionRetrieved : Output: ""PrescriptionRetrievedList""
+        PrescriptionRetrieved : Output: ""DispensationList""
+        PrescriptionRetrieved : \nempfangene(s) Rezept(e) für Abgabe vorbereitet
+      }
+      PrescriptionSelection --> PrescriptionRetrieved : Auswahl [Rezept(e) gewählt]\n/ Rufe Rezept(e) ab
+      PrescriptionRetrieved --> outPrescriptionListing : Erfolg [Rezept(e) abgerufen und vorgemerkt]
+    }
+
+    PatientRelationshipConfirmed --> inPrescriptionListing : TRC [OK]
+    inPrescriptionListing --> PrescriptionSelection : TRC [OK]\n/ Lade verfügbare Rezepte
+    inPrescriptionListing --> PrescriptionNotFound : Fehler [Keine Rezepte gefunden]
+    PrescriptionNotFound --> outPrescriptionListingFail : Fehler [Keine Rezepte gefunden]
+    outPrescriptionListingFail --> ActivityAborted : Propagiere Abbruch [OK]\n/ Bereinige Daten
+
+    
+    outPrescriptionListing --> Dispensation : Erfolg [Rezept(e) abgerufen und vorgemerkt]\n/ Bereite Abgabe vor
+    
+    state Dispensation {
+      Dispensation : Input: ""euwp_id_token""
+      Dispensation : Output: ""DispensationInformation""
+      Dispensation : (Output: ""SubstitutionInformation"")
+      Dispensation : \nVerkaufsdaten komplettieren
+    }
+    
+    Dispensation --> ActivitySuccess : Übermitteln [Daten komplett]\n/ Sende Request
+    
+    state ActivitySuccess
+    state ActivityAborted
+    
+    ActivitySuccess --> outEpedBLogout : Logout [OK]
+    ActivitySuccess --> outEpedB : Kunde bedient [Erfolg]
+    ActivitySuccess --> inEpedB : nächster Kunde [OK]\n/ Bereinige TRC-Assertion
+    ActivityAborted --> inEpedB : nächster Kunde [OK]
+
+    ActivityAborted --> outEpedBAborted : Abbruch [OK]\n/ Bereinige Daten
+  }
+  
+  EpedBActivity -down-> ActivityAborted : UI Klick [Manueller Abbruch]\n/ Bereinige Daten
+  outEpedBAborted --> outWebAppReady : Propagiere Abbruch [OK]\n/ Lösche Tokens und bereinige Daten
+  outEpedBLogout --> NotAuthenticated : / Lösche Tokens
+  outEpedB --> outWebAppReady : / Lösche Tokens und bereinige Daten
+
+  EpedBActivity -[#red]> Idle : lange LE-DE Inaktivität\n[Inaktivität > ncpehprx_access_token Lebensdauer]\n/ halte State
+  Idle -[#red]-> EpedBActivity[H] : LE-DE macht weiter\n[ncpehprx_access_token abgelaufen]\n/ setze Refresh-Token ein
+
+}
+
+
+outWebAppReady --> [*] : Browsertab schließen [OK]
+
+@enduml
