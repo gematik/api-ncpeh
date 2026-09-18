@@ -36,8 +36,10 @@ components:
       in: header
       name: XXXXX-API-KEY
       description: API-Key für den internen Dienstzugriff.
+
 security:
   - mTLS: []
+
 paths:
   /ism:
     get:
@@ -74,53 +76,6 @@ paths:
                     type: string
                     example: "Internal Server Error"
 
-  /ism/render:
-    post:
-      tags:
-        - UC_ISM_bereitstellen
-        - I_ISM_Service
-      summary: Internes Rendering der ISM-Ansichten
-      description: Interne Operation des HTTP-Proxy, um die ISM-Liste in HTML-Ansichten zu rendern.
-      operationId: postIsmRender
-      parameters:
-        - $ref: '#/components/parameters/x-useragent'
-      security:
-        - mTLS: []
-        - ApiKeyAuth: []
-      requestBody:
-        description: Die zu rendernde Liste der ISM
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '../../../domain/domainobj-eped-b.yaml#/components/schemas/ISMInternationalList'
-          application/fhir+json:
-            schema:
-              $ref: '../../../domain/domainobj-eped-b.yaml#/components/schemas/ISMInternationalList'
-          application/fhir+xml:
-            schema:
-              type: string
-              contentMediaType: application/fhir+xml
-      responses:
-        '200':
-          description: Erfolgreich gerenderte HTML-Ressourcen
-          content:
-            application/json:
-              schema:
-                $ref: '../../../domain/domainobj-eped-b.yaml#/components/schemas/ISMInternationalHtmlList'
-            text/html:
-              schema:
-                type: string
-                contentMediaType: text/html
-        '400':
-          description: Ungültiges Format der übergebenen ISM-Liste
-        '401':
-          description: Authentifizierung fehlgeschlagen
-        '403':
-          description: Zugriff verweigert
-        '500':
-          description: Interner Fehler beim Rendering-Prozess
-
   /assets/flags:
     get:
       tags:
@@ -147,11 +102,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                additionalProperties:
-                  type: string
-                  format: byte
-                  description: Base64-kodierte Flaggen-Bilddaten
+                $ref: '../../../domain/domainobj-eped-b.yaml#/components/schemas/CountryFlagList'
         '404':
           description: Flagge für mindestens einen angegebenen Ländercode nicht gefunden
         '406':
@@ -162,7 +113,6 @@ paths:
           description: Zu viele Anfragen pro Zeiteinheit
         '500':
           description: Interner Serverfehler beim Bereitstellen der Flaggen
-
 
   /events/ism/update:
     post:

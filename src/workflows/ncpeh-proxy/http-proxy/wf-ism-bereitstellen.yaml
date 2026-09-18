@@ -44,28 +44,6 @@ workflows:
         outputs:
           ismListPayload: $response.body
 
-      - stepId: renderIsmStep
-        description: Proxy rendert die abgerufenen ISM-Listen-Daten intern als HTML.
-        operationId: ism-service.postIsmRender
-        requestBody:
-          contentType: application/fhir+json
-          payload: $steps.getIsmListStep.outputs.ismListPayload
-        successCriteria:
-          - condition: $statusCode == 200
-        onFailure:
-          - name: handleBadRequest
-            criteria:
-              - condition: $statusCode == 400
-            type: end
-          - name: retryOnServerError
-            criteria:
-              - condition: $statusCode == 500
-            type: retry
-            retryAfter: 5
-            retryLimit: 3
-        outputs:
-          renderedHtml: $response.body
-
       - stepId: triggerBuildStep
         description: Proxy triggert den Buildprozess über den konfigurierten Webhook.
         operationId: proxy-basic.triggerWebAppBuild

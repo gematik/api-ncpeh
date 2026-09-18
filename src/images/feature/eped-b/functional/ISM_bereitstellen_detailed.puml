@@ -1,12 +1,15 @@
-@startuml ISM bereitstellen (detailliert)
+@startuml ISM_bereitstellen_detailed
 
 skinparam maxMessageSize 200
-autonumber
+hide unlinked
+'autonumber
 
 actor "LE-DE" as User
 
 participant "EU-Webportal\n(im Browser)" as WebApp
-participant "Buildprozess\n(im Hintergrund)" as Buildprozess
+control "Buildprozess\n(im Hintergrund)" as Buildprozess
+database "Quellcode-Repository" as SrcRepo
+participant "Translation Service" as TranslationService
 
 box "NCPeH-Proxy" #FloralWhite
     participant "HTTP-Proxy" as Proxy
@@ -20,14 +23,14 @@ end box
 
 participant "eHDSI Configuration Service" as ConfServ
 
-== Vorbedingung ==
+== Vorbedingungen ==
 Administrator -> Scheduler: legt an
-
+opt manuelle Übersetzung von ISMs gewünscht
+    Administrator -> Proxy: erstellt lektorierte, manuelle Übersetzung der ISMs
+end
 == 1. Täglicher Abruf von ServiceMetadata ==
 == ism-handling-retrieval ==
-
-
-
+autonumber
 opt Geplanter täglicher Aktualisierungszeitpunkt erreicht
     Scheduler -> NCPeH: Trigger: \nAktualisierungsprozess von ISM anderer NCPeH Land-A starten
     NCPeH -> ConfServ: SignedServiceMetadata relevanter NCPeH Land-A gemäß eHDSI abrufen
@@ -52,32 +55,46 @@ opt Neue ServiceMetadata im NCPeH-FD verfügbar
     activate Proxy
     Proxy -> NCPeH: GET /ismlist
     activate NCPeH
-    note left: Hinweis: Auflösung der Objekte über ""domainobj-eped-b.yaml""
-    NCPeH -> NCPeH: Alle ISM in FHIR-Bundle integrieren(ServiceMetadata.ISM):ISMInternationalList
-    note left: jedes Listenelement als base64-enc FHIR Entry (Bundle.entry)
+    note left#Yellow: Hinweis: ab hier Auflösung der Objekte über ""domainobj-eped-b.yaml""
+    loop Für jede ISM in ServiceMetadata.ISM
+        NCPeH -> NCPeH: Anwendungen/Operationen der ISM zuordnen :ISMInternational
+        NCPeH -> NCPeH: ISM in FHIR-Bundle integrieren(ISMInternational) :ISMInternationalList
+        note left: jedes Listenelement als base64-enc FHIR Entry (Bundle.entry)
+    end
     NCPeH --> Proxy: :ISMInternationalList
     note left: Liste ohne zusätzlichen Integritätsschutz auf Nachrichtenebene
     deactivate NCPeH
     Proxy -> Proxy: FHIR-Bundle validieren (ISMInternationalList)
 
 == ism-handling-preparation ==
-    Proxy -> Proxy: POST /ism/render (ISMInternationalList):ISMInternationalHtmlList
     'WebApp -> Proxy: POST /ism (ism_international_specific_html)
-    
+    loop Für jede ISMInternational in ISMInternationalList
+        Proxy -> Proxy: ISM in HTML-Repräsentation umwandeln (ISMInternational):ISMInternationalHtml
+        note right#DimGrey: vormals POST /ism/render
+        alt Lektorierte Übersetzung der ISM vorhanden
+            Proxy -> Proxy: Lektorierten deutschsprachigen HTML-GUI-Text übernehmen (ISMInternationalHtml) :ISMInternationalHtml.RepHtmlGerman
+        else keine lektorierte Übersetzung vorhanden
+            opt Translation Service verfügbar
+            Proxy -> TranslationService: HTML-GUI-Text in deutsche Sprache übersetzen (ISMInternationalHtml)
+            TranslationService --> Proxy: :ISMInternationalHtml.RepHtmlGerman
+            end
+        end
+    end
     Proxy -> Buildprozess: POST /events/app/build
     note left: Ereignisbasierter Workflow statt Polling
     activate Buildprozess
-        Buildprozess -> Proxy: GET /ism
-        note right: kein Lazyloading der ISMs über WebApp, sondern statische Bereitstellung in WebApp-DeploymentArtifact
-        note left: TODO: Request absichern oder hat der BP automatisch Zugriff?\nz.B. weil er ein Sidecar im selben Namespace ist
-        Proxy --> Buildprozess: :ISMInternationalHtmlList
-        
-        Buildprozess -> Proxy: GET /assets/flags?countryCodes={countryCodes}
-        note left: Batch-Endpoint für benötigte Länderflaggen
-        Proxy --> Buildprozess: :Map der Flaggen als Base64-kodierte Bilddaten
-        
-        Buildprozess -> Buildprozess: Webapp bauen (ISMInternationalHtmlList, FlagList, ...)
-        note right: weitere Schritte für diesen UC nicht relevant, daher nicht aufgeführt
+    Buildprozess -> Proxy: GET /ism
+    note right: kein Lazyloading der ISMs über WebApp, sondern statische Bereitstellung in WebApp-DeploymentArtifact
+    note left#DimGrey: TODO: Request absichern oder hat\nder BP automatisch Zugriff?\nz.B. weil er ein Sidecar im selben\nNamespace ist\n\nTODO: Parameter für gültige\nAnwendungen notwendig?
+    Proxy -> Proxy: gefilterte HTML-ISM-Liste zusammenstellen für gültige Anwendungen (ISMInternationalHtmlList):ISMInternationalHtmlList
+    Proxy --> Buildprozess: :ISMInternationalHtmlList
+    Buildprozess -> Buildprozess: Länderliste zu den benötigten Flaggen ableiten (ISMInternationalHtmlList) :countryCodes
+    
+    Buildprozess -> Proxy: GET /assets/flags?countryCodes=<countryCodes>
+    note left: Batch-Endpoint für benötigte Länderflaggen
+    Proxy --> Buildprozess: :CountryFlagList
+    Buildprozess -> Buildprozess: Webapp bauen (ISMInternationalHtmlList, CountryFlagList, ...)
+    note right: weitere Schritte für diesen UC nicht relevant, daher nicht aufgeführt
     deactivate Buildprozess
     ... Anschließend Deployment der Webapp auf dem Webserver ...
 end

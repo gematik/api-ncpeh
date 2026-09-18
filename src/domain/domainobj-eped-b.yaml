@@ -120,6 +120,12 @@ components:
         - $ref: './subdomains.yaml#/subdomains/ism-handling-preparation'
       x-medical-personal-information: false
       description: "Eine International Search Mask des Herkunftslandes des EU-Bürgers als schemakonforme XML-Repräsentation, die die Identifikation des EU-Bürgers in der Apotheke vor Ort ermöglicht"
+      required: [ISM]
+      properties:
+        OperationOrApplicationType: 
+          type: array
+          items: { type: string }
+        ISM: { type: string, contentMediaType: application/xml }
 
     ISMInternationalHtml:
       type: object
@@ -128,7 +134,14 @@ components:
         - $ref: './subdomains.yaml#/subdomains/ism-handling-preparation'
         - $ref: './subdomains.yaml#/subdomains/ism-handling-display'
       x-medical-personal-information: false
-      description: "HTML-Repräsentation einer International Search Mask entsprechend der Vorgaben der ISMInternational"
+      description: "HTML-Repräsentation einer International Search Mask entsprechend der Vorgaben der ISMInternational inkl. einer deutschen Übersetzung"
+      required: [RepHtml]
+      properties:
+        OperationOrApplicationType: 
+          type: array
+          items: { type: string }
+        RepHtml: { type: string, contentMediaType: text/html }
+        RepHtmlGerman: { type: string, contentMediaType: text/html }
 
     ISMInternationalList:
       type: object
@@ -144,9 +157,10 @@ components:
       properties:
         ISMInternational: 
           type: array
-          x-fhir-mapping: "Bundle.entry.resource"
+          x-fhir-object-type: "Bundle.entry.resource"
           items:
             $ref: '#/components/schemas/ISMInternational'
+          contentEncoding: base64
 
     ISMInternationalHtmlList:
       type: object
@@ -161,6 +175,34 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ISMInternationalHtml'
+
+    CountryFlag:
+      type: object
+      x-object-type: "ValueObject"
+      x-subdomains: 
+        - $ref: './subdomains.yaml#/subdomains/ism-handling-preparation'
+        - $ref: './subdomains.yaml#/subdomains/ism-handling-display'
+      x-medical-personal-information: false
+      description: "Landesflagge eines EU-Mitgliedsstaates"
+      required: [CountryCode, Flag]
+      properties:
+        CountryCode: { type: string, format: iso-country-2, pattern: '^[A-Z]{2}$' }
+        Flag: { type: string, contentMediaType: image/png, contentEncoding: base64 }
+        Link: { type: string, format: uri }
+
+    CountryFlagList:
+      type: object
+      x-object-type: "ValueObject"
+      x-subdomains: 
+        - $ref: './subdomains.yaml#/subdomains/ism-handling-preparation'
+        - $ref: './subdomains.yaml#/subdomains/ism-handling-display'
+      x-medical-personal-information: false
+      description: "Landesflaggenliste von EU-Mitgliedsstaaten"
+      properties:
+        CountryFlag: 
+          type: array
+          items:
+            $ref: '#/components/schemas/CountryFlag'
 
     PatientIdentificationQuery:
       type: object
