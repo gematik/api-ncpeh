@@ -1,0 +1,30 @@
+info:
+  name: checkHealth
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: "{{process.env.API_GATEWAY_URL}}/http-proxy/api/v1/health"
+  headers:
+    - name: x-useragent
+      value: "{{process.env.USER_AGENT}}"
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: eq
+      value: "200"
+    - expression: res.body.status
+      operator: isDefined
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  Health Check für Proxy-Dienst.
+  Beispieldaten: example-data/I_HTTP-Proxy_basic-checkHealth-res-001.json

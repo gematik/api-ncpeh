@@ -1,0 +1,33 @@
+info:
+  name: triggerWebAppBuild
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: "{{process.env.API_GATEWAY_URL}}/http-proxy/api/v1/events/app/build"
+  headers:
+    - name: x-useragent
+      value: "{{process.env.USER_AGENT}}"
+    - name: XXXXX-API-KEY
+      value: "{{process.env.API_KEY}}"
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: in
+      value: "[202]"
+    - expression: res.status
+      operator: notIn
+      value: "[404]"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  Webhook: triggerWebAppBuild (Proxy). 
+  Beispieldaten: example-data/I_HTTP-Proxy_basic-triggerWebAppBuild-res-001.json

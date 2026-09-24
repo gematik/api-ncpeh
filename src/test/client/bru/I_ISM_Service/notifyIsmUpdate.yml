@@ -1,0 +1,28 @@
+info:
+  name: notifyIsmUpdate
+  type: http
+  seq: 3
+
+http:
+  method: POST
+  url: "{{process.env.API_GATEWAY_URL}}/http-proxy/api/v1/events/ism/update"
+  headers:
+    - name: x-useragent
+      value: "{{process.env.USER_AGENT}}"
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: in
+      value: "[202, 404]"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  Webhook zur Benachrichtigung über aktualisierte ISM-Daten.
+  Beispieldaten: example-data/I_ISM_Service-notifyIsmUpdate-res-001.json
