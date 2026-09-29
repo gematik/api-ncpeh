@@ -146,8 +146,10 @@ components:
     ISMInternationalList:
       type: object
       x-object-type: "ValueObject"
-      x-fhir-object-type: "Bundle"
-      x-fhir-bundle-type: "collection"
+      x-gem-fhir-canonical-type: "http://hl7.org/fhir/StructureDefinition/Bundle|4.0.1"
+      x-gem-fhir-canonical-type-schema: "http://hl7.org/fhir/R4/bundle.profile.json"
+      x-gem-fhir-canonical-type-cs: "http://hl7.org/fhir/bundle-type|4.0.1"
+      x-gem-fhir-canonical-type-cs-code: "collection"
       x-subdomains: 
         - $ref: './subdomains.yaml#/subdomains/ism-handling-retrieval'
         - $ref: './subdomains.yaml#/subdomains/ism-handling-preparation'
@@ -157,10 +159,13 @@ components:
       properties:
         ISMInternational: 
           type: array
-          x-fhir-object-type: "Bundle.entry.resource"
           items:
-            $ref: '#/components/schemas/ISMInternational'
-          contentEncoding: base64
+            allOf:
+              - $ref: '#/components/schemas/ISMInternational'
+            x-gem-fhir-canonical-type: "http://hl7.org/fhir/StructureDefinition/Bundle|4.0.1#Bundle.entry.resource"
+            x-gem-fhir-canonical-type-schema: "http://hl7.org/fhir/R4/bundle.profile.json"
+            description: "Eintrag in der Liste der International Search Mask"
+            contentEncoding: base64
 
     ISMInternationalHtmlList:
       type: object
