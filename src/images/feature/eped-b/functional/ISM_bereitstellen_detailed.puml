@@ -50,12 +50,12 @@ deactivate NCPeH
 == 2. Integration von ISM ins EU-Webportal ==
 
 opt Neue ServiceMetadata im NCPeH-FD verfügbar
-    NCPeH -> Proxy: POST /events/ism/update
+    NCPeH -> Proxy: notifyIsmUpdateStep
     note left: Ereignisbasierter Workflow statt Polling
     activate Proxy
-    Proxy -> NCPeH: GET /ismlist
+    Proxy -> NCPeH: getIsmListStep
     activate NCPeH
-    note left#Yellow: Hinweis: ab hier Auflösung der Objekte über ""domainobj-eped-b.yaml""
+    note left#Yellow: Hinweis: ab hier Auflösung der Objekte über ""domainobj-eped-b.yaml""\nAuflösung der StepIDs über ""wf-ism-bereitstellen.yaml""
     loop Für jede ISM in ServiceMetadata.ISM
         NCPeH -> NCPeH: Anwendungen/Operationen der ISM zuordnen :ISMInternational
         NCPeH -> NCPeH: ISM in FHIR-Bundle integrieren(ISMInternational) :ISMInternationalList
@@ -70,7 +70,6 @@ opt Neue ServiceMetadata im NCPeH-FD verfügbar
     'WebApp -> Proxy: POST /ism (ism_international_specific_html)
     loop Für jede ISMInternational in ISMInternationalList
         Proxy -> Proxy: ISM in HTML-Repräsentation umwandeln (ISMInternational):ISMInternationalHtml
-        note right#DimGrey: vormals POST /ism/render
         alt Lektorierte Übersetzung der ISM vorhanden
             Proxy -> Proxy: Lektorierten deutschsprachigen HTML-GUI-Text übernehmen (ISMInternationalHtml) :ISMInternationalHtml.RepHtmlGerman
         else keine lektorierte Übersetzung vorhanden
@@ -80,17 +79,17 @@ opt Neue ServiceMetadata im NCPeH-FD verfügbar
             end
         end
     end
-    Proxy -> Buildprozess: POST /events/app/build
+    Proxy -> Buildprozess: triggerBuildStep
     note left: Ereignisbasierter Workflow statt Polling
     activate Buildprozess
-    Buildprozess -> Proxy: GET /ism
+    Buildprozess -> Proxy: getIsmHtmlStep
     note right: kein Lazyloading der ISMs über WebApp, sondern statische Bereitstellung in WebApp-DeploymentArtifact
     note left#DimGrey: TODO: Request absichern oder hat\nder BP automatisch Zugriff?\nz.B. weil er ein Sidecar im selben\nNamespace ist\n\nTODO: Parameter für gültige\nAnwendungen notwendig?
     Proxy -> Proxy: gefilterte HTML-ISM-Liste zusammenstellen für gültige Anwendungen (ISMInternationalHtmlList):ISMInternationalHtmlList
     Proxy --> Buildprozess: :ISMInternationalHtmlList
     Buildprozess -> Buildprozess: Länderliste zu den benötigten Flaggen ableiten (ISMInternationalHtmlList) :countryCodes
     
-    Buildprozess -> Proxy: GET /assets/flags?countryCodes=<countryCodes>
+    Buildprozess -> Proxy: getFlagAssetsStep
     note left: Batch-Endpoint für benötigte Länderflaggen
     Proxy --> Buildprozess: :CountryFlagList
     Buildprozess -> Buildprozess: Webapp bauen (ISMInternationalHtmlList, CountryFlagList, ...)
