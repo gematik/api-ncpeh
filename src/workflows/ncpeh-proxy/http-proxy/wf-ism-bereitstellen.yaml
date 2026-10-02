@@ -44,6 +44,22 @@ workflows:
         outputs:
           ismListPayload: $response.body
 
+      - stepId: getEntitlementsStep
+        description: Proxy ruft die aktuellen Länder-Berechtigungen (AllowedList) vom NCPeH-FD ab.
+        operationId: ism-service-fd.getEntitlementsCountries
+        successCriteria:
+          - condition: $statusCode == 200
+        onFailure:
+          - name: retryOnServerError
+            criteria:
+              - condition: $statusCode == 500
+            type: retry
+            retryAfter: 5
+            retryLimit: 3
+        outputs:
+          entitlementsPayload: $response.body
+
+
       - stepId: triggerBuildStep
         description: Proxy triggert den Buildprozess über den konfigurierten Webhook.
         operationId: proxy-basic.triggerWebAppBuild

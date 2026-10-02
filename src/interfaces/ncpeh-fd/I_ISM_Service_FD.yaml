@@ -68,3 +68,54 @@ paths:
           description: Zu viele Anfragen pro Zeiteinheit
         '500':
           description: Interner Serverfehler beim Bereitstellen der ISM-Liste
+
+  /entitlements/countries:
+    get:
+      tags:
+        - ISM_Resources
+        - UC_ISM_bereitstellen
+        - I_ISM_Service
+      summary: Abruf der Länder-Berechtigungen (AllowedList)
+      description: Liefert eine Liste der erlaubten LOINC- und PractitionerRole-Codes pro Land.
+      operationId: getEntitlementsCountries
+      parameters:
+        - $ref: '#/components/parameters/x-useragent'
+        - name: version
+          in: query
+          description: Optionale Angabe einer spezifischen Listenversion. Fehlt der Parameter, wird die neueste Liste geliefert.
+          required: false
+          schema:
+            type: string
+      security:
+        - mTLS: []
+      responses:
+        '200':
+          description: Erfolgreicher Abruf der Berechtigungsliste
+          content:
+            application/json:
+              schema:
+                $ref: '../../domain/domainobj-eped-b.yaml#/components/schemas/CountryApplicationAuthorizationList'
+        '400':
+          description: Ungültige Parameter (z.B. falsches Versionsformat)
+          content:
+            application/problem+json:
+              schema:
+                type: object
+        '404':
+          description: Angefragte Version der Liste nicht gefunden
+          content:
+            application/problem+json:
+              schema:
+                type: object
+        '406':
+          description: Angefragter Mime-Type im Accept-Header kann nicht bedient werden
+          content:
+            application/problem+json:
+              schema:
+                type: object
+        '500':
+          description: Interner Serverfehler
+          content:
+            application/problem+json:
+              schema:
+                type: object

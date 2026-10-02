@@ -64,7 +64,12 @@ opt Neue ServiceMetadata im NCPeH-FD verfügbar
     NCPeH --> Proxy: :ISMInternationalList
     note left: Liste ohne zusätzlichen Integritätsschutz auf Nachrichtenebene
     deactivate NCPeH
+    Proxy -> NCPeH: getEntitlementsStep
+    activate NCPeH
+    NCPeH --> Proxy: :CountryApplicationAuthorizationList
+    deactivate NCPeH
     Proxy -> Proxy: FHIR-Bundle validieren (ISMInternationalList)
+    Proxy -> Proxy: Länderspezifische Rollenberechtigungen validieren (CountryApplicationAuthorizationList)
 
 == ism-handling-preparation ==
     'WebApp -> Proxy: POST /ism (ism_international_specific_html)
