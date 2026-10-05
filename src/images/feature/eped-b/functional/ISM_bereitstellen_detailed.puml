@@ -7,14 +7,19 @@ hide unlinked
 actor "LE-DE" as User
 
 participant "EU-Webportal\n(im Browser)" as WebApp
-control "Buildprozess\n(im Hintergrund)" as Buildprozess
-database "Quellcode-Repository" as SrcRepo
-participant "Translation Service" as TranslationService
+box "externe Services" #White
+    participant "Translation Service" as TranslationService
+end box
+box "CI/CD-Pipeline" #faffe7
+    control "Buildprozess\n(im Hintergrund)" as Buildprozess
+    database "Quellen-\nRepository" as SrcRepo
+end box
 
 box "NCPeH-Proxy" #FloralWhite
     participant "HTTP-Proxy" as Proxy
 end box
 
+actor "Anbieter" as Provider
 actor "Systemadministrator" as Administrator
 box "NCPeH-FD" #EAF2F8
 control "Scheduler" as Scheduler <<internal>>
@@ -26,7 +31,7 @@ participant "eHDSI Configuration Service" as ConfServ
 == Vorbedingungen ==
 Administrator -> Scheduler: legt an
 opt manuelle Übersetzung von ISMs gewünscht
-    Administrator -> Proxy: erstellt lektorierte, manuelle Übersetzung der ISMs
+    Provider -> SrcRepo: erstellt lektorierte, manuelle Übersetzung der ISMs
 end
 == 1. Täglicher Abruf von ServiceMetadata ==
 == ism-handling-retrieval ==
@@ -49,56 +54,67 @@ deactivate NCPeH
 
 == 2. Integration von ISM ins EU-Webportal ==
 
-opt Neue ServiceMetadata im NCPeH-FD verfügbar
-    NCPeH -> Proxy: notifyIsmUpdateStep
-    note left: Ereignisbasierter Workflow statt Polling
-    activate Proxy
-    Proxy -> NCPeH: getIsmListStep
-    activate NCPeH
+opt Neue ServiceMetadata.ISM im NCPeH-FD verfügbar
+    NCPeH ->> Proxy: notifyIsmUpdateStep
+    note right: Ereignisbasierter\nWorkflow statt Polling
     note left#Yellow: Hinweis: ab hier Auflösung der Objekte über ""domainobj-eped-b.yaml""\nAuflösung der StepIDs über ""wf-ism-bereitstellen.yaml""
-    loop Für jede ISM in ServiceMetadata.ISM
-        NCPeH -> NCPeH: Anwendungen/Operationen der ISM zuordnen :ISMInternational
-        NCPeH -> NCPeH: ISM in FHIR-Bundle integrieren(ISMInternational) :ISMInternationalList
-        note left: jedes Listenelement als base64-enc FHIR Entry (Bundle.entry)
-    end
-    NCPeH --> Proxy: :ISMInternationalList
-    note left: Liste ohne zusätzlichen Integritätsschutz auf Nachrichtenebene
-    deactivate NCPeH
+    activate Proxy
+    Proxy ->> Buildprozess: notifyWebAppBuildStep
+    note left: TODO
+    activate Buildprozess
     Proxy -> NCPeH: getEntitlementsStep
     activate NCPeH
     NCPeH --> Proxy: :CountryApplicationAuthorizationList
     deactivate NCPeH
-    Proxy -> Proxy: FHIR-Bundle validieren (ISMInternationalList)
     Proxy -> Proxy: Länderspezifische Rollenberechtigungen validieren (CountryApplicationAuthorizationList)
+    deactivate Proxy
+
+    Buildprozess -> NCPeH: getIsmListStep
+    note left: TODO direkt an FD oder Forward durch Proxy?
+    activate NCPeH
+    loop Für jede ISM in ServiceMetadata.ISM
+        NCPeH -> NCPeH: Anwendungen/Operationen der ISM zuordnen :ISMInternational
+        NCPeH -> NCPeH: ISM in FHIR-Bundle integrieren (ISMInternational) :ISMInternationalList
+        note left: jedes Listenelement als base64-enc FHIR Entry (Bundle.entry)
+    end
+    NCPeH --> Buildprozess: :ISMInternationalList
+    note left: Liste ohne zusätzlichen\nIntegritätsschutz auf Nachrichtenebene
+    deactivate NCPeH
+    Buildprozess -> Buildprozess: FHIR-Bundle validieren (ISMInternationalList)
 
 == ism-handling-preparation ==
-    'WebApp -> Proxy: POST /ism (ism_international_specific_html)
     loop Für jede ISMInternational in ISMInternationalList
-        Proxy -> Proxy: ISM in HTML-Repräsentation umwandeln (ISMInternational):ISMInternationalHtml
+        Buildprozess -> Buildprozess: ISM in HTML-Repräsentation umwandeln (ISMInternational):ISMInternationalHtml
         alt Lektorierte Übersetzung der ISM vorhanden
-            Proxy -> Proxy: Lektorierten deutschsprachigen HTML-GUI-Text übernehmen (ISMInternationalHtml) :ISMInternationalHtml.RepHtmlGerman
+            Buildprozess -> SrcRepo: Lektorierten deutschsprachigen HTML-GUI-Text übernehmen (ISMInternationalHtml)
+            note right: TODO getHtmlAssetStep
+            activate SrcRepo
+            SrcRepo --> Buildprozess: :ISMInternationalHtml.RepHtmlGerman
+            deactivate SrcRepo
         else keine lektorierte Übersetzung vorhanden
             opt Translation Service verfügbar
-            Proxy -> TranslationService: HTML-GUI-Text in deutsche Sprache übersetzen (ISMInternationalHtml)
-            TranslationService --> Proxy: :ISMInternationalHtml.RepHtmlGerman
+            Buildprozess -> TranslationService: HTML-GUI-Text in deutsche Sprache übersetzen (ISMInternationalHtml)
+            activate TranslationService
+            TranslationService --> Buildprozess: :ISMInternationalHtml.RepHtmlGerman
+            deactivate TranslationService
             end
         end
     end
-    Proxy -> Buildprozess: triggerBuildStep
-    note left: Ereignisbasierter Workflow statt Polling
-    activate Buildprozess
-    Buildprozess -> Proxy: getIsmHtmlStep
-    note right: kein Lazyloading der ISMs über WebApp, sondern statische Bereitstellung in WebApp-DeploymentArtifact
-    note left#DimGrey: TODO: Request absichern oder hat\nder BP automatisch Zugriff?\nz.B. weil er ein Sidecar im selben\nNamespace ist\n\nTODO: Parameter für gültige\nAnwendungen notwendig?
-    Proxy -> Proxy: gefilterte HTML-ISM-Liste zusammenstellen für gültige Anwendungen (ISMInternationalHtmlList):ISMInternationalHtmlList
-    Proxy --> Buildprozess: :ISMInternationalHtmlList
+    'Proxy -> Buildprozess: triggerBuildStep
+    Buildprozess -> Buildprozess: gefilterte ISMInternationalHtmlList zusammenstellen für gültige Anwendungen (ISMInternationalHtmlList) :ISMInternationalHtmlList
+    note left: TODO abschaffen zugunsten\nToken-Scope-basierten Filtermechanismus
     Buildprozess -> Buildprozess: Länderliste zu den benötigten Flaggen ableiten (ISMInternationalHtmlList) :countryCodes
-    
-    Buildprozess -> Proxy: getFlagAssetsStep
-    note left: Batch-Endpoint für benötigte Länderflaggen
-    Proxy --> Buildprozess: :CountryFlagList
+    note left: TODO abschaffen zugunsten\nToken-Scope-basierten Filtermechanismus
+
+    Buildprozess -> SrcRepo: getFlagAssetsStep
+    note right: TODO getFlagAssetsStep redesign
+    activate SrcRepo
+    SrcRepo --> Buildprozess: :CountryFlagList
+    deactivate SrcRepo
     Buildprozess -> Buildprozess: Webapp bauen (ISMInternationalHtmlList, CountryFlagList, ...)
-    note right: weitere Schritte für diesen UC nicht relevant, daher nicht aufgeführt
+    note right
+        weitere Schritte für diesen UC nicht relevant, daher nicht aufgeführt
+    end note
     deactivate Buildprozess
     ... Anschließend Deployment der Webapp auf dem Webserver ...
 end
