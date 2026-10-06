@@ -443,6 +443,7 @@ components:
       description: "Liste der Länder und der jeweils für sie erlaubten LOINC-Codes und Practitioner Role Codes."
       required: [CountryApplicationAuthorizations]
       properties:
+        id: { type: string, format: uuid }
         Version: { type: number, minimum: 1, format: int32 }
         CountryApplicationAuthorizations:
           type: array
@@ -459,7 +460,7 @@ components:
       x-gem-medical-personal-information: false
       required: [CountryCode, Authorizations]
       properties:
-        CountryCode: { type: string, format: iso-country-2, pattern: '^[A-Z]{2}$' }
+        CountryCode: { type: string, format: iso-country-2, pattern: '^[A-Z]{2}$', example: "PT" }
         Authorizations:
           type: array
           items:
@@ -486,3 +487,37 @@ components:
             example: "1.2.276.0.76.4.32"
         PractitionerRoleCodesCodesystem: { type: string, const: "https://gematik.de/fhir/directory/CodeSystem/PractitionerProfessionOID" }
       additionalProperties: false
+
+    CountryTranscoder:
+      type: object
+      x-gem-object-type: "ValueObject"
+      x-gem-subdomains: 
+        - $ref: './subdomains.yaml#/subdomains/ism-handling-preparation' 
+      x-gem-medical-personal-information: false
+      description: "Regeln und Metadaten zur Umwandlung einer länderspezifischen ISM in eine passende HTML-Repräsentation."
+      required: [BaseLanguage, TargetLanguage, ISMInternational, TranscodingRules]
+      properties:
+        BaseLanguage: 
+          type: string
+          description: "Ausgangssprache der ISM"
+          format: iso-country-2 
+          pattern: '^[A-Z]{2}$'
+          example: "PT"
+        TargetLanguage: 
+          type: string
+          description: "Zielsprache für die Transformation"
+          format: iso-country-2 
+          pattern: '^[A-Z]{2}$'
+          const: "DE"
+        TranscodingRules: 
+          type: object
+          description: "Strukturelle Mapping-Regeln für die Transformation der ISM-Felder."
+
+    AllowedListNcpehCountryA:
+      type: object
+      x-gem-object-type: "Entity"
+      x-gem-subdomains: 
+        - $ref: './subdomains.yaml#/subdomains/ism-handling-retrieval'
+      x-gem-external-reference: "ALLOWEDLIST_NCPeH_COUNTRY-A"
+      x-gem-medical-personal-information: false
+      description: "Eine Liste von zulässigen europäischen Ländern (Land-A), mit denen ein gegenseitiger Betrieb für den grenzüberschreitenden Austausch von Gesundheitsdaten gemäß den Vorgaben des eHDSI besteht"

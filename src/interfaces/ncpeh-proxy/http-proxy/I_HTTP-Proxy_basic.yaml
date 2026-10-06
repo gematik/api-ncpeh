@@ -70,7 +70,7 @@ webhooks:
         - UC_ISM_bereitstellen
       summary: WebApp-Build triggern
       description: Webhook, der vom Proxy aufgerufen wird, um den Buildprozess der WebApp anzustoßen.
-      operationId: triggerWebAppBuild
+      operationId: notifyWebAppBuild
       parameters:
         - $ref: '#/components/parameters/x-useragent'
       security:

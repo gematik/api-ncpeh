@@ -28,6 +28,8 @@ workflows:
             criteria:
               - condition: $statusCode == 401
             type: end
+          - name: abortOnWebhookFailure
+            type: end
 
       - stepId: getIsmListStep
         description: Proxy ruft die aktuellen ISM-Daten vom NCPeH-FD ab.
@@ -59,42 +61,15 @@ workflows:
         outputs:
           entitlementsPayload: $response.body
 
-
-      - stepId: triggerBuildStep
+      - stepId: notifyWebAppBuildStep
         description: Proxy triggert den Buildprozess über den konfigurierten Webhook.
-        operationId: proxy-basic.triggerWebAppBuild
+        operationId: proxy-basic.notifyWebAppBuild
         successCriteria:
           - condition: $statusCode == 202
         onFailure:
-          - name: abortOnWebhookFailure
+          - name: handleUnauthorized
+            criteria:
+              - condition: $statusCode == 401
             type: end
-
-      - stepId: getIsmHtmlStep
-        description: Buildprozess ruft die gerenderten HTML-Ansichten statisch ab.
-        operationId: ism-service.getIsmHtml
-        successCriteria:
-          - condition: $statusCode == 200
-        onFailure:
-          - name: retryOnServerError
-            criteria:
-              - condition: $statusCode == 500
-            type: retry
-            retryAfter: 5
-            retryLimit: 3
-        outputs:
-          fetchedHtml: $response.body
-
-      - stepId: getFlagAssetsStep
-        description: Buildprozess lädt die benötigten Flaggen-Ressourcen im Batch herunter.
-        operationId: ism-service.getFlagAssets
-        parameters:
-          - name: countryCodes
-            in: query
-            value: "PL,FR,PT"
-        successCriteria:
-          - condition: $statusCode == 200
-        onFailure:
-          - name: handleNotFound
-            criteria:
-              - condition: $statusCode == 404
+          - name: abortOnWebhookFailure
             type: end
