@@ -7,9 +7,9 @@ servers:
   - url: "{protocol}://{hostname}/{basepath}/{apipath}/{apiversion}"
     variables:
       protocol:
-        default: https
+        default: http
       hostname:
-        default: "dummyhostname:443"
+        default: "localhost:8080"
       basepath:
         default: "http-proxy"
       apipath:
@@ -78,7 +78,7 @@ webhooks:
         - ApiKeyAuth: []
       responses:
         '202':
-          description: Build-Prozess erfolgreich angestoßen
+          description: Buildprozess erfolgreich angestoßen
         '401':
           description: Fehlende oder ungültige Authentifizierung
         '403':

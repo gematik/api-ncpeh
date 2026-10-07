@@ -7,9 +7,9 @@ servers:
   - url: "{protocol}://{hostname}/{basepath}/{apipath}/{apiversion}"
     variables:
       protocol:
-        default: https
+        default: http
       hostname:
-        default: "dummyhostname:443"
+        default: "localhost:8080"
       basepath:
         default: "ncpeh-fd"
       apipath:

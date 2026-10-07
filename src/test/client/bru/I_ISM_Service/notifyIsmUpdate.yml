@@ -1,20 +1,25 @@
 info:
   name: notifyIsmUpdate
   type: http
-  seq: 3
+  seq: 1
 
 http:
   method: POST
-  url: "{{process.env.API_GATEWAY_URL}}/http-proxy/api/v1/events/ism/update"
+  url: "{{process.env.protocol}}://{{process.env.hostname}}/{{process.env.basepath_proxy}}/{{process.env.apipath}}/{{process.env.apiversion}}/events/ism/update"
   headers:
     - name: x-useragent
       value: "{{process.env.USER_AGENT}}"
+    - name: XXXXX-API-KEY
+      value: "{{process.env.PROXY_API_KEY}}"
 
 runtime:
   assertions:
     - expression: res.status
-      operator: in
-      value: "[202, 404]"
+      operator: eq
+      value: "202"
+    - expression: res.status
+      operator: neq
+      value: "401"
 
 settings:
   encodeUrl: true
@@ -23,6 +28,16 @@ settings:
   maxRedirects: 5
   forwardAuthorizationHeader: true
 
-docs: |-
-  Webhook zur Benachrichtigung über aktualisierte ISM-Daten.
-  Beispieldaten: example-data/I_ISM_Service-notifyIsmUpdate-res-001.json
+examples:
+  - name: res-202
+    request:
+      url: "{{process.env.protocol}}://{{process.env.hostname}}/{{process.env.basepath_proxy}}/{{process.env.apipath}}/{{process.env.apiversion}}/events/ism/update"
+      method: POST
+      headers:
+        - name: x-useragent
+          value: "{{process.env.USER_AGENT}}"
+        - name: XXXXX-API-KEY
+          value: "{{process.env.PROXY_API_KEY}}"
+    response:
+      status: 202
+      statusText: OK
