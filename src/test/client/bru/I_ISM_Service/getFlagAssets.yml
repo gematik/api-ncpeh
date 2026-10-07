@@ -1,0 +1,36 @@
+info:
+  name: getFlagAssets
+  type: http
+  seq: 2
+
+http:
+  method: GET
+  url: "{{process.env.API_GATEWAY_URL}}/http-proxy/api/v1/assets/flags?countryCodes={{countryCodes}}"
+  headers:
+    - name: x-useragent
+      value: "{{process.env.USER_AGENT}}"
+    - name: XXXXX-API-KEY
+      value: "{{process.env.API_KEY}}"
+  params:
+    - name: countryCodes
+      value: "{{process.env.COUNTRY_CODES}}"
+      type: query
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: eq
+      value: "200"
+    - expression: res.body.CountryFlag
+      operator: isDefined
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  Abruf der Flaggen-Ressourcen.
+  Beispieldaten: example-data/I_ISM_Service-getFlagAssets-res-001.json

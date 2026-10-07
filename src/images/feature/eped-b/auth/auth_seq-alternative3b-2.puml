@@ -1,0 +1,131 @@
+@startuml
+!pragma PLS 8192
+
+skinparam maxMessageSize 200
+autonumber
+hide unlinked
+scale 1625 width
+
+actor "LE-DE" as User
+box "EU-Webportal (Frontend)" #AliceBlue
+    participant "WebApp" as WebApp
+end box
+box "Apotheken-Umgebung" #LightSkyBlue
+    participant "Browser" as Browser
+    participant "AVS" as AVS
+    participant "Konnektor" as Konnektor
+end box
+box "Hilfsmittel" #WhiteSmoke
+    participant "IDP-Dienst" as IDP
+end box
+box "NCPeH-Proxy" #FloralWhite
+    participant "NCPeH-Proxy" as Proxy
+end box
+
+== Anmeldung im AVS ==
+User -> AVS: Klick auf "Anmelden im EU-Webportal"
+activate AVS
+loop durchführen, jeweils einmal für HBA und einmal für SMC-B
+    AVS -> IDP: GET /auth (response_type=code, PKCE-Challenge...)
+    activate IDP
+    IDP --> AVS: :Challenge, :User Consent
+    deactivate IDP
+
+    == Consent und Karteninteraktion (vereinfacht) ==
+    AVS -> User: Consent abfragen
+    User --> AVS: Consent erteilt
+    AVS -> Konnektor: ExternalAuthenticate (Challenge)
+    activate Konnektor
+    Konnektor --> AVS: :signierte Challenge
+    deactivate Konnektor
+
+    == AUTH_CODE Grant ==
+    AVS -> IDP: POST /auth (signierte Challenge)
+    activate IDP
+    IDP -> IDP: Validiere (Signatur, Zertifikate)
+    IDP --> AVS: 302 Redirect (code=<AUTH_CODE>)
+    deactivate IDP
+
+    == Token Exchange, Herausgabe-Code zum Bootstrap der WebApp ==
+    AVS -> Proxy: POST /auth/handover (code, Code Verifier)
+    activate Proxy
+    Proxy -> IDP: POST /token (code, Code Verifier)
+    activate IDP
+    IDP --> Proxy: 200 OK (:id_token)
+    deactivate IDP
+end
+Proxy -> Proxy: id_tokens validieren
+Proxy -> Proxy: Kurzlebigen Einmal-Code generieren :handover_code
+
+Proxy -> Proxy: Autorisierungsauftrag speichern (handover_code, id_token[1..2])
+note left #Yellow
+    Domänenobjekt:
+    ""AuthorizationTask""
+end note
+
+Proxy --> AVS: 200 OK (:handover_code)
+deactivate Proxy
+
+== Bootstrap-Cookie erzeugen ==
+AVS -> Browser: Browser öffnen mit parameterisiertem Auth-Service Call
+note right: sinngemäß:\n""https://auth-service.ncpeh-proxy.de/auth/cookie-handoff?code=handover_code""
+activate Browser
+Browser -> Proxy: GET /auth/cookie-handoff?code=<handover_code>
+activate Proxy
+Proxy -> Proxy: handover_code prüfen und entwerten(handover_code)
+note left: nur einmalig nutzbar
+Proxy -> Proxy: Autorisierungsauftrag finden (handover_code): Autorisierungsauftrag
+Proxy -> Proxy: Bootstrap-Session generieren :Bootstrap-Session-ID
+Proxy -> Proxy: Autorisierungsauftrag aktualisieren (Bootstrap-Session-ID)
+
+Proxy --> Browser: 302 Redirect zu WebApp-Download-URI 
+note left
+    sinngemäß: ""https://eu-webportal.ncpeh.de""
+    HTTP-Header-Anweisung:
+    ""Set-Cookie: bootstrap_session=<Bootstrap-Session-ID>;""
+    ""HttpOnly; SameSite=Strict""
+end note
+
+deactivate Proxy
+
+Browser -> WebApp: Lade WebApp Frontend inkl. Ressourcen
+activate WebApp
+WebApp --> Browser: WebApp geladen
+
+== Session Upgrade: Bootstrap-Cookie zu Access-Token mit DPoP ==
+WebApp -> WebApp: DPoP-Schlüsselpaar generieren (PrK, PuK)
+WebApp -> Proxy: POST /token-upgrade (PuK)
+note over Browser
+  Der Browser hängt Cookie 
+  ""bootstrap_session"" beim API-Call 
+  automatisch im Hintergrund an.
+end note
+activate Proxy
+
+Proxy -> Proxy: Cookie validieren (Bootstrap-Session-ID)
+Proxy -> Proxy: Autorisierungsauftrag finden (Bootstrap-Session-ID): Autorisierungsauftrag
+note over Proxy
+    Autorisierung und Policies 
+    für neues Access-Token ""ncpehprx_access_token""
+    durchführen
+end note   
+Proxy -> Proxy: Access-Token generieren und an PuK binden
+Proxy -> Proxy: Autorisierungsauftrag abschließen und löschen
+Proxy --> WebApp: 200 OK (:ncpehprx_access_token)
+note over Browser
+    HTTP-Header-Anweisung zum Löschen des Cookies:
+    ""Set-Cookie: bootstrap_session=<Bootstrap-Session-ID>;""
+    ""Max-Age=0""
+    (...wird nicht mehr gebraucht, da nun JWT+DPoP)
+end note
+deactivate Proxy
+
+== Backend-Zugriff ==
+WebApp -> Proxy: API-Call (Authorization: DPoP ncpehprx_access_token, DPoP-Header: <Signatur>)
+activate Proxy
+Proxy -> Proxy: DPoP Signatur validieren
+Proxy ->? : API-Call /xyz
+Proxy --> WebApp: Response
+deactivate Proxy
+
+@enduml

@@ -1,0 +1,30 @@
+info:
+  name: getIsmList
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: "{{process.env.API_GATEWAY_URL}}/ncpeh-fd/api/v1/ismlist"
+  headers:
+    - name: x-useragent
+      value: "{{process.env.USER_AGENT}}"
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: eq
+      value: "200"
+    - expression: res.body.ISMInternational
+      operator: isDefined
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true
+
+docs: |-
+  Abruf der ISM-FHIR-Liste vom NCPeH-FD.
+  Beispieldaten: example-data/I_ISM_Service_FD-getIsmList-res-001.json

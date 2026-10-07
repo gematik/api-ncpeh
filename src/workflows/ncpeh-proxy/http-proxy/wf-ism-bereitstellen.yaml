@@ -1,0 +1,75 @@
+arazzo: 1.1.0
+info:
+  title: ISM Bereitstellen Workflow
+  version: 1.0.0
+  description: Workflow-Definition der ISM-Bereitstellung inklusive Error Handling und Retry
+sourceDescriptions:
+  - name: ism-service
+    url: ../../../interfaces/ncpeh-proxy/http-proxy/I_ISM_Service.yaml
+    type: openapi
+  - name: proxy-basic
+    url: ../../../interfaces/ncpeh-proxy/http-proxy/I_HTTP-Proxy_basic.yaml
+    type: openapi
+  - name: ism-service-fd
+    url: ../../../interfaces/ncpeh-fd/I_ISM_Service_FD.yaml
+    type: openapi
+workflows:
+  - workflowId: ism-bereitstellen-workflow
+    summary: Workflow der ISM-Bereitstellung mit Error Handling
+    description: Ereignisbasierter Workflow zur Bereitstellung der ISM für die WebApp des EU-Webportals.
+    steps:
+      - stepId: notifyIsmUpdateStep
+        description: Proxy über das Vorliegen neuer ISMs aus ServiceMetadata benachrichtigt.
+        operationId: ism-service.notifyIsmUpdate
+        successCriteria:
+          - condition: $statusCode == 202
+        onFailure:
+          - name: handleUnauthorized
+            criteria:
+              - condition: $statusCode == 401
+            type: end
+          - name: abortOnWebhookFailure
+            type: end
+
+      - stepId: getIsmListStep
+        description: Proxy ruft die aktuellen ISM-Daten vom NCPeH-FD ab.
+        operationId: ism-service-fd.getIsmList
+        successCriteria:
+          - condition: $statusCode == 200
+        onFailure:
+          - name: retryOnServerError
+            criteria:
+              - condition: $statusCode == 500
+            type: retry
+            retryAfter: 5
+            retryLimit: 3
+        outputs:
+          ismListPayload: $response.body
+
+      - stepId: getEntitlementsStep
+        description: Proxy ruft die aktuellen Länder-Berechtigungen (AllowedList) vom NCPeH-FD ab.
+        operationId: ism-service-fd.getEntitlementsCountries
+        successCriteria:
+          - condition: $statusCode == 200
+        onFailure:
+          - name: retryOnServerError
+            criteria:
+              - condition: $statusCode == 500
+            type: retry
+            retryAfter: 5
+            retryLimit: 3
+        outputs:
+          entitlementsPayload: $response.body
+
+      - stepId: notifyWebAppBuildStep
+        description: Proxy triggert den Buildprozess über den konfigurierten Webhook.
+        operationId: proxy-basic.notifyWebAppBuild
+        successCriteria:
+          - condition: $statusCode == 202
+        onFailure:
+          - name: handleUnauthorized
+            criteria:
+              - condition: $statusCode == 401
+            type: end
+          - name: abortOnWebhookFailure
+            type: end

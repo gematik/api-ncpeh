@@ -1,0 +1,150 @@
+@startuml ISM_bereitstellen_detailed
+
+skinparam maxMessageSize 200
+hide unlinked
+'autonumber
+
+actor "LE-DE" as User
+
+participant "EU-Webportal\n(im Browser)" as WebApp
+box "externe Services" #White
+    participant "Translation Service" as TranslationService
+end box
+box "CI/CD-Pipeline" #faffe7
+    control "Buildprozess\n(im Hintergrund)" as Buildprozess
+    database "Quellen-Repository\ndes EU-Webportals" as SrcRepo
+end box
+
+actor "Anbieter des\nEU-Webportals" as Provider
+
+box "NCPeH-Proxy" #FloralWhite
+    participant "HTTP-Proxy" as Proxy
+end box
+
+actor "Systemadministrator\ndes NCPeH-FD" as Administrator
+box "NCPeH-FD" #EAF2F8
+control "Scheduler" as Scheduler <<internal>>
+participant "NCPeH-FD" as NCPeH
+end box
+
+participant "eHDSI Configuration Service" as ConfServ
+
+== Vorbedingungen ==
+Administrator -> Scheduler: legt an
+Administrator -> NCPeH: konfiguriert AllowedList (AllowedListNcpehCountryA)
+opt manuelle Übersetzung von ISMs gewünscht
+    Provider -> SrcRepo: erstellt lektorierte, manuelle Übersetzung der ISMs
+end
+== 1. Täglicher Abruf von ServiceMetadata ==
+== ism-handling-retrieval ==
+autonumber
+opt Geplanter täglicher Aktualisierungszeitpunkt erreicht
+    Scheduler -> NCPeH: Trigger: \nAktualisierungsprozess von ISM anderer NCPeH Land-A starten
+    activate NCPeH 
+    NCPeH -> ConfServ: SignedServiceMetadata relevanter NCPeH Land-A gemäß eHDSI abrufen
+    activate ConfServ
+
+    ConfServ --> NCPeH: :Liste der SignedServiceMetadata
+    deactivate ConfServ
+
+    NCPeH -> NCPeH: Schema und Signatur validieren (SignedServiceMetadata) :ServiceMetadata
+    NCPeH -> NCPeH: Signatur validieren (ServiceMetadata)
+    NCPeH -> NCPeH: Länderzuordnung prüfen (ServiceMetadata)
+    NCPeH -> NCPeH: Serviceinformationen und ISM aktualisieren (ServiceMetadata)
+end
+deactivate NCPeH
+
+== 2. Integration von ISM ins EU-Webportal ==
+
+opt Neue ServiceMetadata.ISM im NCPeH-FD verfügbar
+    NCPeH ->> Proxy: notifyIsmUpdateStep
+    note right: kann auch durch Änderungen an\nVorbedingungen ausgelöst werden
+    note left#Yellow: Hinweis: ab hier Auflösung der Objekte über ""domainobj-eped-b.yaml""\nAuflösung der StepIDs über ""wf-ism-bereitstellen.yaml""
+    activate Proxy
+    Proxy ->> Buildprozess: notifyWebAppBuildStep
+    note left: kann auch durch Änderungen an\nVorbedingungen ausgelöst werden
+    activate Buildprozess
+    Proxy -> NCPeH: getEntitlementsStep
+    activate NCPeH
+    NCPeH --> Proxy: :CountryApplicationAuthorizationList
+    deactivate NCPeH
+    group TODO TUC ableiten für Token-Handling
+        Proxy -> Proxy: Länderspezifische Rollenberechtigungen validieren (CountryApplicationAuthorizationList)
+    end group
+    deactivate Proxy
+
+    Buildprozess -> Proxy: getIsmListStep
+    activate Proxy
+    Proxy -> NCPeH: Weiterleiten
+    deactivate Proxy
+    activate NCPeH
+    loop Für jede ISM in ServiceMetadata.ISM
+        NCPeH -> NCPeH: ISM in FHIR-Bundle integrieren (ISMInternational) :ISMInternationalList
+        note left: jedes Listenelement als base64-enc FHIR Entry (Bundle.entry)
+    end
+    NCPeH --> Proxy: :ISMInternationalList
+    activate Proxy
+    Proxy --> Buildprozess: Weiterleiten
+    deactivate Proxy
+    note left: Liste ohne zusätzlichen\nIntegritätsschutz auf Nachrichtenebene
+    deactivate NCPeH
+    Buildprozess -> Buildprozess: FHIR-Bundle validieren (ISMInternationalList)
+    Buildprozess -> SrcRepo: Pull RepositoryContent
+    note left: z.B. ""git clone <repository-url>""
+    activate SrcRepo
+    SrcRepo --> Buildprozess: :RepositoryContent
+    deactivate SrcRepo
+
+== ism-handling-preparation ==
+    loop Für jede ISMInternational in ISMInternationalList
+        Buildprozess -> Buildprozess: ISM in HTML-Repräsentation umwandeln (ISMInternational, CountryTranscoder):ISMInternationalHtml
+        opt lektorierte Fassung in RepositoryContent hat aktuellsten Zeitstempel
+            Buildprozess -> Buildprozess: Lektorierten deutschsprachigen HTML-GUI-Text übernehmen (RepositoryContent.ISMInternationalHtml.RepHtmlGerman) :ISMInternationalHtml.RepHtmlGerman
+        end
+    end
+    Buildprozess -> Buildprozess: RepositoryContent aktualisieren und speichern (ISMInternationalList, ISMInternationalHtmlList)
+    note left: z.B. ""git commit""
+    Buildprozess -> SrcRepo: Push RepositoryContent (ISMInternationalList, ISMInternationalHtmlList)
+    note left: z.B. ""git push origin <build-branch>""
+    
+    group TODO TUC ableiten für Token-Handling
+    Buildprozess -> Buildprozess: gefilterte ISMInternationalHtmlList zusammenstellen für gültige Anwendungen (ISMInternationalHtmlList) :ISMInternationalHtmlList
+        note left
+            TODO abschaffen zugunsten eines
+            Token-Scope-basierten Filtermechanismus
+            am NCPeH-Proxy
+        end note
+        Buildprozess -> Buildprozess: Länderliste zu den benötigten Flaggen ableiten (ISMInternationalHtmlList) :countryCodes
+        note left
+            TODO abschaffen zugunsten eines
+            Token-Scope-basierten Filtermechanismus
+            am NCPeH-Proxy
+        end note
+    end
+
+    Buildprozess -> Buildprozess: Webapp bauen (ISMInternationalHtmlList, RepositoryContent.CountryFlagList, ...)
+    note right
+        weitere Schritte für diesen UC nicht relevant, daher nicht aufgeführt
+    end note
+    deactivate Buildprozess
+    ... Anschließend Deployment der Webapp auf dem Webserver ...
+end
+
+== ism-handling-display ==
+    ... später: Benutzung durch LE-DE ...
+    group TODO TUC ableiten für Token-Handling in der WebApp
+        WebApp -> WebApp: Validierung der Token-Claims durchführen
+        activate WebApp
+    end
+    WebApp -> User: Übersicht aller verfügbaren Länder anzeigen
+    User -> WebApp: Auswahl eines Landes für detaillierte ISM-Informationen (ISMInternationalHtml)
+    WebApp -> WebApp: HTML-Resource laden (ISMInternationalHtml)
+    User -> WebApp: Ausfüllen der detaillierten ISM-Ansicht (ISMInternationalHtml)
+    WebApp -> WebApp: Validierung der Eingaben (ISMInternationalHtml)
+    deactivate WebApp
+
+== UC-Ende ==
+    note over Proxy: ""WebApp -> Proxy: POST /ism (PatientIdentificationQuery)"" nicht mehr Bestandteil des UC 
+
+deactivate Proxy
+@enduml

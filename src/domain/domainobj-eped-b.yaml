@@ -1,9 +1,9 @@
 openapi: 3.1.0
 info:
   title: ePed-B Domain Objects
-  version: "0.1"
+  version: "0.2"
 
-x-subdomains:
+x-gem-subdomains:
   $ref: './subdomains.yaml#/subdomains'
 
 components:
@@ -11,10 +11,10 @@ components:
 
     DPoPAsymmetricKeyPair:
       type: object
-      x-object-type: "Entity"
-      x-subdomains: 
+      x-gem-object-type: "Entity"
+      x-gem-subdomains: 
         - $ref: './subdomains.yaml#/subdomains/authentication-authorization'
-      x-medical-personal-information: false
+      x-gem-medical-personal-information: false
       description: "Asymm. Schlüsselpaar als Grundlage für die Generierung von DPoP-Tokens"
       properties:
         id: { type: string, format: uuid }
@@ -23,12 +23,12 @@ components:
 
     IdentityAssertion:
       type: object
-      x-object-type: "Entity"
-      x-subdomains: 
+      x-gem-object-type: "Entity"
+      x-gem-subdomains: 
         - $ref: './subdomains.yaml#/subdomains/authentication-authorization'
         - $ref: './subdomains.yaml#/subdomains/identity-role-mapping'
         - $ref: './subdomains.yaml#/subdomains/transaction-handling-eped-b'
-      x-medical-personal-information: false
+      x-gem-medical-personal-information: false
       description: "Identitätsnachweis des Leistungserbringers in Deutschland"
       required: [id]
       properties:
@@ -37,19 +37,19 @@ components:
 
     AccessRights:
       type: object
-      x-object-type: "ValueObject"
-      x-subdomains: 
+      x-gem-object-type: "ValueObject"
+      x-gem-subdomains: 
         - $ref: './subdomains.yaml#/subdomains/authentication-authorization'
         - $ref: './subdomains.yaml#/subdomains/identity-role-mapping'
-      x-medical-personal-information: false
+      x-gem-medical-personal-information: false
       description: "Zugriffsrechte des Leistungserbringers in Deutschland, die die Berechtigungen des Leistungserbringers für die Durchführung von ePeD-B-Vorgängen festlegen"
 
     AuthorizationTask:
       type: object
-      x-object-type: "Entity"
-      x-subdomains: 
+      x-gem-object-type: "Entity"
+      x-gem-subdomains: 
         - $ref: './subdomains.yaml#/subdomains/authentication-authorization'
-      x-medical-personal-information: false
+      x-gem-medical-personal-information: false
       description: "Autorisierungsauftrag, der die Informationen über die Autorisierung des Leistungserbringers in Deutschland für die Durchführung von ePeD-B-Vorgängen enthält"
       required: [auth_req_id]
       properties:
@@ -65,10 +65,10 @@ components:
 
     ExchangePolicy:
       type: object
-      x-object-type: "Entity"
-      x-subdomains: 
+      x-gem-object-type: "Entity"
+      x-gem-subdomains: 
         - $ref: './subdomains.yaml#/subdomains/identity-role-mapping'
-      x-medical-personal-information: false
+      x-gem-medical-personal-information: false
       description: "Richtlinie für den Austausch von ID-Tokens des Upstream-IDPs"
       required: [id]
       properties:
@@ -77,12 +77,12 @@ components:
 
     PINDocument:
       type: object
-      x-object-type: "ValueObject"
-      x-subdomains: 
+      x-gem-object-type: "ValueObject"
+      x-gem-subdomains: 
         - $ref: './subdomains.yaml#/subdomains/pin-documents-retrieval'
         - $ref: './subdomains.yaml#/subdomains/pin-documents-preparation'
         - $ref: './subdomains.yaml#/subdomains/pin-documents-display'
-      x-medical-personal-information: false
+      x-gem-medical-personal-information: false
       description: "Ein Dokument, das die Rechte und Pflichten des EU-Bürgers zum Schutz seiner personenbezogenen und gesundheitlichen Daten enthält"
       properties:
         language: { type: string}
@@ -90,92 +90,177 @@ components:
 
     HPINDocument:
       type: object
-      x-object-type: "ValueObject"
-      x-subdomains: 
+      x-gem-object-type: "ValueObject"
+      x-gem-subdomains: 
         - $ref: './subdomains.yaml#/subdomains/pin-documents-retrieval'
         - $ref: './subdomains.yaml#/subdomains/pin-documents-preparation'
         - $ref: './subdomains.yaml#/subdomains/pin-documents-display'
-      x-medical-personal-information: false
+      x-gem-medical-personal-information: false
       description: "Ein Dokument, das die Rechte und Pflichten des Leistungserbringers zum Schutz seiner personenbezogenen und gesundheitlichen Daten enthält, das speziell für den Leistungserbringer in Deutschland erstellt wurde"
       properties:
         weblink: { type: string, format: uri }
 
     PINAcknowledgement:
       type: object
-      x-object-type: "Entity"
-      x-subdomains: 
+      x-gem-object-type: "Entity"
+      x-gem-subdomains: 
         - $ref: './subdomains.yaml#/subdomains/pin-documents-display'
         - $ref: './subdomains.yaml#/subdomains/transaction-handling-eped-b'
-      x-medical-personal-information: false
+      x-gem-medical-personal-information: false
       description: "Ein Informationsobjekt, das die Bestätigung des EU-Bürgers dokumentiert, dass er über seine Rechte und Pflichten zum Schutz seiner personenbezogenen und gesundheitlichen Daten informiert wurde"
       required: [id]
       properties:
         id: { type: string, format: uuid }
 
-    ISMNational:
+    ISMInternational:
       type: object
-      x-object-type: "ValueObject"
-      x-subdomains: 
+      x-gem-object-type: "ValueObject"
+      x-gem-subdomains: 
         - $ref: './subdomains.yaml#/subdomains/ism-handling-retrieval'
         - $ref: './subdomains.yaml#/subdomains/ism-handling-preparation'
+      x-gem-medical-personal-information: false
+      description: "Eine International Search Mask des Herkunftslandes des EU-Bürgers als schemakonforme XML-Repräsentation, die die Identifikation des EU-Bürgers in der Apotheke vor Ort ermöglicht"
+      required: [ISM]
+      properties:
+        CountryCode: { type: string, format: iso-country-2, pattern: '^[A-Z]{2}$' }
+        ISM: { type: string, contentMediaType: application/xml }
+
+    ISMInternationalHtml:
+      type: object
+      x-gem-object-type: "ValueObject"
+      x-gem-subdomains: 
+        - $ref: './subdomains.yaml#/subdomains/ism-handling-preparation'
         - $ref: './subdomains.yaml#/subdomains/ism-handling-display'
-      x-external-reference: "list_ism_international"
-      x-medical-personal-information: false
-      description: "Eine International Search Mask des Herkunftslandes des EU-Bürgers, die die Identifikation des EU-Bürgers in der Apotheke vor Ort ermöglicht"
+      x-gem-medical-personal-information: false
+      description: "HTML-Repräsentation einer International Search Mask entsprechend der Vorgaben der ISMInternational inkl. einer deutschen Übersetzung"
+      required: [RepHtml]
+      properties:
+        CountryCode: { type: string, format: iso-country-2, pattern: '^[A-Z]{2}$' }
+        RepHtml: { type: string, contentMediaType: text/html }
+        RepHtmlGerman: { type: string, contentMediaType: text/html }
+
+    ISMInternationalList:
+      type: object
+      x-gem-object-type: "ValueObject"
+      x-gem-fhir-canonical-type: "http://hl7.org/fhir/StructureDefinition/Bundle|4.0.1"
+      x-gem-fhir-canonical-type-schema: "http://hl7.org/fhir/R4/bundle.profile.json"
+      x-gem-fhir-canonical-type-cs: "http://hl7.org/fhir/bundle-type|4.0.1"
+      x-gem-fhir-canonical-type-cs-code: "collection"
+      x-gem-subdomains: 
+        - $ref: './subdomains.yaml#/subdomains/ism-handling-retrieval'
+        - $ref: './subdomains.yaml#/subdomains/ism-handling-preparation'
+      x-gem-external-reference: "list_ism_international"
+      x-gem-medical-personal-information: false
+      description: "Eine Liste aller verfügbaren International Search Mask möglicher Herkunftsländer von EU-Bürgern"
+      properties:
+        ISMInternational: 
+          type: array
+          items:
+            allOf:
+              - $ref: '#/components/schemas/ISMInternational'
+            x-gem-fhir-canonical-type: "http://hl7.org/fhir/StructureDefinition/Bundle|4.0.1#Bundle.entry.resource"
+            x-gem-fhir-canonical-type-schema: "http://hl7.org/fhir/R4/bundle.profile.json"
+            description: "Eintrag in der Liste der International Search Mask"
+            contentEncoding: base64
+
+    ISMInternationalHtmlList:
+      type: object
+      x-gem-object-type: "ValueObject"
+      x-gem-subdomains: 
+        - $ref: './subdomains.yaml#/subdomains/ism-handling-preparation'
+        - $ref: './subdomains.yaml#/subdomains/ism-handling-display'
+      x-gem-medical-personal-information: false
+      description: "HTML-Repräsentation einer Liste aller verfügbaren International Search Mask möglicher Herkunftsländer von EU-Bürgern"
+      properties:
+        ISMInternationalHtml: 
+          type: array
+          items:
+            $ref: '#/components/schemas/ISMInternationalHtml'
+
+    CountryFlag:
+      type: object
+      x-gem-object-type: "ValueObject"
+      x-gem-subdomains: 
+        - $ref: './subdomains.yaml#/subdomains/ism-handling-preparation'
+        - $ref: './subdomains.yaml#/subdomains/ism-handling-display'
+      x-gem-medical-personal-information: false
+      description: "Landesflagge eines EU-Mitgliedsstaates"
+      required: [CountryCode, Flag]
+      properties:
+        CountryCode: { type: string, format: iso-country-2, pattern: '^[A-Z]{2}$' }
+        Flag: { type: string, contentMediaType: image/png, contentEncoding: base64 }
+        Link: { type: string, format: uri }
+
+    CountryFlagList:
+      type: object
+      x-gem-object-type: "ValueObject"
+      x-gem-subdomains: 
+        - $ref: './subdomains.yaml#/subdomains/ism-handling-preparation'
+        - $ref: './subdomains.yaml#/subdomains/ism-handling-display'
+      x-gem-medical-personal-information: false
+      description: "Landesflaggenliste von EU-Mitgliedsstaaten"
+      properties:
+        CountryFlag: 
+          type: array
+          items:
+            $ref: '#/components/schemas/CountryFlag'
 
     PatientIdentificationQuery:
       type: object
-      x-object-type: "Entity"
-      x-subdomains: 
+      x-gem-object-type: "Entity"
+      x-gem-subdomains: 
         - $ref: './subdomains.yaml#/subdomains/patient-identification-retrieval'
-      x-external-reference: "patient_identification_query"
-      x-medical-personal-information: true
-      description: "Übermittlung von Identitätsmerkmalen zur Ermittlung und Befreitstellung von weiteren demographischen Daten."
+      x-gem-external-reference: "patient_identification_query"
+      x-gem-medical-personal-information: true
+      description: "Übermittlung von Identitätsmerkmalen zur Ermittlung und Bereitstellung von weiteren demographischen Daten."
       required: [id]
       properties:
         id: { type: string, format: uuid }
 
     PatientIdentificationData:
       type: object
-      x-object-type: "Entity"
-      x-subdomains: 
+      x-gem-object-type: "Entity"
+      x-gem-subdomains: 
         - $ref: './subdomains.yaml#/subdomains/patient-identification-retrieval'
         - $ref: './subdomains.yaml#/subdomains/patient-identification-preparation'
         - $ref: './subdomains.yaml#/subdomains/patient-identification-display'
         - $ref: './subdomains.yaml#/subdomains/treatment-relationship'
         - $ref: './subdomains.yaml#/subdomains/transaction-handling-eped-b'
-      x-external-reference: "patient_demographics_data"
-      x-medical-personal-information: true
+      x-gem-external-reference: "patient_demographics_data"
+      x-gem-medical-personal-information: true
       description: "Persönliche Daten des EU-Bürgers, die für die Identifikation des EU-Bürgers in der Apotheke vor Ort erforderlich sind"
       required: [id, PatientIdentifier]
       properties:
         id: { type: string, format: uuid }
-        PatientIdentifier: { $ref: '#/components/schemas/PatientIdentifier' }
+        PatientIdentifier:
+          type: array
+          items:
+            $ref: '#/components/schemas/PatientIdentifier'
 
     PatientIdentifier:
       type: object
-      x-object-type: "ValueObject"
-      x-subdomains: 
+      x-gem-object-type: "ValueObject"
+      x-gem-subdomains: 
         - $ref: './subdomains.yaml#/subdomains/patient-identification-retrieval'
         - $ref: './subdomains.yaml#/subdomains/patient-identification-preparation'
         - $ref: './subdomains.yaml#/subdomains/patient-identification-display'
-      x-medical-personal-information: true
+      x-gem-medical-personal-information: true
       description: "Ein Identifikator, der die Identifikation des EU-Bürgers in der Apotheke vor Ort ermöglicht"
 
     AuditTrailEntry:
       type: object
-      x-object-type: "ValueObject"
-      x-subdomains: 
+      x-gem-object-type: "ValueObject"
+      x-gem-subdomains: 
         - $ref: './subdomains.yaml#/subdomains/audit-trail-creation'
-      x-medical-personal-information: false
+      x-gem-medical-personal-information: false
       description: "Ein Eintrag im Audit Trail, der die Identifikation des EU-Bürgers in der Apotheke vor Ort dokumentiert"
 
     SessionTupel:
       type: object
-      x-object-type: "Entity"
-      x-subdomains:
+      x-gem-object-type: "Entity"
+      x-gem-subdomains:
         - $ref: './subdomains.yaml#/subdomains/transaction-handling-eped-b'
-      x-medical-personal-information: false
+      x-gem-medical-personal-information: false
       description: "Ein Tupel, das die Informationen über eine Sitzung enthält, die für die Verwaltung eines einzelnen ePeD-B-Vorgangs für einen EU-Bürger erforderlich sind"
       required: [id]
       properties:
@@ -183,11 +268,11 @@ components:
 
     TRCAssertion:
       type: object
-      x-object-type: "Entity"
-      x-subdomains: 
+      x-gem-object-type: "Entity"
+      x-gem-subdomains: 
         - $ref: './subdomains.yaml#/subdomains/treatment-relationship'
         - $ref: './subdomains.yaml#/subdomains/transaction-handling-eped-b'
-      x-medical-personal-information: true
+      x-gem-medical-personal-information: true
       description: "Ein Nachweis, der die Bestätigung des Behandlungsverhältnisses zum EU-Bürger enthält"
       required: [id]
       properties:
@@ -195,36 +280,42 @@ components:
 
     PrescriptionLanguage:
       type: object
-      x-object-type: "ValueObject"
-      x-subdomains: 
+      x-gem-object-type: "ValueObject"
+      x-gem-subdomains: 
         - $ref: './subdomains.yaml#/subdomains/prescription-settings'
         - $ref: './subdomains.yaml#/subdomains/prescription-display'
-      x-medical-personal-information: false
+      x-gem-medical-personal-information: false
       description: "Spracheinstellungen für die Rezepte des EU-Bürgers"
 
     PrescriptionList:
       type: object
-      x-object-type: "Entity"
-      x-subdomains: 
+      x-gem-object-type: "Entity"
+      x-gem-subdomains: 
         - $ref: './subdomains.yaml#/subdomains/prescription-display'
-      x-external-reference: "list_available_presciption"
-      x-medical-personal-information: true
+      x-gem-external-reference: "list_available_presciption"
+      x-gem-medical-personal-information: true
       description: "Liste der verfügbaren Rezepte, die an den EU-Bürger abgegeben werden können"
       required: [id]
       properties:
         id: { type: string, format: uuid }
-        PrescriptionRedeemable: { $ref: '#/components/schemas/PrescriptionRedeemable' }
-        PrescriptionNonRedeemable: { $ref: '#/components/schemas/PrescriptionNonRedeemable' }
+        PrescriptionRedeemable: 
+          type: array
+          items:
+            $ref: '#/components/schemas/PrescriptionRedeemable'
+        PrescriptionNonRedeemable: 
+          type: array
+          items:
+            $ref: '#/components/schemas/PrescriptionNonRedeemable'
 
     PrescriptionRedeemable:
       type: object
-      x-object-type: "ValueObject"
-      x-subdomains: 
+      x-gem-object-type: "ValueObject"
+      x-gem-subdomains: 
         - $ref: './subdomains.yaml#/subdomains/prescription-settings'
         - $ref: './subdomains.yaml#/subdomains/prescription-retrieval'
         - $ref: './subdomains.yaml#/subdomains/prescription-display'
-      x-external-reference: "list_available_presciption"
-      x-medical-personal-information: true
+      x-gem-external-reference: "list_available_presciption"
+      x-gem-medical-personal-information: true
       description: "Einlösbares Rezept, das an den EU-Bürger abgegeben werden kann"
       properties:
         redeemable: { type: boolean, default: true, readOnly: true }
@@ -232,63 +323,72 @@ components:
 
     PrescriptionNonRedeemable:
       type: object
-      x-object-type: "ValueObject"
-      x-subdomains: 
+      x-gem-object-type: "ValueObject"
+      x-gem-subdomains: 
         - $ref: './subdomains.yaml#/subdomains/prescription-display'
-      x-external-reference: "list_available_presciption"
-      x-medical-personal-information: true
+      x-gem-external-reference: "list_available_presciption"
+      x-gem-medical-personal-information: true
       description: "Nicht einlösbares Rezept, das nicht an den EU-Bürger abgegeben werden kann"
       properties:
         redeemable: { type: boolean, default: false, readOnly: true }
 
     SelectedPrescriptionRetrievalList:
       type: object
-      x-object-type: "Entity"
-      x-subdomains: 
+      x-gem-object-type: "Entity"
+      x-gem-subdomains: 
         - $ref: './subdomains.yaml#/subdomains/prescription-retrieval'
-      x-external-reference: "list_selected_presciption_retrieval"
-      x-medical-personal-information: true
+      x-gem-external-reference: "list_selected_presciption_retrieval"
+      x-gem-medical-personal-information: true
       description: "Liste der ausgewählten Rezepte, die abgerufen werden sollen."
       required: [id]
       properties:
         id: { type: string, format: uuid }
-        PrescriptionRedeemable: { $ref: '#/components/schemas/SelectedPrescriptionRetrievalList' }
+        SelectedPrescriptionRetrieval: 
+          type: array
+          items:
+            $ref: '#/components/schemas/PrescriptionRedeemable'
 
     PrescriptionRetrievedList:
       type: object
-      x-object-type: "Entity"
-      x-subdomains: 
+      x-gem-object-type: "Entity"
+      x-gem-subdomains: 
         - $ref: './subdomains.yaml#/subdomains/prescription-retrieval'
-      x-external-reference: "list_prescription_retrieved"
-      x-medical-personal-information: true
+      x-gem-external-reference: "list_prescription_retrieved"
+      x-gem-medical-personal-information: true
       description: "Liste der abgerufenen Rezepte."
       required: [id]
       properties:
         id: { type: string, format: uuid }
-        PrescriptionRedeemable: { $ref: '#/components/schemas/PrescriptionRetrievedList' }
+        PrescriptionRetrieved: 
+          type: array
+          items:
+            $ref: '#/components/schemas/PrescriptionRedeemable'
 
     DispensationList:
       type: object
-      x-object-type: "Entity"
-      x-subdomains: 
+      x-gem-object-type: "Entity"
+      x-gem-subdomains: 
         - $ref: './subdomains.yaml#/subdomains/dispensation-preparation'
         - $ref: './subdomains.yaml#/subdomains/dispensation-handling'
         - $ref: './subdomains.yaml#/subdomains/transaction-handling-eped-b'
-      x-external-reference: "list_dispensation_documents"
-      x-medical-personal-information: true
+      x-gem-external-reference: "list_dispensation_documents"
+      x-gem-medical-personal-information: true
       description: "Liste der Dispensationen, die an den EU-Bürger abgegeben wurden"
       required: [id, DispensationInformation]
       properties:
         id: { type: string, format: uuid }
-        DispensationInformation: { $ref: '#/components/schemas/DispensationInformation' }
+        DispensationInformation: 
+          type: array
+          items:
+            $ref: '#/components/schemas/DispensationInformation'
 
     DispensationInformation:
       type: object
-      x-object-type: "Entity"
-      x-subdomains: 
+      x-gem-object-type: "Entity"
+      x-gem-subdomains: 
         - $ref: './subdomains.yaml#/subdomains/dispensation-preparation'
         - $ref: './subdomains.yaml#/subdomains/dispensation-handling'
-      x-medical-personal-information: true
+      x-gem-medical-personal-information: true
       description: "Informationen über die Dispensationen, die an den EU-Bürger abgegeben wurden, einschließlich der Informationen über die abgegebenen Medikamente und die Substitution eines Medikaments"
       required: [id, PrescriptionRedeemable]
       properties:
@@ -298,34 +398,126 @@ components:
 
     SubstitutionInformation:
       type: object
-      x-object-type: "ValueObject"
-      x-subdomains: 
+      x-gem-object-type: "ValueObject"
+      x-gem-subdomains: 
         - $ref: './subdomains.yaml#/subdomains/dispensation-preparation'
         - $ref: './subdomains.yaml#/subdomains/dispensation-handling'
-      x-medical-personal-information: true
+      x-gem-medical-personal-information: true
       description: "Informationen über die Substitution eines Medikaments"
 
     GatewayPolicies:
       type: object
-      x-object-type: "Entity"
-      x-subdomains: 
+      x-gem-object-type: "Entity"
+      x-gem-subdomains: 
         - $ref: './subdomains.yaml#/subdomains/transaction-handling-eped-b' 
-      x-medical-personal-information: false
+      x-gem-medical-personal-information: false
       description: "Richtlinien für die Durchführung von Land-B-Vorgängen, die vom NCPeH-Proxy verwendet werden, um die Einhaltung der Anforderungen an die Durchführung von ePeD-B-Vorgängen sicherzustellen"
       required: [id]
       properties:
         id: { type: string, format: uuid }
-        GatewayPolicy: { $ref: '#/components/schemas/GatewayPolicy' }
+        GatewayPolicy: 
+          type: array
+          items:
+            $ref: '#/components/schemas/GatewayPolicy'
 
     GatewayPolicy:
       type: object
-      x-object-type: "Entity"
-      x-subdomains:
+      x-gem-object-type: "Entity"
+      x-gem-subdomains:
         - $ref: './subdomains.yaml#/subdomains/transaction-handling-eped-b' 
-      x-medical-personal-information: false
+      x-gem-medical-personal-information: false
       description: "einzelne Richtlinie für die Durchführung von Land-B-Vorgängen"
       required: [id]
       properties:
         id: { type: string, format: uuid }
         PolicyType: { type: string }
         PolicyDefinition: { type: string }
+
+    CountryApplicationAuthorizationList:
+      type: object
+      x-gem-object-type: "Entity"
+      x-gem-subdomains: 
+        - $ref: './subdomains.yaml#/subdomains/transaction-handling-eped-b' 
+        - $ref: './subdomains.yaml#/subdomains/ism-handling-preparation' 
+      x-gem-medical-personal-information: false
+      description: "Liste der Länder und der jeweils für sie erlaubten LOINC-Codes und Practitioner Role Codes."
+      required: [CountryApplicationAuthorizations]
+      properties:
+        id: { type: string, format: uuid }
+        Version: { type: number, minimum: 1, format: int32 }
+        CountryApplicationAuthorizations:
+          type: array
+          items:
+            $ref: '#/components/schemas/CountryApplicationAuthorization'
+      additionalProperties: false
+      
+    CountryApplicationAuthorization:
+      type: object
+      x-gem-object-type: "ValueObject"
+      x-gem-subdomains: 
+        - $ref: './subdomains.yaml#/subdomains/transaction-handling-eped-b' 
+        - $ref: './subdomains.yaml#/subdomains/ism-handling-preparation' 
+      x-gem-medical-personal-information: false
+      required: [CountryCode, Authorizations]
+      properties:
+        CountryCode: { type: string, format: iso-country-2, pattern: '^[A-Z]{2}$', example: "PT" }
+        Authorizations:
+          type: array
+          items:
+            $ref: '#/components/schemas/ApplicationAuthorization'
+      additionalProperties: false
+
+    ApplicationAuthorization:
+      type: object
+      x-gem-object-type: "ValueObject"
+      x-gem-subdomains: 
+        - $ref: './subdomains.yaml#/subdomains/transaction-handling-eped-b' 
+        - $ref: './subdomains.yaml#/subdomains/ism-handling-preparation' 
+      x-gem-medical-personal-information: false
+      required: [LoincCode, PractitionerRoleCodes, LoincCodeCodesystem, PractitionerRoleCodesCodesystem]
+      properties:
+        LoincCode: { type: string, pattern: '^\d{1,7}-\d$' }
+        LoincCodeCodesystem: { type: string, const: "http://loinc.org" }
+        PractitionerRoleCodes:
+          type: array
+          items:
+            type: string
+            pattern: '^[0-2](\.(0|[1-9][0-9]*))+$'
+            description: "Erlaubte PractitionerRole OIDs"
+            example: "1.2.276.0.76.4.32"
+        PractitionerRoleCodesCodesystem: { type: string, const: "https://gematik.de/fhir/directory/CodeSystem/PractitionerProfessionOID" }
+      additionalProperties: false
+
+    CountryTranscoder:
+      type: object
+      x-gem-object-type: "ValueObject"
+      x-gem-subdomains: 
+        - $ref: './subdomains.yaml#/subdomains/ism-handling-preparation' 
+      x-gem-medical-personal-information: false
+      description: "Regeln und Metadaten zur Umwandlung einer länderspezifischen ISM in eine passende HTML-Repräsentation."
+      required: [BaseLanguage, TargetLanguage, ISMInternational, TranscodingRules]
+      properties:
+        BaseLanguage: 
+          type: string
+          description: "Ausgangssprache der ISM"
+          format: iso-country-2 
+          pattern: '^[A-Z]{2}$'
+          example: "PT"
+        TargetLanguage: 
+          type: string
+          description: "Zielsprache für die Transformation"
+          format: iso-country-2 
+          pattern: '^[A-Z]{2}$'
+          const: "DE"
+        TranscodingRules: 
+          type: object
+          description: "Strukturelle Mapping-Regeln für die Transformation der ISM-Felder."
+
+    AllowedListNcpehCountryA:
+      type: object
+      x-gem-object-type: "Entity"
+      x-gem-subdomains: 
+        - $ref: './subdomains.yaml#/subdomains/ism-handling-retrieval'
+      x-gem-external-reference: "ALLOWEDLIST_NCPeH_COUNTRY-A"
+      x-gem-medical-personal-information: false
+      description: "Eine Liste von zulässigen europäischen Ländern (Land-A), mit denen ein gegenseitiger Betrieb für den grenzüberschreitenden Austausch von Gesundheitsdaten gemäß den Vorgaben des eHDSI besteht"
