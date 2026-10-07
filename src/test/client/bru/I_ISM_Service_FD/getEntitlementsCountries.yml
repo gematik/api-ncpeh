@@ -1,11 +1,11 @@
 info:
   name: getEntitlementsCountries
   type: http
-  seq: 2
+  seq: 1
 
 http:
   method: GET
-  url: "{{process.env.API_GATEWAY_URL}}/ncpeh-fd/api/v1/entitlements/countries?version={{version}}"
+  url: "{{process.env.protocol}}://{{process.env.hostname}}/{{process.env.basepath_fd}}/{{process.env.apipath}}/{{process.env.apiversion}}/entitlements/countries"
   headers:
     - name: x-useragent
       value: "{{process.env.USER_AGENT}}"
@@ -15,6 +15,15 @@ runtime:
     - expression: res.status
       operator: eq
       value: "200"
+    - expression: res.status
+      operator: neq
+      value: "400"
+    - expression: res.status
+      operator: neq
+      value: "404"
+    - expression: res.status
+      operator: neq
+      value: "500"
     - expression: res.body.CountryApplicationAuthorizations
       operator: isDefined
 
@@ -25,4 +34,35 @@ settings:
   maxRedirects: 5
   forwardAuthorizationHeader: true
 
-docs: Abruf der Länder-Berechtigungen (AllowedList) vom NCPeH-FD.
+examples:
+  - name: res-200
+    request:
+      url: "{{process.env.protocol}}://{{process.env.hostname}}/{{process.env.basepath_fd}}/{{process.env.apipath}}/{{process.env.apiversion}}/entitlements/countries"
+      method: GET
+      headers:
+        - name: x-useragent
+          value: "{{process.env.USER_AGENT}}"
+    response:
+      status: 200
+      statusText: OK
+      body:
+        type: text
+        data: |-
+          {
+            "Version": 1,
+            "CountryApplicationAuthorizations": [
+              {
+                "CountryCode": "PT",
+                "Authorizations": [
+                  {
+                    "LoincCode": "60591-5",
+                    "LoincCodeCodesystem": "http://loinc.org",
+                    "PractitionerRoleCodes": [
+                      "1.2.276.0.76.4.30"
+                    ],
+                    "PractitionerRoleCodesCodesystem": "https://gematik.de/fhir/directory/CodeSystem/PractitionerProfessionOID"
+                  }
+                ]
+              }
+            ]
+          }

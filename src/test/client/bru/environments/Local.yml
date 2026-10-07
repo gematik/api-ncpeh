@@ -1,3 +1,1 @@
-variables:
-  - name: countryCodes
-    value: "{{process.env.COUNTRY_CODES}}"
+name: Local

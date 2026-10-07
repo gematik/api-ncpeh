@@ -5,10 +5,12 @@ info:
 
 http:
   method: GET
-  url: "{{process.env.protocol}}://{{process.env.hostname}}/{{process.env.basepath_fd}}/{{process.env.apipath}}/{{process.env.apiversion}}/ismlist"
+  url: "{{process.env.protocol}}://{{process.env.hostname}}/{{process.env.basepath_proxy}}/{{process.env.apipath}}/{{process.env.apiversion}}/ismlist"
   headers:
     - name: x-useragent
       value: "{{process.env.USER_AGENT}}"
+    - name: XXXXX-API-KEY
+      value: "{{process.env.PROXY_API_KEY}}"
 
 runtime:
   assertions:
@@ -37,11 +39,13 @@ settings:
 examples:
   - name: res-200
     request:
-      url: "{{process.env.protocol}}://{{process.env.hostname}}/{{process.env.basepath_fd}}/{{process.env.apipath}}/{{process.env.apiversion}}/ismlist"
+      url: "{{process.env.protocol}}://{{process.env.hostname}}/{{process.env.basepath_proxy}}/{{process.env.apipath}}/{{process.env.apiversion}}/ismlist"
       method: GET
       headers:
         - name: x-useragent
           value: "{{process.env.USER_AGENT}}"
+        - name: XXXXX-API-KEY
+          value: "{{process.env.PROXY_API_KEY}}"
     response:
       status: 200
       statusText: OK
