@@ -2,7 +2,6 @@
 
 skinparam maxMessageSize 200
 hide unlinked
-'autonumber
 
 actor "LE-DE" as User
 
@@ -10,7 +9,7 @@ participant "EU-Webportal\n(im Browser)" as WebApp
 box "externe Services" #White
     participant "Translation Service" as TranslationService
 end box
-box "CI/CD-Pipeline" #faffe7
+box "CI/CD-Pipeline des EU-Webportals" #fefff8
     control "Buildprozess\n(im Hintergrund)" as Buildprozess
     database "Quellen-Repository\ndes EU-Webportals" as SrcRepo
 end box
@@ -75,7 +74,7 @@ opt Neue ServiceMetadata.ISM im NCPeH-FD verfügbar
 
     Buildprozess -> Proxy: getIsmListStep
     activate Proxy
-    Proxy -> NCPeH: Weiterleiten
+    Proxy -> NCPeH: Weiterleiten / getIsmListForwardStep
     deactivate Proxy
     activate NCPeH
     loop Für jede ISM in ServiceMetadata.ISM
@@ -83,11 +82,11 @@ opt Neue ServiceMetadata.ISM im NCPeH-FD verfügbar
         note left: jedes Listenelement als base64-enc FHIR Entry (Bundle.entry)
     end
     NCPeH --> Proxy: :ISMInternationalList
+    deactivate NCPeH
     activate Proxy
     Proxy --> Buildprozess: Weiterleiten
     deactivate Proxy
     note left: Liste ohne zusätzlichen\nIntegritätsschutz auf Nachrichtenebene
-    deactivate NCPeH
     Buildprozess -> Buildprozess: FHIR-Bundle validieren (ISMInternationalList)
     Buildprozess -> SrcRepo: Pull RepositoryContent
     note left: z.B. ""git clone <repository-url>""

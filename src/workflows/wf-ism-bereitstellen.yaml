@@ -31,20 +31,18 @@ workflows:
           - name: abortOnWebhookFailure
             type: end
 
-      - stepId: getIsmListStep
-        description: Proxy ruft die aktuellen ISM-Daten vom NCPeH-FD ab.
-        operationId: ism-service-fd.getIsmList
+      - stepId: notifyWebAppBuildStep
+        description: Proxy triggert den Buildprozess über den konfigurierten Webhook.
+        operationId: proxy-basic.notifyWebAppBuild
         successCriteria:
-          - condition: $statusCode == 200
+          - condition: $statusCode == 202
         onFailure:
-          - name: retryOnServerError
+          - name: handleUnauthorized
             criteria:
-              - condition: $statusCode == 500
-            type: retry
-            retryAfter: 5
-            retryLimit: 3
-        outputs:
-          ismListPayload: $response.body
+              - condition: $statusCode == 401
+            type: end
+          - name: abortOnWebhookFailure
+            type: end
 
       - stepId: getEntitlementsStep
         description: Proxy ruft die aktuellen Länder-Berechtigungen (AllowedList) vom NCPeH-FD ab.
@@ -61,15 +59,32 @@ workflows:
         outputs:
           entitlementsPayload: $response.body
 
-      - stepId: notifyWebAppBuildStep
-        description: Proxy triggert den Buildprozess über den konfigurierten Webhook.
-        operationId: proxy-basic.notifyWebAppBuild
+      - stepId: getIsmListStep
+        description: Buildprozess ruft die aktuellen ISMs mittels Proxy ab.
+        operationId: ism-service.getIsmList
         successCriteria:
-          - condition: $statusCode == 202
+          - condition: $statusCode == 200
         onFailure:
-          - name: handleUnauthorized
+          - name: retryOnServerError
             criteria:
-              - condition: $statusCode == 401
-            type: end
-          - name: abortOnWebhookFailure
-            type: end
+              - condition: $statusCode == 500
+            type: retry
+            retryAfter: 5
+            retryLimit: 3
+        outputs:
+          ismListPayload: $response.body
+
+      - stepId: getIsmListForwardStep
+        description: Proxy ruft die aktuellen ISMs vom NCPeH-FD ab.
+        operationId: ism-service-fd.getIsmList
+        successCriteria:
+          - condition: $statusCode == 200
+        onFailure:
+          - name: retryOnServerError
+            criteria:
+              - condition: $statusCode == 500
+            type: retry
+            retryAfter: 5
+            retryLimit: 3
+        outputs:
+          ismListPayload: $response.body
