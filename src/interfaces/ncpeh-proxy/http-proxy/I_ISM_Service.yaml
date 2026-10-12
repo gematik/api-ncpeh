@@ -59,9 +59,7 @@ paths:
       - ApiKeyAuth: []
       responses:
         '202':
-          description: Benachrichtigung akzeptiert, Verarbeitung gestartet
-        '401':
-          description: Fehlende oder ungültige Authentifizierung
+          description: Benachrichtigung akzeptiert, Verarbeitung gestartet 
         '500':
           description: Interner Serverfehler
 
