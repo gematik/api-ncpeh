@@ -474,6 +474,7 @@ components:
         - $ref: './subdomains.yaml#/subdomains/transaction-handling-eped-b' 
         - $ref: './subdomains.yaml#/subdomains/ism-handling-preparation' 
       x-gem-medical-personal-information: false
+      description: "Die LOINC-Codes müssen den Vorgaben zur „Node Representation“ aus [eHDSI_NCPeH_Components#MyHealth@EU CDA Documents and Codes] entsprechen."  
       required: [LoincCode, PractitionerRoleCodes, LoincCodeCodesystem, PractitionerRoleCodesCodesystem]
       properties:
         LoincCode: { type: string, pattern: '^\d{1,7}-\d$' }
