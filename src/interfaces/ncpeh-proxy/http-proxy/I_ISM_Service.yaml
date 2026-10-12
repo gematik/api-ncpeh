@@ -62,6 +62,8 @@ paths:
           description: Benachrichtigung akzeptiert, Verarbeitung gestartet
         '401':
           description: Fehlende oder ungültige Authentifizierung
+        '500':
+          description: Interner Serverfehler
 
   /ismlist:
     get:
