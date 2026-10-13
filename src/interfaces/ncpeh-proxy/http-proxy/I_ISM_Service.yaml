@@ -56,7 +56,6 @@ paths:
       - $ref: '#/components/parameters/x-useragent'
       security:
       - mTLS: []
-      - ApiKeyAuth: []
       responses:
         '202':
           description: Benachrichtigung akzeptiert, Verarbeitung gestartet
