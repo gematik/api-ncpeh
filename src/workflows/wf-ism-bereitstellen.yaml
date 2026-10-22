@@ -80,6 +80,30 @@ workflows:
         successCriteria:
           - condition: $statusCode == 200
         onFailure:
+          - name: retryOnNotFound
+            criteria:
+              - condition: $statusCode == 404
+            type: retry
+            retryAfter: 5
+            retryLimit: 3
+          - name: retryOnNotAcceptable
+            criteria:
+              - condition: $statusCode == 406
+            type: retry
+            retryAfter: 5
+            retryLimit: 3
+          - name: retryOnRequestTimeout
+            criteria:
+              - condition: $statusCode == 408
+            type: retry
+            retryAfter: 5
+            retryLimit: 3
+          - name: retryOnTooManyRequests
+            criteria:
+              - condition: $statusCode == 429
+            type: retry
+            retryAfter: 5
+            retryLimit: 3
           - name: retryOnServerError
             criteria:
               - condition: $statusCode == 500
