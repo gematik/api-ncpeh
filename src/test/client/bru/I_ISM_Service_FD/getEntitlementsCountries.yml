@@ -43,7 +43,6 @@ examples:
         type: text
         data: |-
           {
-            "Version": 1,
             "CountryApplicationAuthorizations": [
               {
                 "CountryCode": "PT",

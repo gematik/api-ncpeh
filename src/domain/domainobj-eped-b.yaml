@@ -444,7 +444,6 @@ components:
       required: [CountryApplicationAuthorizations]
       properties:
         id: { type: string, format: uuid }
-        Version: { type: number, minimum: 1, format: int32 }
         CountryApplicationAuthorizations:
           type: array
           items:
@@ -489,7 +488,7 @@ components:
         PractitionerRoleCodesCodesystem: { type: string, const: "https://gematik.de/fhir/directory/CodeSystem/PractitionerProfessionOID" }
       additionalProperties: false
 
-    CountryTranscoder:
+    ISMTranscoder:
       type: object
       x-gem-object-type: "ValueObject"
       x-gem-subdomains: 

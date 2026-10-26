@@ -68,13 +68,6 @@ paths:
       summary: Abruf der Länder-Berechtigungen (AllowedList)
       description: Liefert eine Liste der erlaubten LOINC- und PractitionerRole-Codes pro Land.
       operationId: getEntitlementsCountries
-      parameters:
-        - name: version
-          in: query
-          description: Optionale Angabe einer spezifischen Listenversion. Fehlt der Parameter, wird die neueste Liste geliefert.
-          required: false
-          schema:
-            type: string
       security:
         - mTLS: []
       responses:
