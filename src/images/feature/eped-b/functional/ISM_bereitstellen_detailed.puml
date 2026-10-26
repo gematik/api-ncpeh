@@ -98,7 +98,7 @@ opt Neue ServiceMetadata.ISM im NCPeH-FD verfügbar
 
 == ism-handling-preparation ==
     loop Für jede ISMInternational in ISMInternationalList
-        Buildprozess -> Buildprozess: ISM in HTML-Repräsentation umwandeln (ISMInternational, CountryTranscoder):ISMInternationalHtml
+        Buildprozess -> Buildprozess: ISM in HTML-Repräsentation umwandeln (ISMInternational, ISMTranscoder):ISMInternationalHtml
         opt lektorierte Fassung in RepositoryContent hat aktuellsten Zeitstempel
             Buildprozess -> Buildprozess: Lektorierten deutschsprachigen HTML-GUI-Text übernehmen (RepositoryContent.ISMInternationalHtml.RepHtmlGerman) :ISMInternationalHtml.RepHtmlGerman
         end
