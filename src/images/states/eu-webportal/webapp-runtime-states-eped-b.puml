@@ -1,177 +1,174 @@
 @startuml webapp-runtime-states-eped-b
-'!pragma teoz true 
 title Zustandsmodell WebApp für ePeD-B (zur Laufzeit)
 hide empty description
-'scale 350 width
-'left to right direction
-'skinparam stateDiagramEdgeLabelStyle node
-skinparam nodesep 5
-skinparam ranksep 5
-skinparam linetype polyline
-'skinparam linetype ortho
 
-state WebAppReady {
-  [*] -up-> inWebAppReady : Start
-  state inWebAppReady <<entryPoint>>
-  state outWebAppReady <<exitPoint>>
-  state NotAuthenticated
+skinparam defaultFontName "Liberation Sans, Helvetica, Arial, sans-serif"
+skinparam defaultFontSize 12
+skinparam arrowFontSize 11
+skinparam roundCorner 8
+skinparam nodesep 35
+skinparam ranksep 40
 
-  state Idle
-  
-  note right of NotAuthenticated
-    * Notwendig für Transition von inWebAppReady wg. Auth-Alternative 2
-    * Nicht notwendig für Auth-Alternative 3b-2
-  end note
-  
-  inWebAppReady --> NotAuthenticated : Startup [OK]\n/ Zeige Login
+' Globale Zustandsstile
+skinparam state {
+  BackgroundColor #FEFCBF
+  BorderColor #B7791F
+  StartColor #2D3748
+  EndColor #2D3748
+}
+
+state WebAppReady #F7FAFC {
+  state " " as inWebAppReady <<entryPoint>>
+  state " " as outWebAppReady <<exitPoint>>
+  inWebAppReady -> inAuth : Start [OK]
+
+  state Authenticating #FFFFFF {
+    state " " as inAuth <<entryPoint>>
+    state " " as outAuth <<exitPoint>>
     
-  state Authenticating {
-    state inAuth <<entryPoint>>
-    state outAuth <<exitPoint>>
+    inAuth -down-> IdentityCheck : Bootstrap-Cookie vorhanden [OK]\n/ Starte Session Upgrade
     
-    NotAuthenticated --> inAuth : UI Klick [Anmelden]\n/ Initiiere Login
-    inWebAppReady --> inAuth : Bootstrap-Cookie vorhanden\n/ Starte Session Upgrade
-    inAuth --> IdentityCheck : Start Authentifizierung [OK]\n/ Zeige Wartescreen mit Hinweis Karten und PINs
-    
-    state IdentityCheck {
+    state IdentityCheck #FEFCBF {
       IdentityCheck : Output: ""IdentityAssertion""
       IdentityCheck : Output: ""AuthorizationTask.ncpehprx_access_token""
       IdentityCheck : Output: ""AuthorizationTask.euwp_id_token""
       IdentityCheck : \nPrüfung durch Auth-Service und ggf. Authenticator
     }
 
-    state Authenticated {
-        Authenticated : Input: ""IdentityAssertion""
-        Authenticated : Input: ""AuthorizationTask.ncpehprx_access_token""
+    state Authenticated #FEFCBF {
+      Authenticated : Input: ""IdentityAssertion""
+      Authenticated : Input: ""AuthorizationTask.ncpehprx_access_token""
     }
 
-    IdentityCheck --> Authenticated : Auth [Token und IdA erhalten]\n/ Cache Token und IdA
-    Authenticated --> outAuth : [Access-Token und IdA bekannt]
+    IdentityCheck -down-> Authenticated : Auth [Token und IdA erhalten]\n/ Cache Token und IdA
+    Authenticated -down-> outAuth : [Access-Token und IdA bekannt]
   }
-  
-  state EpedBActivity {
-    state inEpedB <<entryPoint>>
-    state outEpedB <<exitPoint>>
-    state outEpedBLogout <<exitPoint>>
-    state outEpedBAborted <<exitPoint>>
 
-    inEpedB --> HomeCountrySelection : Start des Workflows [OK]\n/ Zeige Länderauswahl
-    outAuth --> inEpedB : TODO Weitere Bedingungen??? \n/ Starte Workflow
+  
+  
+  state EpedBActivity #FFFFFF {
+    state " " as inEpedB <<entryPoint>>
+    state " " as outEpedB <<exitPoint>>
+    state " " as outEpedBLogout <<exitPoint>>
+    state " " as outEpedBAborted <<exitPoint>>
+
+    inEpedB -down-> HomeCountrySelection : Start des Workflows [OK]\n/ Zeige Länderauswahl
     
-    state HomeCountrySelection {
+    state HomeCountrySelection #FEFCBF {
       HomeCountrySelection : Output: ""PINDocument""
       HomeCountrySelection : Output: ""HPINDocument""
       HomeCountrySelection : Output: ""PINAcknowledgement""
       HomeCountrySelection : \nLand des EU-Bürgers auswählen und Datenschutz bestätigen
     }
     
-    state PatientIdentification {
-      state inPatientIdentification <<entryPoint>>
-      state outPatientIdentification <<exitPoint>> 
-      state outPatientIdentificationFail <<exitPoint>>
+    state PatientIdentification #F7FAFC {
+      state " " as inPatientIdentification <<entryPoint>>
+      state " " as outPatientIdentification <<exitPoint>> 
+      state " " as outPatientIdentificationFail <<exitPoint>>
       
-      HomeCountrySelection --> inPatientIdentification : UI Klick [Datenschutz bestätigt]\n/ Initialisiere Suche
-      
-      state ISMInputAccept {
+      state ISMInputAccept #FEFCBF {
         ISMInputAccept : Input: ""ISMInternationalHtmlList.ISMInternationalHtml""
         ISMInputAccept : Output: LE-DE Eingaben
       }
 
-      inPatientIdentification --> ISMInputAccept : Laden [OK]\n/ Zeige länderspezifisches ISM-Formular
+      inPatientIdentification -down-> ISMInputAccept : \nLaden [OK]\n/ Zeige länderspezifisches ISM-Formular
       
-      state ISMInputValid {
+      state ISMInputValid #FEFCBF {
         ISMInputValid : Output: ""PatientIdentificationQuery""
       }
 
-      state ISMInputInvalid 
-      state PatientNotFound
+      state ISMInputInvalid #FED7D7
+      state PatientNotFound #FED7D7
 
-      ISMInputAccept --> ISMInputValid : LE-DE Eingaben [Eingaben valide]\n/ Query vorbereiten
-      ISMInputAccept --> ISMInputInvalid : LE-DE Eingaben [Eingaben invalide]
-      ISMInputInvalid --> ISMInputAccept : Korrigieren [Eingaben invalide]\n/ Zeige Warnung
-      ISMInputValid --> ISMDataCheck : Suche [Eingaben valide]\n/ Query senden
+      ISMInputAccept -down-> ISMInputValid : LE-DE Eingaben [Eingaben valide]\n/ Query vorbereiten
+      ISMInputAccept -right-> ISMInputInvalid : LE-DE Eingaben [Eingaben invalide]
+      ISMInputInvalid -left-> ISMInputAccept : Korrigieren [Eingaben invalide]\n/ Zeige Warnung
+      ISMInputValid -down-> ISMDataCheck : Suche [Eingaben valide]\n/ Query senden
       
-      state ISMDataCheck {
+      state ISMDataCheck #FEFCBF {
         ISMDataCheck : Output: ""PatientIdentificationData""
         ISMDataCheck : \nIdentität des EU-Bürgers überprüfen
       }
 
-      ISMDataCheck --> PatientNotFound : Fehler [Patient nicht gefunden]\n/ Zeige Warnung
-      PatientNotFound --> ISMInputAccept : LE-DE neue Eingaben\n[keine PatientIdentifier vorhanden]\n/ TODO bisherige Eingaben zurücksetzen??
-      ISMDataCheck --> outPatientIdentification : Erfolg [Patient gefunden und Identität bestätigt]
-      PatientNotFound --> outPatientIdentificationFail : Fehler [Identität nicht bestätigt]\n/ Abbruch
-      
+      ISMDataCheck -right-> PatientNotFound : Fehler [Patient nicht gefunden]\n/ Zeige Warnung
+      PatientNotFound -left-> ISMInputAccept : LE-DE neue Eingaben\n[keine PatientIdentifier vorhanden]\n/ bisherige Eingaben zurücksetzen
+      ISMDataCheck -down-> outPatientIdentification : Erfolg [Patient gefunden und Identität bestätigt]
+      PatientNotFound -down-> outPatientIdentificationFail : Fehler [Identität nicht bestätigt]\n/ Abbruch
     }
-    state PatientRelationshipConfirmed {
+
+    HomeCountrySelection -down-> inPatientIdentification : UI Klick [Datenschutz bestätigt]\n/ Initialisiere Suche
+
+    state PatientRelationshipConfirmed #C6F6D5 {
       PatientRelationshipConfirmed : Output: ""TRCAssertion""
     }
 
-    outPatientIdentification --> PatientRelationshipConfirmed : Erfolg [Patient gefunden und Identität bestätigt]\n/ Erzeuge TRCAssertion
+    outPatientIdentification -down-> PatientRelationshipConfirmed : Erfolg [Patient gefunden und Identität bestätigt]\n/ Erzeuge TRCAssertion
 
-    outPatientIdentificationFail --> ActivityAborted : Propagiere Abbruch [OK]\n/ Bereinige Eingaben
-
-    state PrescriptionListing {
-      state inPrescriptionListing <<entryPoint>>
-      state outPrescriptionListing <<exitPoint>>
-      state outPrescriptionListingFail <<exitPoint>>
-      state PrescriptionNotFound
+    state PrescriptionListing #F7FAFC {
+      state " " as inPrescriptionListing <<entryPoint>>
+      state " " as outPrescriptionListing <<exitPoint>>
+      state " " as outPrescriptionListingFail <<exitPoint>>
+      state PrescriptionNotFound #FED7D7
+      
       PrescriptionListing : Output: ""PrescriptionList""
 
-
-      state PrescriptionSelection {
+      state PrescriptionSelection #FEFCBF {
         PrescriptionSelection : Output: ""SelectedPrescriptionRetrievalList""
         PrescriptionSelection : \nEinlösbare Rezepte auswählen
       }
 
-      state PrescriptionRetrieved {
+      state PrescriptionRetrieved #FEFCBF {
         PrescriptionRetrieved : Output: ""PrescriptionRetrievedList""
         PrescriptionRetrieved : Output: ""DispensationList""
         PrescriptionRetrieved : \nempfangene(s) Rezept(e) für Abgabe vorbereitet
       }
-      PrescriptionSelection --> PrescriptionRetrieved : Auswahl [Rezept(e) gewählt]\n/ Rufe Rezept(e) ab
-      PrescriptionRetrieved --> outPrescriptionListing : Erfolg [Rezept(e) abgerufen und vorgemerkt]
+
+      inPrescriptionListing -down-> PrescriptionSelection : \nTRC [OK]\n/ Lade verfügbare Rezepte
+      inPrescriptionListing -right-> PrescriptionNotFound : Fehler [Keine Rezepte gefunden]
+      PrescriptionNotFound -down-> outPrescriptionListingFail : Fehler [Keine Rezepte gefunden]
+
+      PrescriptionSelection -down-> PrescriptionRetrieved : Auswahl [Rezept(e) gewählt]\n/ Rufe Rezept(e) ab
+      PrescriptionRetrieved -down-> outPrescriptionListing : Erfolg [Rezept(e) abgerufen und vorgemerkt]
     }
 
-    PatientRelationshipConfirmed --> inPrescriptionListing : TRC [OK]
-    inPrescriptionListing --> PrescriptionSelection : TRC [OK]\n/ Lade verfügbare Rezepte
-    inPrescriptionListing --> PrescriptionNotFound : Fehler [Keine Rezepte gefunden]
-    PrescriptionNotFound --> outPrescriptionListingFail : Fehler [Keine Rezepte gefunden]
-    outPrescriptionListingFail --> ActivityAborted : Propagiere Abbruch [OK]\n/ Bereinige Daten
-
+    PatientRelationshipConfirmed -down-> inPrescriptionListing : TRC [OK]
     
-    outPrescriptionListing --> Dispensation : Erfolg [Rezept(e) abgerufen und vorgemerkt]\n/ Bereite Abgabe vor
-    
-    state Dispensation {
+    state Dispensation #FEFCBF {
       Dispensation : Input: ""euwp_id_token""
       Dispensation : Output: ""DispensationInformation""
       Dispensation : (Output: ""SubstitutionInformation"")
       Dispensation : \nVerkaufsdaten komplettieren
     }
     
-    Dispensation --> ActivitySuccess : Übermitteln [Daten komplett]\n/ Sende Request
-    
-    state ActivitySuccess
-    state ActivityAborted
-    
-    ActivitySuccess --> outEpedBLogout : Logout [OK]
-    ActivitySuccess --> outEpedB : Kunde bedient [Erfolg]
-    ActivitySuccess --> inEpedB : nächster Kunde [OK]\n/ Bereinige TRC-Assertion
-    ActivityAborted --> inEpedB : nächster Kunde [OK]
+    outPrescriptionListing -down-> Dispensation : Erfolg [Rezept(e) abgerufen und vorgemerkt]\n/ Bereite Abgabe vor
 
-    ActivityAborted --> outEpedBAborted : Abbruch [OK]\n/ Bereinige Daten
+    state ActivitySuccess #C6F6D5
+    state ActivityAborted #FED7D7
+
+    Dispensation -down-> ActivitySuccess : Übermitteln [Daten komplett]\n/ Sende Request
+
+    outPatientIdentificationFail -down-> ActivityAborted : Propagiere Abbruch [OK]\n/ Bereinige Eingaben
+    outPrescriptionListingFail -down-> ActivityAborted : Propagiere Abbruch [OK]\n/ Bereinige Daten
+    
+    ActivitySuccess -down-> outEpedBLogout : Logout [OK]
+    ActivitySuccess -down-> outEpedB : Kunde bedient [Erfolg]
+    ActivitySuccess -up-> inEpedB : nächster Kunde [OK]\n/ Bereinige TRC-Assertion
+    ActivityAborted -up-> inEpedB : nächster Kunde [OK]
+
+    ActivityAborted -down-> outEpedBAborted : Abbruch [OK]\n/ Bereinige Daten
   }
-  
+
+  outAuth -down-> inEpedB : / Starte Workflow
+
+  state Idle #EDF2F7
+  EpedBActivity -left[#C53030]-> Idle : lange LE-DE Inaktivität\n[Inaktivität > ncpehprx_access_token Lebensdauer]\n/ halte State
+  Idle -up[#C53030]-> EpedBActivity[H] : LE-DE macht weiter\n[ncpehprx_access_token abgelaufen]\n/ setze Refresh-Token ein
+
   EpedBActivity -down-> ActivityAborted : UI Klick [Manueller Abbruch]\n/ Bereinige Daten
-  outEpedBAborted --> outWebAppReady : Propagiere Abbruch [OK]\n/ Lösche Tokens und bereinige Daten
-  outEpedBLogout --> NotAuthenticated : / Lösche Tokens
-  outEpedB --> outWebAppReady : / Lösche Tokens und bereinige Daten
-
-  EpedBActivity -[#red]> Idle : lange LE-DE Inaktivität\n[Inaktivität > ncpehprx_access_token Lebensdauer]\n/ halte State
-  Idle -[#red]-> EpedBActivity[H] : LE-DE macht weiter\n[ncpehprx_access_token abgelaufen]\n/ setze Refresh-Token ein
-
+  outEpedBAborted -down-> outWebAppReady : Propagiere Abbruch [OK]\n/ Lösche Tokens und bereinige Daten
+  outEpedB -down-> outWebAppReady : / Lösche Tokens und bereinige Daten
 }
 
-
-outWebAppReady --> [*] : Browsertab schließen [OK]
+outWebAppReady -down-> [*] : Browsertab schließen [OK]
 
 @enduml
