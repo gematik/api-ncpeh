@@ -21,22 +21,19 @@ clean:
 test:
     http GET http://localhost:4010/health x-useragent:HttpieMockTest
     http GET http://localhost:4011/ism x-useragent:HttpieMockTest XXXXX-API-KEY:test-key
-    http GET "http://localhost:4011/assets/flags?countryCodes=PL,PT" x-useragent:HttpieMockTest XXXXX-API-KEY:test-key
     http POST http://localhost:4011/events/ism/update x-useragent:HttpieMockTest
-    http GET http://localhost:4012/ismlist x-useragent:HttpieMockTest
+    http GET http://localhost:4012/ismlist
 
 # Führt Funktionstests gegen die laufenden Prism-Mocks via curl aus
 test2:
     curl -i -X GET http://localhost:4010/health -H "x-useragent: CurlMockTest"
     curl -i -X GET http://localhost:4011/ism -H "x-useragent: CurlMockTest" -H "XXXXX-API-KEY: test-key"
-    curl -i -X GET "http://localhost:4011/assets/flags?countryCodes=PL,PT" -H "x-useragent: CurlMockTest" -H "XXXXX-API-KEY: test-key"
     curl -i -X POST http://localhost:4011/events/ism/update -H "x-useragent: CurlMockTest"
-    curl -i -X GET http://localhost:4012/ismlist -H "x-useragent: CurlMockTest"
+    curl -i -X GET http://localhost:4012/ismlist
 
 # Führt Funktionstests gegen das Nginx API-Gateway (mit vollen Base-Pfaden) via httpie aus
 test-apigw:
     http GET http://localhost:8080/http-proxy/api/v1/health x-useragent:HttpieMockTest
     http GET http://localhost:8080/http-proxy/api/v1/ism x-useragent:HttpieMockTest XXXXX-API-KEY:test-key
-    http GET "http://localhost:8080/http-proxy/api/v1/assets/flags?countryCodes=PL,PT" x-useragent:HttpieMockTest XXXXX-API-KEY:test-key
     http POST http://localhost:8080/http-proxy/api/v1/events/ism/update x-useragent:HttpieMockTest
-    http GET http://localhost:8080/ncpeh-fd/api/v1/ismlist x-useragent:HttpieMockTest
+    http GET http://localhost:8080/ncpeh-fd/api/v1/ismlist

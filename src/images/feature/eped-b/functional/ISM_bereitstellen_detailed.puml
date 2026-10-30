@@ -1,17 +1,19 @@
 @startuml ISM_bereitstellen_detailed
-
+!pragma teoz true
 skinparam maxMessageSize 200
 hide unlinked
 
 actor "LE-DE" as User
 
-participant "EU-Webportal\n(im Browser)" as WebApp
+box "EU-Webportal" #AliceBlue
+    participant "EU-Webportal\n(WebApp im Browser)" as WebApp
+    box "CI/CD-Pipeline des EU-Webportals" #AliceBlue
+        control "Buildprozess\n(im Hintergrund)" as Buildprozess
+        database "Quellen-Repository\ndes EU-Webportals" as SrcRepo
+    end box
+end box
 box "externe Services" #White
     participant "Translation Service" as TranslationService
-end box
-box "CI/CD-Pipeline des EU-Webportals" #fefff8
-    control "Buildprozess\n(im Hintergrund)" as Buildprozess
-    database "Quellen-Repository\ndes EU-Webportals" as SrcRepo
 end box
 
 actor "Anbieter des\nEU-Webportals" as Provider
@@ -21,7 +23,7 @@ box "NCPeH-Proxy" #FloralWhite
 end box
 
 actor "Systemadministrator\ndes NCPeH-FD" as Administrator
-box "NCPeH-FD" #EAF2F8
+box "NCPeH-FD" #white
 control "Scheduler" as Scheduler <<internal>>
 participant "NCPeH-FD" as NCPeH
 end box
@@ -96,7 +98,7 @@ opt Neue ServiceMetadata.ISM im NCPeH-FD verfügbar
 
 == ism-handling-preparation ==
     loop Für jede ISMInternational in ISMInternationalList
-        Buildprozess -> Buildprozess: ISM in HTML-Repräsentation umwandeln (ISMInternational, CountryTranscoder):ISMInternationalHtml
+        Buildprozess -> Buildprozess: ISM in HTML-Repräsentation umwandeln (ISMInternational, ISMTranscoder):ISMInternationalHtml
         opt lektorierte Fassung in RepositoryContent hat aktuellsten Zeitstempel
             Buildprozess -> Buildprozess: Lektorierten deutschsprachigen HTML-GUI-Text übernehmen (RepositoryContent.ISMInternationalHtml.RepHtmlGerman) :ISMInternationalHtml.RepHtmlGerman
         end

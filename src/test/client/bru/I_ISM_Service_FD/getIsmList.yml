@@ -6,9 +6,6 @@ info:
 http:
   method: GET
   url: "{{process.env.protocol}}://{{process.env.hostname}}/{{process.env.basepath_fd}}/{{process.env.apipath}}/{{process.env.apiversion}}/ismlist"
-  headers:
-    - name: x-useragent
-      value: "{{process.env.USER_AGENT}}"
 
 runtime:
   assertions:
@@ -39,9 +36,6 @@ examples:
     request:
       url: "{{process.env.protocol}}://{{process.env.hostname}}/{{process.env.basepath_fd}}/{{process.env.apipath}}/{{process.env.apiversion}}/ismlist"
       method: GET
-      headers:
-        - name: x-useragent
-          value: "{{process.env.USER_AGENT}}"
     response:
       status: 200
       statusText: OK

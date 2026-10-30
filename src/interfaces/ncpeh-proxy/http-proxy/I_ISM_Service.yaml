@@ -56,12 +56,13 @@ paths:
       - $ref: '#/components/parameters/x-useragent'
       security:
       - mTLS: []
-      - ApiKeyAuth: []
       responses:
         '202':
           description: Benachrichtigung akzeptiert, Verarbeitung gestartet
         '401':
           description: Fehlende oder ungültige Authentifizierung
+        '500':
+          description: Interner Serverfehler
 
   /ismlist:
     get:
