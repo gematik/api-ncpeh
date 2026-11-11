@@ -18,15 +18,21 @@ participant "NCPeH-FD" as NCPeH
 participant "NCPeH Land-A" as NCPeH_A
 
 
-group#Gold ref
-        Webportal -> Auth_Service: 8.5.1 "Authentifizierung und Autorisierung des LE-DE"
-end
+ref#Gold over User, Webportal, HTTP_Proxy, Auth_Service
+        **Anwendungsfall "LE-DE authentifizieren und autorisieren"**
+end        
+
 
 User -> Webportal: Anwendung ePrescription auswählen()
 activate Webportal
 Webportal -> Webportal: Information über die ausgewählte Anwendung zwischenspeichern() :LOINC_Code
 
+ref#Gold over User, Webportal
+        **Anwendungsfall "PIN/HPIN lesen"**
+end 
 
+
+/'
 opt
     User -> Webportal: Öffnet Datenschutzbestimmungen des Herkunftslands, die vom EU-Webportal bereitgestellt werden
     create Document
@@ -51,31 +57,45 @@ opt
 end
 
 User --> Webportal: Bestätigt Kenntnisnahme der Datenschutzbestimmungen
-User -> Webportal: Wählt das Herkunftsland des EU-Bürgers aus
+User -> Webportal: <s>Wählt das Herkunftsland des EU-Bürgers aus</s>
+'/
+ref#Gold over User, Webportal, HTTP_Proxy, Auth_Service, NCPeH
+    **Anwendungsfall "NCPeH.UC_17 - ISM eines anderen europäischen NCPeH Land-A bereitstellen"**
+end ref
 
-Webportal -> HTTP_Proxy: ISM abrufen()
+/'Webportal -> HTTP_Proxy: ISM abrufen()
 activate HTTP_Proxy
+
 HTTP_Proxy --> Webportal: :list_ism_international
 deactivate HTTP_Proxy
 Webportal -> Webportal: Graphische Übersicht der EU-Länder für den Austausch von E-Rezepten erstellen(list_ism_international, LOINC_Code): html_country_overview
 Webportal -> Webportal: anzeigen(html_country_overview)
 
-User -> Webportal: Land-A auswählen()
+User -> Webportal: <s>Land-A auswählen()</s>
 Webportal -> Webportal: Ländercode für das ausgewählte Land-A zwischenspeichern() :country_code
 Webportal -> Webportal: ISM für das gewählte Herkunftsland laden und anzeigen(list_ism_international) :ism_selected_country
 Webportal -> Webportal: HTML-Seite erstellen(ism_selected_country) :html_ism_page
 Webportal -> Webportal: Webseite anzeigen(html_ism_page)
-
+'/
 User -> Webportal: Identitätsmerkmale und Zugriffsinformationen für Dokumentensuche in ISM eintragen() :patient_search_prameters, document_search_parameter
-Webportal -> Webportal:  Format validieren(patient_search_prameters, document_search_parameter)
-User -> Webportal: Senden der Anfrage zur Patient Identification bestätigen()
-Webportal -> Webportal: Zugriffsinformationen für Dokumentensuche zwischenspeichern(document_search_parameter)
-Webportal -> Webportal: API-Request für Patient Identification erstellen(patient_search_prameters, LOINC_Code, country_code): patient_identification_query
+Webportal -> Webportal:  Datenformat validieren(patient_search_prameters, document_search_parameter)
+User -> Webportal: Senden der Anfrage zum Abruf von demographischen Daten bestätigen()
+Webportal -> Webportal: Identitätsmerkmale und Zugriffsinformationen für Dokumentensuche zwischenspeichern(document_search_parameter)
 note over Webportal #DodgerBlue
-    Nutzung von {Default-Auth-Header}
-    für den API-Request
+    Nutzung von {document_search_parameter} 
+    für späteren Zugriff auf E-Rezepte
 end note  
+Webportal -> Webportal: API-Request??? für Abruf von demographischen Daten erstellen(patient_search_prameters, LOINC_Code, country_code): patient_identification_query
+note over Webportal #DodgerBlue
+    Nutzung von {Default-Auth-Header} für den API-Request
+end note
 
+note over Webportal #DodgerBlue
+    Die fachliche Struktur der Abfragenachricht basiert auf dem HL7-v3-Nachrichtenmodell PRPA_MT201306UV02 ("Patient Registry Query by Demographics") gemäß [ITI-55] 
+    und ist ausschließlich konform zum Element PRPA_MT201306UV02.ParameterList entsprechend den Vorgaben des zugehörigen XSD‑Schemas [PRPA_MT201306UV02.xsd].
+    Für den Transport vom EU-Webportal zum NCPeH-FD innerhalb der FHIR-basierten Kommunikation wird die ParameterList-Abfragenachricht  base64-kodiert 
+    in eine Instanz der FHIR-Ressource Binary aufgenommen.
+end note
 group#Gold ref
         Webportal o-> NCPeH: UC "Nutzung einer autorisierten Verbindung zum NCPeH-FD" {Autorisierter Request (patient_identification_query)}
         NCPeH ->o NCPeH: UC "Nutzung einer autorisierten Verbindung zum NCPeH-FD" {Autorisierter Request abgeschlossen (patient_identification_query)}
@@ -84,25 +104,32 @@ group#Gold ref
 end
 activate NCPeH
 
-NCPeH -> NCPeH: Gültigkeit der Assertion prüfen(IdentityAssertion)
 NCPeH -> NCPeH: Daten aus API-Request extrahieren() :LOINC_Code, country_code, patient_search_prameters
 NCPeH -> NCPeH: Autorisierung des LE-DE zum Abruf der demographischen Daten prüfen(IdentityAssertion, LOINC_Code)
-NCPeH -> NCPeH: ISM des Land-A laden() :ism_coutry_a
-NCPeH -> NCPeH: Suchparameter aus API-Request gegen ISM prüfen(patient_search_prameters, ism_coutry_a)
-NCPeH -> NCPeH: IHE XCPD-Anfrage erstellen(patient_search_prameters, IdA) :xcpd_request
+'NCPeH -> NCPeH: ISM des Land-A laden() :ism_coutry_a
+'NCPeH -> NCPeH: Suchparameter aus API-Request gegen ISM prüfen(patient_search_prameters, ism_coutry_a)
+NCPeH -> NCPeH: Dokument mit Identitätsmerkmalen gemäß Base64 dekodieren(patient_search_prameters) :patient_search_prameters_decoded
+NCPeH -> NCPeH: Identitätsmerkmale auf Einschränkungen aus eHDSI_XCPD_Profile#2.1.2 prüfen(patient_search_prameters_decoded)
+NCPeH -> NCPeH: HL7 V3 Transmission Wrapper im XCPD-Request erstellen(): xcpd_request
+NCPeH -> NCPeH: Dokument mit Identitätsmerkmalen in ControlActProcess der XCPD-Anfrage aufnehmen(patient_search_prameters_decoded) :xcpd_request
+NCPeH -> NCPeH: IdentityAssertion in den SecurityHeader der XCPD-Anfrage aufnehmen(IdentityAssertion): xcpd_request
 NCPeH -> NCPeH: Informationen über XCPD Service Endpoint des Land-A laden(country_code) :xcpd_endpoint_country_a
 NCPeH -> NCPeH: Non-Repudiation of Origin speichern()
-NCPeH -> NCPeH_A: IHE-Anfrage an Land-A senden(xcpd_endpoint_country_a, xcpd_request)
+NCPeH -> NCPeH_A: XCPD-Request an Land-A senden(xcpd_endpoint_country_a, xcpd_request)
 activate NCPeH_A
 NCPeH_A -> NCPeH_A: Weitere demographische Daten im Land-A ermitteln(xcpd_request)
 NCPeH_A --> NCPeH: :xcpd_response
 deactivate NCPeH_A
 NCPeH -> NCPeH: Non-Repudiation of Receipt speichern()
-NCPeH -> NCPeH: Auf eHDSI und IHE Vorgaben prüfen(xcpd_response)
-NCPeH -> NCPeH: queryByParameters aus XCPD-Response auf Eindeutigkeit mit Identitätsdaten aus der WebApp-Anfrage prüfen(patient_search_prameters, xcpd_response)
-NCPeH -> NCPeH: Demographische Daten des EU-Bürgers extrahieren(xcpd_response) :patient_demographics_data
-NCPeH -> NCPeH: Demographische Daten in FHIR_Bundle integrieren(patient_demographics_data) :Payload
+NCPeH -> NCPeH: Antwortnachricht auf Schemakonformität gemäß eHDSI_XCPD_Profile#2.3 prüfen(xcpd_response)
+NCPeH -> NCPeH: HL7 V3 Transmission Wrapper prüfen(xcpd_response)
+NCPeH -> NCPeH: QueryAck auswerten(xcpd_response)
+NCPeH -> NCPeH: ControlActProcess prüfen(xcpd_response)
+NCPeH -> NCPeH: queryByParameters aus ControlActProcess auf Eindeutigkeit mit Identitätsdaten aus der API-Anfrage prüfen(patient_search_prameters, xcpd_response)
+NCPeH -> NCPeH: patientPerson extrahieren(xcpd_response) :patient_demographics_data
+NCPeH -> NCPeH: patientPerson in FHIR-Bundle integrieren(patient_demographics_data) :Payload
 NCPeH -> NCPeH: Non-Repudiation of Origin speichern()
+NCPeH -> NCPeH: Eintrag nach ID Mapping audit schema erstellen()
 
 group#Gold ref
         NCPeH ->o NCPeH: UC "Nutzung einer autorisierten Verbindung zum NCPeH-FD" {Payloadverarbeitung abgeschlossen(Payload)}
@@ -111,7 +138,7 @@ group#Gold ref
         Webportal ->o Webportal: UC "Nutzung einer autorisierten Verbindung zum NCPeH-FD" {Autorisierter Response abgeschlossen (Payload)}
 end
 
-Webportal -> Webportal: Antwort gegen Schema validieren(Payload) :patient_demographics_data
+'Webportal -> Webportal: Antwort gegen Schema validieren(Payload) :patient_demographics_data
 Webportal -> Webportal: Eindeutiges Patient Identifier zwischenspeichern(patient_demographics_data) :patient_identifier
 Webportal -> Webportal: Webseite rendern(patient_demographics_data) :html_site
 Webportal -> Webportal: Webseite anzeigen(html_site)
