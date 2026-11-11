@@ -104,8 +104,8 @@ loop jeder weitere API-Request
     alt #HoneyDew Validierung erfolgreich: ncpehprx_access_token und IdA_raw gültig
         Proxy -> NCPeH: Request-Path und Payload weiterleiten (IdA_raw)
         activate NCPeH
+        NCPeH -> NCPeH: Non-Repudiation of Receipt erstellen()
         opt Falls kein SessionTupel aus\nIdA_raw und IdentityAssertion gespeichert
-            NCPeH -> NCPeH: Non-Repudiation of Receipt erstellen()  
             NCPeH -> NCPeH: Token validieren (IdA_raw)
             NCPeH -> NCPeH: Attribute extrahieren (IdA_raw): IdA_Claims
             NCPeH -> NCPeH: Attribute transkodieren (IdA_Claims):Transkodierte_Attribute
