@@ -4,7 +4,7 @@ skinparam maxMessageSize 200
 autonumber
 actor "EU-Bürger" as EUBuerger #LightGoldenRodYellow
 actor "LE-DE" as User
-entity "PIN-Dokument/\nHPIN-Dokument" as Document
+'entity "PIN-Dokument/\nHPIN-Dokument" as Document
 box "EU-Webportal" #AliceBlue
   participant "EU-Webportal\n(Client-side WebApp)" as Webportal
 end box
