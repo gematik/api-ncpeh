@@ -78,12 +78,12 @@ Webportal -> Webportal: HTML-Seite erstellen(ism_selected_country) :html_ism_pag
 Webportal -> Webportal: Webseite anzeigen(html_ism_page)
 '/
 User -> Webportal: Senden der Anfrage zum Abruf von demographischen Daten bestätigen()
-Webportal -> Webportal: Identitätsmerkmale und Zugriffsinformationen für Dokumentensuche zwischenspeichern(document_search_parameter)
+Webportal -> Webportal: Identitätsmerkmale und Zugriffsinformationen für Dokumentensuche zwischenspeichern(DocumentSearchParameterList)
 note over Webportal #DodgerBlue
-    Nutzung von {document_search_parameter} 
+    Nutzung von {DocumentSearchParameterList} 
     für späteren Zugriff auf E-Rezepte
 end note  
-Webportal -> Webportal: API-Request??? für Abruf von demographischen Daten erstellen(patient_search_prameters, LOINC_Code, country_code): patient_identification_query
+Webportal -> Webportal: API-Request??? für Abruf von demographischen Daten erstellen(PatientSearchParameterList, LOINC_Code, country_code): patient_identification_query
 note over Webportal #DodgerBlue
     Nutzung von {Default-Auth-Header} für den API-Request
 end note
@@ -96,20 +96,23 @@ note over Webportal #DodgerBlue
 end note
 group#Gold ref
         Webportal o-> NCPeH: UC "Nutzung einer autorisierten Verbindung zum NCPeH-FD" {Autorisierter Request (patient_identification_query)}
+        note over Webportal
+            ToDo: Benennung der Schnittstellenoperation
+        end note
         NCPeH ->o NCPeH: UC "Nutzung einer autorisierten Verbindung zum NCPeH-FD" {Autorisierter Request abgeschlossen (patient_identification_query)}
         NCPeH o-> NCPeH: UC "Nutzung einer autorisierten Verbindung zum NCPeH-FD" {Payloadverarbeitung (Payload_decrypted)} aufnehmen
 
 end
 activate NCPeH
 
-NCPeH -> NCPeH: Daten aus API-Request extrahieren() :LOINC_Code, country_code, patient_search_prameters
+NCPeH -> NCPeH: Daten aus API-Request extrahieren() :LOINC_Code, country_code, PatientSearchParameterList
 NCPeH -> NCPeH: Autorisierung des LE-DE zum Abruf der demographischen Daten prüfen(IdentityAssertion, LOINC_Code)
 'NCPeH -> NCPeH: ISM des Land-A laden() :ism_coutry_a
-'NCPeH -> NCPeH: Suchparameter aus API-Request gegen ISM prüfen(patient_search_prameters, ism_coutry_a)
-NCPeH -> NCPeH: Dokument mit Identitätsmerkmalen gemäß Base64 dekodieren(patient_search_prameters) :patient_search_prameters_decoded
-NCPeH -> NCPeH: Identitätsmerkmale auf Einschränkungen aus eHDSI_XCPD_Profile#2.1.2 prüfen(patient_search_prameters_decoded)
+'NCPeH -> NCPeH: Suchparameter aus API-Request gegen ISM prüfen(PatientSearchParameterList, ism_coutry_a)
+NCPeH -> NCPeH: Dokument mit Identitätsmerkmalen gemäß Base64 dekodieren(PatientSearchParameterList) :PatientSearchParameterListDecoded
+NCPeH -> NCPeH: Identitätsmerkmale auf Einschränkungen aus eHDSI_XCPD_Profile#2.1.2 prüfen(PatientSearchParameterListDecoded)
 NCPeH -> NCPeH: HL7 V3 Transmission Wrapper im XCPD-Request erstellen(): xcpd_request
-NCPeH -> NCPeH: Dokument mit Identitätsmerkmalen in ControlActProcess der XCPD-Anfrage aufnehmen(patient_search_prameters_decoded) :xcpd_request
+NCPeH -> NCPeH: Dokument mit Identitätsmerkmalen in ControlActProcess der XCPD-Anfrage aufnehmen(PatientSearchParameterListDecoded) :xcpd_request
 NCPeH -> NCPeH: IdentityAssertion in den SecurityHeader der XCPD-Anfrage aufnehmen(IdentityAssertion): xcpd_request
 NCPeH -> NCPeH: Informationen über XCPD Service Endpoint des Land-A laden(country_code) :xcpd_endpoint_country_a
 NCPeH -> NCPeH: Non-Repudiation of Origin speichern()
@@ -123,7 +126,7 @@ NCPeH -> NCPeH: Antwortnachricht auf Schemakonformität gemäß eHDSI_XCPD_Profi
 NCPeH -> NCPeH: HL7 V3 Transmission Wrapper prüfen(xcpd_response)
 NCPeH -> NCPeH: QueryAck auswerten(xcpd_response)
 NCPeH -> NCPeH: ControlActProcess prüfen(xcpd_response)
-NCPeH -> NCPeH: queryByParameters aus ControlActProcess auf Eindeutigkeit mit Identitätsdaten aus der API-Anfrage prüfen(patient_search_prameters, xcpd_response)
+NCPeH -> NCPeH: queryByParameters aus ControlActProcess auf Eindeutigkeit mit Identitätsdaten aus der API-Anfrage prüfen(PatientSearchParameterList, xcpd_response)
 NCPeH -> NCPeH: patientPerson extrahieren(xcpd_response) :patient_demographics_data
 NCPeH -> NCPeH: patientPerson in FHIR-Bundle integrieren(patient_demographics_data) :Payload
 NCPeH -> NCPeH: Non-Repudiation of Origin speichern()
