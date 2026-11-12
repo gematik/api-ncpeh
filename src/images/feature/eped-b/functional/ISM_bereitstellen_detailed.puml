@@ -140,8 +140,8 @@ end
     WebApp -> User: Übersicht aller verfügbaren Länder anzeigen
     User -> WebApp: Auswahl eines Landes für detaillierte ISM-Informationen (ISMInternationalHtml)
     WebApp -> WebApp: HTML-Resource laden (ISMInternationalHtml)
-    User -> WebApp: Ausfüllen der detaillierten ISM-Ansicht (ISMInternationalHtml)
-    WebApp -> WebApp: Validierung der Eingaben (ISMInternationalHtml)
+    User -> WebApp: Identitätsmerkmale und Zugriffsinformationen für Dokumentensuche in ISM eintragen(ISMInternationalHtml) :PatientSearchParameterList, :DocumentSearchParameterList
+    WebApp -> WebApp: Datenformat der Eingaben validieren(PatientSearchParameterList, DocumentSearchParameterList)
     deactivate WebApp
 
 == UC-Ende ==

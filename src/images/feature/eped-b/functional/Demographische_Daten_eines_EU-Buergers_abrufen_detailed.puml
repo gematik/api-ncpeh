@@ -77,8 +77,6 @@ Webportal -> Webportal: ISM für das gewählte Herkunftsland laden und anzeigen(
 Webportal -> Webportal: HTML-Seite erstellen(ism_selected_country) :html_ism_page
 Webportal -> Webportal: Webseite anzeigen(html_ism_page)
 '/
-User -> Webportal: Identitätsmerkmale und Zugriffsinformationen für Dokumentensuche in ISM eintragen() :patient_search_prameters, document_search_parameter
-Webportal -> Webportal:  Datenformat validieren(patient_search_prameters, document_search_parameter)
 User -> Webportal: Senden der Anfrage zum Abruf von demographischen Daten bestätigen()
 Webportal -> Webportal: Identitätsmerkmale und Zugriffsinformationen für Dokumentensuche zwischenspeichern(document_search_parameter)
 note over Webportal #DodgerBlue
