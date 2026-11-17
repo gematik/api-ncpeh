@@ -22,14 +22,29 @@ ref#Gold over User, Webportal, HTTP_Proxy, Auth_Service
         **Anwendungsfall "LE-DE authentifizieren und autorisieren"**
 end        
 
-
-User -> Webportal: Anwendung ePrescription auswählen()
+group TODO TUC ableiten für Token-Handling in der WebApp
+    Webportal -> Webportal: Validierung der Token-Claims durchführen
 activate Webportal
-Webportal -> Webportal: Information über die ausgewählte Anwendung zwischenspeichern() :LOINC_Code
+end
 
-ref#Gold over User, Webportal
-        **Anwendungsfall "PIN/HPIN lesen"**
-end 
+Webportal -> Webportal: erlaubte LoincCodes des LE-DE zwischenspeichern(euwp_id_token.roles.LoincCodeList) :LoincCodeList
+Webportal -> Webportal: LoincCodeList für die Anzeige im Webportal aufbereiten(LoincCodeList) : LoincCodeListPresentation
+note left
+    LoincCodeList muss noch mit sprechenden
+    Anwendungsnamen versehen werden
+    -> Aufbereitung der LoincCodeList für
+    die Anzeige in WebApp
+end note
+
+alt LE-DE für mehrere Anwendungen autorisiert
+    User -> Webportal: Anwendung ePrescription aus der Liste der verfügbaren Anwendungen auswählen(LoincCodeList) :LoincCode
+else LE-DE nur für Anwendung ePrescription autorisiert
+    Webportal -> Webportal: ePeD-B Workflow direkt starten(euwp_id_token.roles.LoincCode)
+end
+
+'activate Webportal
+Webportal -> Webportal: Information über die ausgewählte Anwendung zwischenspeichern() :LoincCode
+
 
 
 /'
@@ -68,7 +83,7 @@ activate HTTP_Proxy
 
 HTTP_Proxy --> Webportal: :list_ism_international
 deactivate HTTP_Proxy
-Webportal -> Webportal: Graphische Übersicht der EU-Länder für den Austausch von E-Rezepten erstellen(list_ism_international, LOINC_Code): html_country_overview
+Webportal -> Webportal: Graphische Übersicht der EU-Länder für den Austausch von E-Rezepten erstellen(list_ism_international, LoincCode): html_country_overview
 Webportal -> Webportal: anzeigen(html_country_overview)
 
 User -> Webportal: <s>Land-A auswählen()</s>
@@ -83,7 +98,7 @@ note over Webportal #DodgerBlue
     Nutzung von {DocumentSearchParameterList} 
     für späteren Zugriff auf E-Rezepte
 end note  
-Webportal -> Webportal: API-Request??? für Abruf von demographischen Daten erstellen(PatientSearchParameterList, LOINC_Code, country_code): patient_identification_query
+Webportal -> Webportal: API-Request??? für Abruf von demographischen Daten erstellen(PatientSearchParameterList, LoincCode, country_code): patient_identification_query
 note over Webportal #DodgerBlue
     Nutzung von {Default-Auth-Header} für den API-Request
 end note
@@ -105,8 +120,8 @@ group#Gold ref
 end
 activate NCPeH
 
-NCPeH -> NCPeH: Daten aus API-Request extrahieren() :LOINC_Code, country_code, PatientSearchParameterList
-NCPeH -> NCPeH: Autorisierung des LE-DE zum Abruf der demographischen Daten prüfen(IdentityAssertion, LOINC_Code)
+NCPeH -> NCPeH: Daten aus API-Request extrahieren() :LoincCode, country_code, PatientSearchParameterList
+NCPeH -> NCPeH: Autorisierung des LE-DE zum Abruf der demographischen Daten prüfen(IdentityAssertion, LoincCode)
 'NCPeH -> NCPeH: ISM des Land-A laden() :ism_coutry_a
 'NCPeH -> NCPeH: Suchparameter aus API-Request gegen ISM prüfen(PatientSearchParameterList, ism_coutry_a)
 NCPeH -> NCPeH: Dokument mit Identitätsmerkmalen gemäß Base64 dekodieren(PatientSearchParameterList) :PatientSearchParameterListDecoded

@@ -138,7 +138,14 @@ end
         WebApp -> WebApp: Validierung der Token-Claims durchführen
         activate WebApp
     end
+
+    ref#Gold over User, WebApp
+            **Anwendungsfall "PIN/HPIN lesen"**
+    end 
+
     WebApp -> User: Übersicht aller verfügbaren Länder anzeigen
+    note right: TODO gehört zum UC "PIN/HPIN lesen"
+
     User -> WebApp: Auswahl eines Landes für detaillierte ISM-Informationen (ISMInternationalHtml)
     WebApp -> WebApp: HTML-Resource laden (ISMInternationalHtml)
     User -> WebApp: Identitätsmerkmale und Zugriffsinformationen für Dokumentensuche in ISM eintragen(ISMInternationalHtml) :PatientSearchParameterList, :DocumentSearchParameterList
