@@ -28,15 +28,17 @@ activate Webportal
 end
 
 Webportal -> Webportal: erlaubte LoincCodes des LE-DE zwischenspeichern(euwp_id_token.roles.LoincCodeList) :LoincCodeList
-Webportal -> Webportal: LoincCodeList für die Anzeige im Webportal aufbereiten(LoincCodeList) : LoincCodeListPresentation
-note left
-    LoincCodeList muss noch mit sprechenden
-    Anwendungsnamen versehen werden
-    -> Aufbereitung der LoincCodeList für
-    die Anzeige in WebApp
-end note
 
 alt LE-DE für mehrere Anwendungen autorisiert
+
+    Webportal -> Webportal: LoincCodeList für die Anzeige im Webportal aufbereiten(LoincCodeList) : LoincCodeListPresentation
+    note right
+        LoincCodeList muss noch mit sprechenden
+        Anwendungsnamen versehen werden
+        -> Aufbereitung der LoincCodeList für
+        die Anzeige in WebApp
+    end note
+
     User -> Webportal: Anwendung ePrescription aus der Liste der verfügbaren Anwendungen auswählen(LoincCodeList) :LoincCode
 else LE-DE nur für Anwendung ePrescription autorisiert
     Webportal -> Webportal: ePeD-B Workflow direkt starten(euwp_id_token.roles.LoincCode)
@@ -74,9 +76,11 @@ end
 User --> Webportal: Bestätigt Kenntnisnahme der Datenschutzbestimmungen
 User -> Webportal: <s>Wählt das Herkunftsland des EU-Bürgers aus</s>
 '/
-ref#Gold over User, Webportal, HTTP_Proxy, Auth_Service, NCPeH
-    **Anwendungsfall "NCPeH.UC_17 - ISM eines anderen europäischen NCPeH Land-A bereitstellen"**
-end ref
+'ref#Gold over User, Webportal, HTTP_Proxy, Auth_Service, NCPeH
+group#Gold ref
+'    **Anwendungsfall "NCPeH.UC_17 - ISM eines anderen europäischen NCPeH Land-A bereitstellen"**
+    Webportal ->o User: UC "NCPeH.UC_17 - ISM eines anderen europäischen NCPeH Land-A bereitstellen" {Übersicht der zulässigen Länder anzeigen}
+end
 
 /'Webportal -> HTTP_Proxy: ISM abrufen()
 activate HTTP_Proxy
