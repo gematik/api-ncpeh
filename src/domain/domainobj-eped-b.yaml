@@ -28,14 +28,18 @@ components:
         - $ref: './subdomains.yaml#/subdomains/authentication-authorization'
         - $ref: './subdomains.yaml#/subdomains/identity-role-mapping'
         - $ref: './subdomains.yaml#/subdomains/transaction-handling-eped-b'
+      x-gem-external-reference: "IdA"
       x-gem-medical-personal-information: false
       description: "Identitätsnachweis des Leistungserbringers in Deutschland"
       required: [id]
       properties:
         id: { type: string, format: uuid }
-        AccessRights: { $ref: '#/components/schemas/AccessRights' }
+        ida_permissions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Permission'
 
-    AccessRights:
+    Permission:
       type: object
       x-gem-object-type: "ValueObject"
       x-gem-subdomains: 
@@ -281,8 +285,8 @@ components:
       required: [id, ncpehprx_access_token, IdA_raw, ASL-Channel-ID-1, ASL-Channel-ID-2]
       properties:
         ncpehprx_access_token: { type: string, format: jwt, description: "DPoP-gebundenes Access-Token der WebApp für den Zugriff auf den NCPeH-Proxy" }
-        ASL-Channel-ID-1: { type: string, description: "ZETA-ASL-CID des ersten ASL-Kanals zwischen WebApp (ASL-Client) und HTTP-Proxy (ASL-Server)" }
-        ASL-Channel-ID-2: { type: string, description: "ZETA-ASL-CID des zweiten ASL-Kanals zwischen HTTP-Proxy (ASL-Client) und VAU des NCPeH-FD (ASL-Server)" }
+        ASL-Channel-ID-1: { type: string, description: "ZETA-ASL-CID des ersten ASL-Kanals (ASL-Kanal 1) zwischen WebApp (ASL-Client) und HTTP-Proxy (ASL-Server)" }
+        ASL-Channel-ID-2: { type: string, description: "ZETA-ASL-CID des zweiten ASL-Kanals (ASL-Kanal 2) zwischen HTTP-Proxy (ASL-Client) und VAU des NCPeH-FD (ASL-Server)" }
 
     FDSessionTupel:
       allOf:
@@ -294,11 +298,11 @@ components:
         - $ref: './subdomains.yaml#/subdomains/identity-role-mapping'
         - $ref: './subdomains.yaml#/subdomains/transaction-handling-eped-b'
       x-gem-medical-personal-information: false
-      description: "Spezialisiertes Session-Tupel in der VAU des NCPeH-FD, das vom Basisobjekt SessionTupel ableitet und den übermittelten Roh-Identitätsnachweis (IdA_raw) sowie die daraus generierte, signierte eHDSI-IdentityAssertion fest an den zweiten ZETA/ASL-Kanal (ASL-Channel-ID-2 zum HTTP-Proxy) bindet"
+      description: "Spezialisiertes Session-Tupel in der VAU des NCPeH-FD, das vom Basisobjekt SessionTupel ableitet und den übermittelten Identitätsnachweis (IdA_raw) sowie die daraus generierte, signierte eHDSI-IdentityAssertion fest an den zweiten ZETA/ASL-Kanal (ASL-Channel-ID-2 zum HTTP-Proxy) bindet"
       required: [id, IdA_raw, IdentityAssertion, ASL-Channel-ID-2]
       properties:
         IdentityAssertion: { $ref: '#/components/schemas/IdentityAssertion' }
-        ASL-Channel-ID-2: { type: string, description: "ZETA-ASL-CID des zweiten ASL-Kanals zwischen HTTP-Proxy (ASL-Client) und VAU des NCPeH-FD (ASL-Server)" }
+        ASL-Channel-ID-2: { type: string, description: "ZETA-ASL-CID des zweiten ASL-Kanals (ASL-Kanal 2) zwischen HTTP-Proxy (ASL-Client) und VAU des NCPeH-FD (ASL-Server)" }
 
     TRCAssertion:
       type: object
